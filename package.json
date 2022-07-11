@@ -1,0 +1,42 @@
+{
+  "name": "ha-assistant",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/carl09/ha-assistant.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/carl09/ha-assistant/issues"
+  },
+  "homepage": "https://github.com/carl09/ha-assistant#readme",
+  "workspaces": [
+    "/apps/*",
+    "/libs/*"
+  ],
+  "scripts": {
+    "prepare": "husky install",
+    "prettier": "pretty-quick --staged",
+    "start": "npm start -ws",
+    "dev": "npm run dev -ws",
+    "build": "npm run build -ws"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "husky": "^8.0.1",
+    "prettier": "^2.7.1",
+    "pretty-quick": "^3.1.0",
+    "eslint": "^8.19.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsx-a11y": "^6.6.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.30.1",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-import-resolver-typescript": "^3.2.5"
+  }
+}
