@@ -2,6 +2,17 @@
 
 bashio::log.info "Starting Google Proxy Service..."
 
+serverPort=$(bashio::addon.port)
+
+udpPort=$(bashio::addon.port 3312)
+
+## Print the message the user supplied, defaults to "Hello World..."
+bashio::log.info "server port ${serverPort}"
+bashio::log.info "udp port ${udpPort}"
+
+export SERVER_PORT=${serverPort:=8089}
+export UDP_PORT=${udpPort:=3312}
+
 cd /www
 
 exec node server/index.js
