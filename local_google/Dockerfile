@@ -28,4 +28,4 @@ RUN npm install --only=production
 USER node
 
 # CMD [ "/run.sh" ]
-CMD ["node", "dist/index.js"]
+CMD ["node", "server/index.js"]

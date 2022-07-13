@@ -1,9 +1,22 @@
 (global as any).WebSocket = require('ws');
 import dotenv from 'dotenv';
-// import { webSocket } from 'rxjs/webSocket';
 import express from 'express';
+import * as fs from 'fs';
+import * as path from 'path';
 
 dotenv.config();
+
+export const readFileAsJson = (filePath: string): any => {
+  console.info('Reading File:', filePath);
+  const rawdata = fs.readFileSync(filePath);
+  return JSON.parse(rawdata.toString());
+};
+
+const options = process.env.NODE_ENV === 'production'
+  ? readFileAsJson('/data/options.json')
+  : JSON.parse(process?.env?.options || '{}');
+
+console.debug('App options', options);
 
 const port = process.env.SERVER_PORT || 4001;
 

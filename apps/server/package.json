@@ -29,7 +29,7 @@
   "copyFiles": [
     {
       "from": "dist/*",
-      "to": "../../local_google/www/dist"
+      "to": "../../local_google/www/server"
     },
     {
       "from": "public/*",
