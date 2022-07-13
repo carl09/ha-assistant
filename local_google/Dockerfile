@@ -14,7 +14,7 @@ RUN apk add --no-cache nodejs npm
 
 COPY rootfs /
 
-RUN chmod a+x /etc/services.d/google
+RUN chmod a+x /etc/services.d/google/run
 
 # to remove
 # COPY run.sh /
