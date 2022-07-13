@@ -55,14 +55,13 @@ app.get('/api', (req, res) => {
     });
 });
 app.get('/config.js', (req, res) => {
-    const clientConfig = `
-window.config = {
-  API: ${port},
-  SOCKET: 123
-};
-  `;
+    const clientConfig = {
+        API: port,
+        SOCKET: 123,
+        INGRESS_URL: process.env.INGRESS_URL,
+    };
     res.set('Content-Type', 'application/javascript');
-    res.send(clientConfig);
+    res.send(`window.config = ${JSON.stringify(clientConfig)}`);
 });
 app.listen(port, () => {
     // tslint:disable-next-line:no-console
