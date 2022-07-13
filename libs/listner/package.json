@@ -7,7 +7,8 @@
     "build": "node esbuild.config.js",
     "postbuild": "tsc --emitDeclarationOnly --outDir dist",
     "dev": "node esbuild.config.js --watch",
-    "lint": "eslint \"src/*\""
+    "lint": "eslint \"src/*\"",
+    "release": "echo nothing in lib"
   },
   "license": "ISC",
   "dependencies": {

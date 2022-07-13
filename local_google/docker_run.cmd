@@ -1,1 +1,1 @@
-docker run --rm -v c:/temp/my_test_data:/data -p 4010:4010 local/my-test-addon
+docker run --rm -v c:/temp/my_test_data:/data -p 8089:8089 local/my-test-addon

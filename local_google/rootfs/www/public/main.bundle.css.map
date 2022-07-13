@@ -1,0 +1,1 @@
+{"version":3,"file":"main.bundle.css","mappings":"AAAA,MACE,mB","sources":["webpack://@ha-assistant/web-admin/./src/index.scss"],"sourcesContent":[":root {\r\n  --color-f: #ff0000;\r\n}\r\n"],"names":[],"sourceRoot":""}

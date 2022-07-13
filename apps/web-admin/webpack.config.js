@@ -1,28 +1,47 @@
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const path = require("path");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const Dotenv = require('dotenv-webpack');
 
+const isProduction = process.env.NODE_ENV === 'production';
+
+console.log('production', isProduction);
+
+const plugins = [
+  new MiniCssExtractPlugin({
+    filename: '[name].bundle.css',
+    chunkFilename: '[id].css',
+  }),
+  new HtmlWebpackPlugin({
+    template: './public/index.html',
+    scriptLoading: 'module',
+  }),
+];
+
+if (!isProduction) {
+  plugins.push(new Dotenv());
+}
+
 module.exports = {
-  entry: "./src/index.tsx",
-  mode: "development",
+  entry: './src/index.tsx',
+  mode: isProduction ? 'production' : 'development',
   devServer: {
-    static: "./dist",
+    static: './dist',
     // contentBase: path.join(__dirname, 'dist'),
     port: 3001,
     open: true,
   },
-  target: ["web", "es2017"],
+  target: ['web', 'es2017'],
   output: {
     module: true,
   },
   experiments: {
     outputModule: true,
   },
-  devtool: "source-map",
+  devtool: 'source-map',
   resolve: {
-    mainFields: ["es2015", "module", "main"],
-    extensions: [".ts", ".tsx", ".js", ".jsx", ".json", ".scss", ".css"],
+    mainFields: ['es2015', 'module', 'main'],
+    extensions: ['.ts', '.tsx', '.js', '.jsx', '.json', '.scss', '.css'],
     fallback: {
       crypto: false,
     },
@@ -31,17 +50,17 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        enforce: "pre",
-        use: ["source-map-loader"],
+        enforce: 'pre',
+        use: ['source-map-loader'],
       },
       {
         test: /\.(t|j)sx?$/,
-        loader: "babel-loader",
+        loader: 'babel-loader',
         exclude: /node_modules/,
         options: {
           presets: [
             [
-              "@babel/preset-env",
+              '@babel/preset-env',
               {
                 targets: { esmodules: true },
                 modules: false,
@@ -51,12 +70,12 @@ module.exports = {
               },
             ],
             [
-              "@babel/preset-react",
+              '@babel/preset-react',
               {
-                runtime: "automatic",
+                runtime: 'automatic',
               },
             ],
-            ["@babel/preset-typescript", {}],
+            ['@babel/preset-typescript', {}],
           ],
         },
       },
@@ -66,21 +85,11 @@ module.exports = {
           {
             loader: MiniCssExtractPlugin.loader,
           },
-          "css-loader",
-          "sass-loader",
+          'css-loader',
+          'sass-loader',
         ],
       },
     ],
   },
-  plugins: [
-    new MiniCssExtractPlugin({
-      filename: "[name].bundle.css",
-      chunkFilename: "[id].css",
-    }),
-    new HtmlWebpackPlugin({
-      template: "./public/index.html",
-      scriptLoading: "module",
-    }),
-    new Dotenv()
-  ],
+  plugins: plugins,
 };

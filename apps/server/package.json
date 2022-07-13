@@ -29,15 +29,11 @@
   "copyFiles": [
     {
       "from": "dist/*",
-      "to": "../../local_google/www/server"
-    },
-    {
-      "from": "public/*",
-      "to": "../../local_google/www/public"
+      "to": "../../local_google/rootfs/www/server"
     },
     {
       "from": "package.json",
-      "to": "../../local_google/www/package.json"
+      "to": "../../local_google/rootfs/www/package.json"
     }
   ],
   "copyFilesSettings": {

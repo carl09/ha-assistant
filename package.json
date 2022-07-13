@@ -46,7 +46,7 @@
   "copyFiles": [
     {
       "from": "package-lock.json",
-      "to": "local_google/www/package-lock.json"
+      "to": "local_google/rootfs/www/package-lock.json"
     }
   ],
   "copyFilesSettings": {

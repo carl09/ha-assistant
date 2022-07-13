@@ -16,11 +16,6 @@ COPY rootfs /
 
 RUN chmod a+x /etc/services.d/google/run
 
-# to remove
-# COPY run.sh /
-# RUN chmod a+x /run.sh
-ADD www/ /www/ 
-
 WORKDIR www
 
 ENV NODE_ENV production
