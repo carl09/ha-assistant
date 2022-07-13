@@ -6,16 +6,16 @@ serverPort=$(bashio::addon.port)
 
 udpPort=$(bashio::addon.port 3312)
 
-ingress_url= $(bashio::addon.ingress_url)
+ingressUrl="$(bashio::addon.ingress_url)"
 
 ## Print the message the user supplied, defaults to "Hello World..."
 bashio::log.info "server port ${serverPort}"
 bashio::log.info "udp port ${udpPort}"
-bashio::log.info "ingress_url ${ingress_url}"
+bashio::log.info "ingressUrl ${ingressUrl}"
 
 export SERVER_PORT=${serverPort:=8089}
 export UDP_PORT=${udpPort:=3312}
-export INGRESS_URL=${ingress_url:=''}
+export INGRESS_URL=${ingressUrl:=""}
 
 cd /www
 
