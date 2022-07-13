@@ -1,4 +1,4 @@
-# Google Home Manager
+# Google Home Manager V2
 
 Nothing to say yet
 
