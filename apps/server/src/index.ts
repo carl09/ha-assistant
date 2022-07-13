@@ -34,6 +34,17 @@ app.get('/api', (req, res) => {
   });
 });
 
+app.get('/config.js', (req, res) => {
+  const clientConfig = `
+  window.config = {
+    API: ${port}
+    SOCKET: 123
+  }
+  `;
+  res.set('Content-Type', 'application/javascript');
+  res.send(clientConfig);
+});
+
 app.listen(port, () => {
   // tslint:disable-next-line:no-console
   console.log(`server started at http://localhost:${port}`);

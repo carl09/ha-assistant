@@ -2,12 +2,7 @@ import { useEffect, useState } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
 
-try {
-  const homeAssistaneApiKey = process?.env?.HA_API_KEY || '';
-} catch (err) {
-  console.error('process failed', err);
-}
-
+// const homeAssistaneApiKey = process.env.HA_API_KEY || '';
 // const homeAssistaneSocketUri = process.env.HA_SOCKET_URL || '';
 
 // const socket = getHomeAssistantDataAccess(
