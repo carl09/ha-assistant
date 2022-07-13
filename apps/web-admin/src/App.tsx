@@ -10,6 +10,8 @@ import { json } from '@codemirror/lang-json';
 //   homeAssistaneApiKey
 // );
 
+console.log('window.config', (window as any).config);
+
 export const App = () => {
   const [devices, setDevices] = useState<{ [key: string]: unknown }>();
 

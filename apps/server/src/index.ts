@@ -36,10 +36,10 @@ app.get('/api', (req, res) => {
 
 app.get('/config.js', (req, res) => {
   const clientConfig = `
-  window.config = {
-    API: ${port}
-    SOCKET: 123
-  }
+window.config = {
+  API: ${port},
+  SOCKET: 123
+};
   `;
   res.set('Content-Type', 'application/javascript');
   res.send(clientConfig);
