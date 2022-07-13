@@ -1,37 +1,48 @@
 import { useEffect, useState } from 'react';
-import {
-  getHomeAssistantDataAccess,
-  getDeviceStatusV2$,
-} from '@ha-assistant/listner';
 import CodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
 
-const homeAssistaneApiKey = process.env.HA_API_KEY || '';
-const homeAssistaneSocketUri = process.env.HA_SOCKET_URL || '';
+try {
+  const homeAssistaneApiKey = process?.env?.HA_API_KEY || '';
+} catch (err) {
+  console.error('process failed', err);
+}
 
-const socket = getHomeAssistantDataAccess(
-  homeAssistaneSocketUri,
-  homeAssistaneApiKey
-);
+// const homeAssistaneSocketUri = process.env.HA_SOCKET_URL || '';
+
+// const socket = getHomeAssistantDataAccess(
+//   homeAssistaneSocketUri,
+//   homeAssistaneApiKey
+// );
 
 export const App = () => {
   const [devices, setDevices] = useState<{ [key: string]: unknown }>();
 
-  useEffect(() => {
-    const deviceStatus$ = getDeviceStatusV2$(socket).subscribe({
-      next: (d) => {
-        setDevices(d);
-      },
-    });
+  // useEffect(() => {
+  //   const deviceStatus$ = getDeviceStatusV2$(socket).subscribe({
+  //     next: (d) => {
+  //       setDevices(d);
+  //     },
+  //   });
 
-    return () => {
-      deviceStatus$.unsubscribe();
-    };
+  //   return () => {
+  //     deviceStatus$.unsubscribe();
+  //   };
+  // }, []);
+
+  useEffect(() => {
+    fetch('/api').then((resp) => {
+      resp.json().then((data) => {
+        setDevices({
+          test: data,
+        });
+      });
+    });
   }, []);
 
   return (
     <>
-      <h1>Hello World</h1>
+      <h1>Hello World {location.hostname}</h1>
 
       {devices
         ? Object.keys(devices).map((x) => (

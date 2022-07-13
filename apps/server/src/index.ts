@@ -12,10 +12,6 @@ export const readFileAsJson = (filePath: string): any => {
   return JSON.parse(rawdata.toString());
 };
 
-// const options = process.env.NODE_ENV === 'production'
-//   ? readFileAsJson('/data/options.json')
-//   : JSON.parse(process?.env?.options || '{}');
-
 const options = fs.existsSync('/data/options.json')
   ? readFileAsJson('/data/options.json')
   : JSON.parse(process?.env?.options || '{}');
@@ -31,6 +27,12 @@ Object.keys(process.env).forEach((x) => {
 const app = express();
 
 app.use('/', express.static('public'));
+
+app.get('/api', (req, res) => {
+  res.send({
+    name: 'hello',
+  });
+});
 
 app.listen(port, () => {
   // tslint:disable-next-line:no-console

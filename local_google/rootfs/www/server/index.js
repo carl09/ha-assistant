@@ -39,9 +39,6 @@ const readFileAsJson = (filePath) => {
     return JSON.parse(rawdata.toString());
 };
 exports.readFileAsJson = readFileAsJson;
-// const options = process.env.NODE_ENV === 'production'
-//   ? readFileAsJson('/data/options.json')
-//   : JSON.parse(process?.env?.options || '{}');
 const options = fs.existsSync('/data/options.json')
     ? (0, exports.readFileAsJson)('/data/options.json')
     : JSON.parse(((_a = process === null || process === void 0 ? void 0 : process.env) === null || _a === void 0 ? void 0 : _a.options) || '{}');
@@ -52,6 +49,11 @@ Object.keys(process.env).forEach((x) => {
 });
 const app = (0, express_1.default)();
 app.use('/', express_1.default.static('public'));
+app.get('/api', (req, res) => {
+    res.send({
+        name: 'hello',
+    });
+});
 app.listen(port, () => {
     // tslint:disable-next-line:no-console
     console.log(`server started at http://localhost:${port}`);
