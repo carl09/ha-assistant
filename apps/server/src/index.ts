@@ -12,7 +12,11 @@ export const readFileAsJson = (filePath: string): any => {
   return JSON.parse(rawdata.toString());
 };
 
-const options = process.env.NODE_ENV === 'production'
+// const options = process.env.NODE_ENV === 'production'
+//   ? readFileAsJson('/data/options.json')
+//   : JSON.parse(process?.env?.options || '{}');
+
+const options = fs.existsSync('/data/options.json')
   ? readFileAsJson('/data/options.json')
   : JSON.parse(process?.env?.options || '{}');
 

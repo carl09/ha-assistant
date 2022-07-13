@@ -6,6 +6,4 @@ npm -v
 
 echo "Hello world!"
 
-cd /www
-
-npm ci --only=production --ignore-scripts
+node server/index.js

@@ -1,0 +1,7 @@
+#!/usr/bin/with-contenv bashio
+
+bashio::log.info "Starting Google Proxy Service..."
+
+cd /www
+
+exec node server/index.js
