@@ -25,7 +25,7 @@ const resolveType = (node: Node, object: any, resolve: boolean): any => {
     return node.value;
   }
 
-  if (node.type === 'NumericLiteral'){
+  if (node.type === 'NumericLiteral') {
     return node.value;
   }
 
@@ -34,7 +34,6 @@ const resolveType = (node: Node, object: any, resolve: boolean): any => {
     const p = resolveType(node.property, object, resolve);
     if (resolve) {
       const r = typeof o === 'string' ? object[o][p] : o[p];
-    //   console.log('MemberExpression', o, p, r);
       return r;
     }
 
@@ -131,16 +130,4 @@ export const getDevicesFromProps = (
   });
 
   return results;
-
-  //   console.log(`${deviceProp} = `, s);
-
-  //   if (deviceProp.split('.').length > 2) {
-  //     const [domain, name, prop] = deviceProp.split('.');
-  //     return {
-  //       domain: restoreSwitchDomain(domain),
-  //       name,
-  //       prop,
-  //     };
-  //   }
-  //   return undefined;
 };

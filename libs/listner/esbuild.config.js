@@ -6,7 +6,7 @@ require('esbuild')
     outfile: './dist/index.js',
     bundle: true,
     platform: 'neutral',
-    external: ['axios'],
+    external: ['axios', '@babel/parser'],
     watch: {
       onRebuild(error, result) {
         if (error) console.error('watch build failed:', error);

@@ -7,7 +7,7 @@
   },
   "extends": ["plugin:@typescript-eslint/recommended", "prettier"],
   "parserOptions": {
-    "project": ["tsconfig.json"],
+    "project": ["libs/listner/tsconfig.json"],
     "ecmaVersion": 2020,
     "sourceType": "module"
   },

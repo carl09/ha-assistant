@@ -1,0 +1,1 @@
+docker run -it --rm -v c:/temp/my_test_data:/data -p 4010 local/my-test-addon /bin/bash 

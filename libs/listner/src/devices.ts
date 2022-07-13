@@ -1,29 +1,77 @@
-// import { BehaviorSubject } from 'rxjs';
+import { Observable } from 'rxjs';
+import { getDevicesFromProps } from './devices-props';
 
-// let _devices: string[] = [];
+export interface IDeviceSubs {
+  [entityId: string]: {
+    key: string;
+    prop: string;
+    expression: string;
+  }[];
+}
 
-// const devicesSubject: BehaviorSubject<string[]> = new BehaviorSubject(_devices);
+export interface IDevice {
+  name: string;
+  subs: IDeviceSubs;
+}
 
-// const getDeviceConfig = (deviceName: string) => {
-//   return {
-//     thermostatMode: 'climate.d1_mini_4_climate.state',
-//     thermostatTemperatureSetpoint: 'climate.d1_mini_4_climate.temperature',
-//     thermostatTemperatureAmbient: 'climate.d1_mini_4_climate.current_temperature',
-//     // thermostatTemperatureSetpointHigh: 'climate.d1_mini_4_climate.', // Bug ?
-//     // thermostatTemperatureSetpointLow: 'climate.d1_mini_4_climate.min_temp',
-//     thermostatHumidityAmbient: 'sensor.d1_mini_4_humidity.state',
-//   };
-// };
+export interface IDeviceV2 {
+  name: string;
+  status: { [key: string]: any };
+  subs: { [key: string]: any };
+}
 
-// export const setDevices = (devices: string[]) => {
-//   _devices = [...devices];
-//   devicesSubject.next([..._devices]);
-// };
+const getDeviceDehumidifier = () => ({
+  // online: true,
+  on: `equals(switch.kogan_8.state, 'on')`,
+  currentFanSpeedSetting: 'low_key',
+  humiditySetpointPercent: '40',
+  humidityAmbientPercent: 'sensor.d1_mini_3_humidity.state',
+});
 
-// export const getDevices = () => {
-//   return _devices;
-// };
+const getDeviceClimate = (deviceName: string) => ({
+  thermostatMode: `climate.${deviceName}_climate.state`,
+  thermostatTemperatureSetpoint: `climate.${deviceName}_climate.temperature`,
+  thermostatTemperatureAmbient: `sensor.${deviceName}_temperature.state`,
+  thermostatHumidityAmbient: `sensor.${deviceName}_humidity.state`,
+});
 
-// export const devices$ = () => {
-//   return devicesSubject.asObservable();
-// };
+const getDeviceSubsV2 = (device: any): { [key: string]: any } =>
+  Object.keys(device).reduce<{ [key: string]: any }>((acc, x) => {
+    const list = getDevicesFromProps(device[x]);
+
+    if (list) {
+      list.forEach((item) => {
+        const key = `${item.domain}.${item.name}`;
+        acc[key] = true;
+      });
+    }
+    return acc;
+  }, {});
+
+export const getDevicesV2$: Observable<{
+  devices: IDeviceV2[];
+  allSubs: { [key: string]: any };
+}> = new Observable((sub) => {
+  const fakeDevices: { [key: string]: any } = {
+    d1_mini_4: getDeviceClimate('d1_mini_4'),
+    d1_mini_3: getDeviceClimate('d1_mini_3'),
+    wroom_32_1: getDeviceClimate('wroom_32_1'),
+    dehumidifier: getDeviceDehumidifier(),
+  };
+
+  console.warn('getDeviceSubs', fakeDevices);
+
+  const deviceSubs = Object.keys(fakeDevices).map((x) => ({
+    name: x,
+    status: fakeDevices[x],
+    subs: getDeviceSubsV2(fakeDevices[x]),
+  }));
+
+  sub.next({
+    devices: deviceSubs,
+    allSubs: deviceSubs.reduce<{ [key: string]: any }>((acc, i) => {
+      acc = { ...(acc || {}), ...i.subs };
+      return acc;
+    }, {}),
+  });
+});

@@ -23,10 +23,7 @@ export const getDeviceStatusV2$ = (socket: HomeAssistantDataAccess) =>
             });
           });
 
-          console.log('entitesState', entitesState);
-
           return devices.devices.reduce<{ [key: string]: any }>((acc, y) => {
-            console.log('getDevices', y.subs);
             acc[y.name] = Object.keys(y.status).reduce<{ [key: string]: any }>(
               (acc2, i) => ({
                 ...acc2,
@@ -49,8 +46,6 @@ export const getDeviceStatusV2$ = (socket: HomeAssistantDataAccess) =>
       .pipe(
         combineLatestWith(socket.getEntityStatusUpdated()),
         map(([devices, update]) => {
-          // console.log('devices', devices);
-
           let found = false;
 
           if (update.entity_id in devices.allSubs) {
@@ -73,7 +68,6 @@ export const getDeviceStatusV2$ = (socket: HomeAssistantDataAccess) =>
             updatedDevices = devices.devices.reduce<{
               [key: string]: any;
             }>((acc, y) => {
-              console.log('getDevices', y.subs);
               acc[y.name] = Object.keys(y.status).reduce<{
                 [key: string]: any;
               }>(
@@ -102,28 +96,6 @@ export const getDeviceStatusV2$ = (socket: HomeAssistantDataAccess) =>
           //   console.log('entityStatusUpdated$', msg);
         },
       });
-
-    // const entityStatusUpdated = getEntityStatusUpdated$(socket).subscribe({
-    //   next: (msg) => {
-    //     if (msg && Object.keys(msg).length !== 0) {
-    //       console.log('per getEntityStatusUpdated', msg);
-    //       const foo = Object.keys(devices).reduce<{ [key: string]: any }>(
-    //         (acc, x) => {
-    //           if (x in msg) {
-    //             acc[x] = { ...devices[x], ...msg[x] };
-    //           } else {
-    //             acc[x] = { ...devices[x] };
-    //           }
-    //           return acc;
-    //         },
-    //         {}
-    //       );
-
-    //       devices = foo;
-    //       obs.next(devices);
-    //     }
-    //   },
-    // });
 
     return () => {
       console.warn('unsub');
