@@ -30,7 +30,7 @@ export const getConfig = (): IConfig => {
   return {
     port: port,
     ingressUrl: process.env.INGRESS_URL,
-    homeAssistaneApiKey: process.env.HA_API_KEY || '',
+    homeAssistaneApiKey: process.env.HASSIO_TOKEN || '',
     homeAssistaneSocketUri:
       process.env.HA_SOCKET_URL || 'ws://hassio/homeassistant/api/websocket',
   };
