@@ -2,7 +2,7 @@
 
 bashio::log.info "Starting Google Proxy Service..."
 
-serverPort=$(bashio::addon.port)
+serverPort=$(bashio::addon.port 8089)
 
 udpPort=$(bashio::addon.port 3312)
 
@@ -19,4 +19,4 @@ export INGRESS_URL=${ingressUrl:=""}
 
 cd /www
 
-exec node server/index.js >message | (bashio::log.info $message)
+exec node server/index.js
