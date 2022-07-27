@@ -59,7 +59,7 @@ export const getDevicesV2$: Observable<{
     dehumidifier: getDeviceDehumidifier(),
   };
 
-  console.warn('getDeviceSubs', fakeDevices);
+  // console.warn('getDeviceSubs', fakeDevices);
 
   const deviceSubs = Object.keys(fakeDevices).map((x) => ({
     name: x,

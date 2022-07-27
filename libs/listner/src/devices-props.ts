@@ -15,15 +15,15 @@ const restoreSwitchDomain = (v: string): string =>
 
 const fn: { [key: string]: (...args: any[]) => any } = {
   equals: (...args: any[]) => {
-    console.log('equals', args);
+    // console.log('equals', args);
     return args[0] === args[1];
   },
   toNum: (...args: any[]) => {
-    console.log('toNum', args[0]);
+    // console.log('toNum', args[0]);
     return parseFloat(args[0]);
   },
   toInt: (...args: any[]) => {
-    console.log('toInt', args[0]);
+    // console.log('toInt', args[0]);
     return parseInt(args[0]);
   }
 };
@@ -117,7 +117,7 @@ export const getDevicesFromProps = (
 
   const referances = findReferances(deviceProp);
 
-  console.log('getDevicesFromProps.referances', referances);
+  // console.log('getDevicesFromProps.referances', referances);
 
   if (!referances) {
     return;
