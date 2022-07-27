@@ -1,6 +1,6 @@
 {
   "name": "Google Home V2",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "slug": "google_home_local_v2",
   "description": "Google Home to Home Assistant manager V2",
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],

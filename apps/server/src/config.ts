@@ -22,9 +22,9 @@ console.debug('App options', options);
 
 const port = process.env.SERVER_PORT ? parseInt(process.env.SERVER_PORT) : 4001;
 
-// Object.keys(process.env).forEach((x) => {
-//   console.log(`process.env.${x} = ${process.env[x]}`);
-// });
+Object.keys(process.env).forEach((x) => {
+  console.log(`process.env.${x} = ${process.env[x]}`);
+});
 
 export const getConfig = (): IConfig => {
   return {
