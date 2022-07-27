@@ -18,6 +18,14 @@ const fn: { [key: string]: (...args: any[]) => any } = {
     console.log('equals', args);
     return args[0] === args[1];
   },
+  toNum: (...args: any[]) => {
+    console.log('toNum', args[0]);
+    return parseFloat(args[0]);
+  },
+  toInt: (...args: any[]) => {
+    console.log('toInt', args[0]);
+    return parseInt(args[0]);
+  }
 };
 
 const resolveType = (node: Node, object: any, resolve: boolean): any => {

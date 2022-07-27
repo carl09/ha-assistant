@@ -1,14 +1,17 @@
 {
   "name": "@ha-assistant/listner",
   "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "typings": "./dist/index.d.ts",
   "scripts": {
-    "build": "node esbuild.config.js",
+    "build": "node esbuild.config.cjs",
     "postbuild": "tsc --emitDeclarationOnly --outDir dist",
-    "dev": "node esbuild.config.js --watch",
+    "dev": "node esbuild.config.cjs --watch",
     "lint": "eslint \"src/*\"",
-    "release": "echo nothing in lib"
+    "release": "echo nothing in lib",
+    "foo": "tsup --dts"
   },
   "license": "ISC",
   "dependencies": {
@@ -20,6 +23,7 @@
   "devDependencies": {
     "esbuild": "^0.14.43",
     "esbuild-plugin-d.ts": "^1.1.0",
-    "typescript": "^4.7.4"
+    "typescript": "^4.7.4",
+    "tsup": "^6.2.0"
   }
 }

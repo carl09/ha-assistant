@@ -1,53 +1,35 @@
-(global as any).WebSocket = require('ws');
 import dotenv from 'dotenv';
-import express from 'express';
-import * as fs from 'fs';
-import * as path from 'path';
-
 dotenv.config();
+(global as any).WebSocket = require('ws');
 
-export const readFileAsJson = (filePath: string): any => {
-  console.info('Reading File:', filePath);
-  const rawdata = fs.readFileSync(filePath);
-  return JSON.parse(rawdata.toString());
-};
+import express from 'express';
+import { apiInit } from './api-endpoints';
+import { clientInit } from './client-endpoints';
+import { IConfig, getConfig } from './config';
+import { webSocketInit } from './websocket-endpoint';
+import { Server } from 'http';
+import * as http from 'http';
+import * as WebSocket from 'ws';
+// import * as cors from 'cors';
 
-const options = fs.existsSync('/data/options.json')
-  ? readFileAsJson('/data/options.json')
-  : JSON.parse(process?.env?.options || '{}');
-
-console.debug('App options', options);
-
-const port = process.env.SERVER_PORT || 4001;
-
-Object.keys(process.env).forEach((x) => {
-  console.log(`process.env.${x} = ${process.env[x]}`);
-});
+const cors = require('cors');
 
 const app = express();
 
-app.use('/', express.static('public'));
+app.use(cors());
 
-app.get('/api', (req, res) => {
-  res.send({
-    name: 'hello',
-  });
-});
+const config = getConfig();
 
-app.get('/config.js', (req, res) => {
-  const clientConfig = {
-    API: port,
-    SOCKET: 123,
-    INGRESS_URL: process.env.INGRESS_URL,
-  };
+clientInit(app, config);
+apiInit(app);
 
-  res.set('Content-Type', 'application/javascript');
-  res.send(`window.config = ${JSON.stringify(clientConfig)}`);
-});
+const server = http.createServer(app);
 
-app.listen(port, () => {
-  // tslint:disable-next-line:no-console
-  console.log(`server started at http://localhost:${port}`);
+webSocketInit(server);
+
+
+server.listen(config.port, () => {
+  console.log(`server started at http://localhost:${config.port}`);
 });
 
 const handle = (signal: number) => {

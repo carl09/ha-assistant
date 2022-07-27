@@ -30,8 +30,8 @@ export class HomeAssistantWebSocket {
     this.webSocketSubject = webSocket<IMassageBase>({
       url: this.url,
       closeObserver: {
-        next: (err) => {
-          logging.error('Home Assistant Web Socket Closed', err);
+        next: () => {
+          logging.error('Home Assistant Web Socket Closed');
           setTimeout(() => {
             logging.debug('Re connecting');
             this.initWebSocket();
@@ -44,8 +44,8 @@ export class HomeAssistantWebSocket {
       next: (msg) => {
         this.processMessage(msg);
       },
-      error: (err) => {
-        logging.error('ws error', err);
+      error: () => {
+        logging.error('HomeAssistantWebSocket ws error');
         this.webSocketSubject.complete();
       },
       complete: () => {

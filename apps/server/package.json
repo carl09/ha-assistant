@@ -4,8 +4,11 @@
   "description": "",
   "main": "./dist/index.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only ./src/index.ts",
-    "build": "tsc -p tsconfig.json",
+    "_dev": "ts-node-dev --respawn --transpile-only ./src/index.ts",
+    "dev": "run-p dev:build dev:run",
+    "dev:build": "cross-env NODE_ENV=development webpack --watch --mode development",
+    "dev:run": "node-dev dist/index.js",
+    "build": "cross-env NODE_ENV=production webpack",
     "copy": "copy-files-from-to",
     "release": "npm run build && npm run copy"
   },
@@ -15,7 +18,10 @@
     "rxjs": "^7.5.5",
     "ws": "^8.8.0",
     "express": "^4.18.1",
-    "dotenv": "^16.0.1"
+    "dotenv": "^16.0.1",
+    "cors": "^2.8.5",
+    "utf-8-validate": "^5.0.9",
+    "bufferutil": "^4.0.6"
   },
   "peerDependencies": {
     "@ha-assistant/listner": "*"
@@ -23,8 +29,11 @@
   "devDependencies": {
     "@types/node": "^16.0.0",
     "@types/express": "^4.17.13",
+    "@types/cors": "^2.8.12",
     "ts-node-dev": "^2.0.0",
-    "copy-files-from-to": "^3.2.2"
+    "copy-files-from-to": "^3.2.2",
+    "node-dev": "^7.4.3",
+    "npm-run-all": "^4.1.5"
   },
   "copyFiles": [
     {

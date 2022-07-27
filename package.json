@@ -23,8 +23,9 @@
     "start": "npm start -ws",
     "dev": "npm run dev -ws",
     "build": "npm run build -ws",
-    "release": "npm run release -ws && npm run copy",
-    "copy": "copy-files-from-to"
+    "release": "npm run release -ws && npm run copy && npm run inc-version",
+    "copy": "copy-files-from-to",
+    "inc-version": "node ./update_image_version.mjs"
   },
   "dependencies": {},
   "devDependencies": {
@@ -41,7 +42,9 @@
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.30.1",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-import-resolver-typescript": "^3.2.5"
+    "eslint-import-resolver-typescript": "^3.2.5",
+    "semver": "^7.3.7",
+    "@types/semver": "^7.3.10"
   },
   "copyFiles": [
     {

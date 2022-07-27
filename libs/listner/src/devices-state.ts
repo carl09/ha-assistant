@@ -1,7 +1,7 @@
-import { HomeAssistantDataAccess } from '@ha-assistant/listner';
 import { Observable, combineLatestWith, map } from 'rxjs';
 import { getDevicesV2$ } from './devices';
 import { resolveValue } from './devices-props';
+import { HomeAssistantDataAccess } from './home-assistant-data-access';
 
 export const getDeviceStatusV2$ = (socket: HomeAssistantDataAccess) =>
   new Observable<{ [key: string]: any }>((obs) => {
@@ -47,6 +47,13 @@ export const getDeviceStatusV2$ = (socket: HomeAssistantDataAccess) =>
         combineLatestWith(socket.getEntityStatusUpdated()),
         map(([devices, update]) => {
           let found = false;
+
+          if (update === undefined || update.entity_id === undefined) {
+            return {
+              found: false,
+              devices: {}
+            };
+          }
 
           if (update.entity_id in devices.allSubs) {
             console.warn('found', update);

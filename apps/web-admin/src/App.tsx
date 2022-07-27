@@ -1,36 +1,61 @@
 import { useEffect, useState } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
+import { messages } from '@ha-assistant/listner';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
 
-// const homeAssistaneApiKey = process.env.HA_API_KEY || '';
-// const homeAssistaneSocketUri = process.env.HA_SOCKET_URL || '';
+interface IConfig {
+  port: number;
+  ingressUrl?: string;
+  homeAssistaneSocketUri: string;
+  homeAssistaneApiKey: string;
+}
 
-// const socket = getHomeAssistantDataAccess(
-//   homeAssistaneSocketUri,
-//   homeAssistaneApiKey
-// );
+const config: IConfig = (window as any).config || {};
 
-const config = (window as any).config || {};
-
-console.log('window.config', config);
+console.log('window.config', config, location);
 
 export const App = () => {
   const [devices, setDevices] = useState<{ [key: string]: unknown }>();
 
-  // useEffect(() => {
-  //   const deviceStatus$ = getDeviceStatusV2$(socket).subscribe({
-  //     next: (d) => {
-  //       setDevices(d);
-  //     },
-  //   });
+  const { sendMessage, lastJsonMessage, readyState } =
+    useWebSocket<messages>('ws://localhost:8080/ws', {
+      shouldReconnect: (e) => {
+        return true;
+      },
+      reconnectAttempts: 10,
+      reconnectInterval: 3000,
+    });
 
-  //   return () => {
-  //     deviceStatus$.unsubscribe();
+  useEffect(() => {
+    if (lastJsonMessage !== null) {
+      console.log('lastJsonMessage', lastJsonMessage);
+      if (lastJsonMessage.type === 'devices') {
+        setDevices(lastJsonMessage.value);
+      }
+    }
+  }, [lastJsonMessage]);
+
+  // useEffect(() => {
+  //   const client = new WebSocket('ws://localhost:8080/ws');
+
+  //   client.onopen = (e) => {
+  //     client.send('Hello Server!');
   //   };
+
+  //   client.onmessage = (e) => {
+  //     const message: messages = JSON.parse(e.data);
+  //     console.log('Message from server ', message);
+  //     if (message.type === 'devices') {
+  //       setDevices(message.value);
+  //     }
+  //   };
+
+  //   return () => client.close();
   // }, []);
 
   useEffect(() => {
-    fetch('/api').then((resp) => {
+    fetch(`api`).then((resp) => {
       resp.json().then((data) => {
         setDevices({
           test: data,
@@ -39,9 +64,18 @@ export const App = () => {
     });
   }, []);
 
+  const connectionStatus = {
+    [ReadyState.CONNECTING]: 'Connecting',
+    [ReadyState.OPEN]: 'Open',
+    [ReadyState.CLOSING]: 'Closing',
+    [ReadyState.CLOSED]: 'Closed',
+    [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
+  }[readyState];
+
   return (
     <>
       <h1>Hello World {location.hostname}</h1>
+      <span>The WebSocket is currently {connectionStatus}</span>
 
       <p>{JSON.stringify(config)}</p>
 

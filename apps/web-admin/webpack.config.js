@@ -1,6 +1,7 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const Dotenv = require('dotenv-webpack');
+// const nodeExternals = require('webpack-node-externals');
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -21,6 +22,7 @@ if (!isProduction) {
   plugins.push(new Dotenv());
 }
 
+/** @type { import('webpack').Configuration } */
 module.exports = {
   entry: './src/index.tsx',
   mode: isProduction ? 'production' : 'development',
@@ -29,6 +31,11 @@ module.exports = {
     // contentBase: path.join(__dirname, 'dist'),
     port: 3001,
     open: true,
+    proxy: {
+      '/api': 'http://localhost:8080',
+      '/ws': 'http://localhost:8080',
+      '/config.js': 'http://localhost:8080',
+    },
   },
   target: ['web', 'es2017'],
   output: {
@@ -43,15 +50,23 @@ module.exports = {
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json', '.scss', '.css'],
     fallback: {
       crypto: false,
+      url: false,
+      stream: false,
+      tls: false,
+      net: false,
+      http: false,
+      https: false,
+      zlib: false,
     },
   },
+  // externals: [nodeExternals()],
   module: {
     rules: [
-      {
-        test: /\.js$/,
-        enforce: 'pre',
-        use: ['source-map-loader'],
-      },
+      // {
+      //   test: /\.js$/,
+      //   enforce: 'pre',
+      //   use: ['source-map-loader'],
+      // },
       {
         test: /\.(t|j)sx?$/,
         loader: 'babel-loader',

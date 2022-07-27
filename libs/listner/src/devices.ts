@@ -25,14 +25,14 @@ const getDeviceDehumidifier = () => ({
   on: `equals(switch.kogan_8.state, 'on')`,
   currentFanSpeedSetting: 'low_key',
   humiditySetpointPercent: '40',
-  humidityAmbientPercent: 'sensor.d1_mini_3_humidity.state',
+  humidityAmbientPercent: 'toInt(sensor.d1_mini_3_humidity.state)',
 });
 
 const getDeviceClimate = (deviceName: string) => ({
   thermostatMode: `climate.${deviceName}_climate.state`,
-  thermostatTemperatureSetpoint: `climate.${deviceName}_climate.temperature`,
-  thermostatTemperatureAmbient: `sensor.${deviceName}_temperature.state`,
-  thermostatHumidityAmbient: `sensor.${deviceName}_humidity.state`,
+  thermostatTemperatureSetpoint: `toInt(climate.${deviceName}_climate.temperature)`,
+  thermostatTemperatureAmbient: `toInt(sensor.${deviceName}_temperature.state)`,
+  thermostatHumidityAmbient: `toInt(sensor.${deviceName}_humidity.state)`,
 });
 
 const getDeviceSubsV2 = (device: any): { [key: string]: any } =>

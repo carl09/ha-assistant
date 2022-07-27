@@ -7,3 +7,4 @@ export * from './home-assistant-data-access';
 export * from './home-assistant-entities';
 
 export * from './utils/helpers';
+export * from './messages'

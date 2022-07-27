@@ -1,6 +1,6 @@
 {
   "name": "Google Home V2",
-  "version": "0.0.14",
+  "version": "0.0.17",
   "slug": "google_home_local_v2",
   "description": "Google Home to Home Assistant manager V2",
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
@@ -8,23 +8,14 @@
   "init": false,
   "panel_icon": "mdi:google-home",
   "options": {
-    "firebase": {
-      "apiKey": "",
-      "databaseURL": ""
-    },
+    "firebase": { "apiKey": "", "databaseURL": "" },
     "googleJwtPath": "/config/google-local/serviceAccountKey.json"
   },
   "schema": {
-    "firebase": {
-      "apiKey": "str",
-      "databaseURL": "url"
-    },
+    "firebase": { "apiKey": "str", "databaseURL": "url" },
     "googleJwtPath": "str"
   },
-  "ports": {
-    "8089/tcp": 8089,
-    "3312/udp": 3312
-  },
+  "ports": { "8089/tcp": 8089, "3312/udp": 3312 },
   "ports_description": {
     "8089/tcp": "HA Addon Server",
     "3312/udp": "Google local Descovery port"
