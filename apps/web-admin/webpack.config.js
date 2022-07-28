@@ -33,7 +33,6 @@ module.exports = {
     open: true,
     proxy: {
       '/api': 'http://localhost:8080',
-      '/ws': 'http://localhost:8080',
       '/config.js': 'http://localhost:8080',
     },
   },

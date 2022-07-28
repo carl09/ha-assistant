@@ -1,17 +1,10 @@
 import { useEffect, useState } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
-import { messages } from '@ha-assistant/listner';
+import { IServerConfig, messages } from '@ha-assistant/listner';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 
-interface IConfig {
-  port: number;
-  ingressUrl?: string;
-  homeAssistaneSocketUri: string;
-  homeAssistaneApiKey: string;
-}
-
-const config: IConfig = (window as any).config || {};
+const config: IServerConfig = (window as any).config || {};
 
 console.log('window.config', config, location);
 
@@ -19,7 +12,7 @@ export const App = () => {
   const [devices, setDevices] = useState<{ [key: string]: unknown }>();
 
   const { sendMessage, lastJsonMessage, readyState } =
-    useWebSocket<messages>('ws://localhost:8080/ws', {
+    useWebSocket<messages>(config.socketUrl, {
       shouldReconnect: (e) => {
         return true;
       },
