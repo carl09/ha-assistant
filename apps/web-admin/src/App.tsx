@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
-import { IServerConfig, messages } from '@ha-assistant/listner';
+import { IServerConfig, logging, messages } from '@ha-assistant/listner';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 
 const config: IServerConfig = (window as any).config || {};
@@ -22,7 +22,7 @@ export const App = () => {
 
   useEffect(() => {
     if (lastJsonMessage !== null) {
-      console.log('lastJsonMessage', lastJsonMessage);
+      logging.log('lastJsonMessage', lastJsonMessage);
       if (lastJsonMessage.type === 'devices') {
         setDevices(lastJsonMessage.value);
       }

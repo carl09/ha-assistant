@@ -1,0 +1,12 @@
+{
+    "9ba0d4e5-2782-4a8b-bdcd-6f26680feae1": {
+        "id": "9ba0d4e5-2782-4a8b-bdcd-6f26680feae1",
+        "name": "demo",
+        "states": {},
+        "attributes": {},
+        "deviceType": "action.devices.types.SWITCH",
+        "traits": [
+            "action.devices.traits.OnOff"
+        ]
+    }
+}
