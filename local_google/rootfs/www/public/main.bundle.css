@@ -1,3 +1,3 @@
-:root{--color-f: #ff0000}
+:root{--color-f: #ff0000;--gh2-color: black;--gh2-bg-color: white}@media(prefers-color-scheme: dark){:root{--gh2-color: white;--gh2-bg-color: black}}body{color:var(--gh2-color);background-color:var(--gh2-bg-color)}
 
 /*# sourceMappingURL=main.bundle.css.map*/
