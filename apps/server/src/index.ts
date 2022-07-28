@@ -32,6 +32,6 @@ server.listen(config.port, () => {
 });
 
 const handle = (signal: number) => {
-  console.log(`*^!@4=> Received event: ${signal}`);
+  logging.error(`*^!@4=> Received event: ${signal}`);
 };
 process.on('SIGHUP', handle);

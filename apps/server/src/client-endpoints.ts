@@ -1,4 +1,4 @@
-import { IServerConfig } from '@ha-assistant/listner';
+import { IServerConfig, logging } from '@ha-assistant/listner';
 import express from 'express';
 import { type Express } from 'express';
 import { IConfig } from './config';
@@ -7,7 +7,7 @@ export const clientInit = (app: Express, config: IConfig) => {
   app.use('/', express.static('public'));
 
   app.get('/config.js', (req, res) => {
-    console.log('Client', req.protocol, req.get('host'), req.originalUrl);
+    logging.debug('Client', req.protocol, req.get('host'), req.originalUrl);
 
     const host =
       process.env.NODE_ENV === 'development'

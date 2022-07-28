@@ -1,4 +1,5 @@
 import {
+  logging,
   getHomeAssistantDataAccess,
   HomeAssistantDataAccess,
   getDeviceStatusV2$,
@@ -19,7 +20,7 @@ export const webSocketInit = (server: Server) => {
     server,
   });
 
-  console.log('created socket server', wss.path);
+  logging.debug('created socket server', wss.path);
 
   wss.on('connection', (ws) => {
     ws.send(JSON.stringify({ type: 'welcome', value: 'Hello' }));
@@ -31,7 +32,7 @@ export const webSocketInit = (server: Server) => {
     }
 
     ws.on('message', (message) => {
-      console.log('from Client', message.toLocaleString());
+      logging.log('from Client', message.toLocaleString());
       ws.send(
         JSON.stringify({
           type: 'debug',
@@ -41,7 +42,7 @@ export const webSocketInit = (server: Server) => {
     });
 
     ws.on('close', (e) => {
-      console.log('client gone', e);
+      logging.log('client gone', e);
     });
   });
 
