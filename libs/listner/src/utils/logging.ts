@@ -1,7 +1,15 @@
+import chalk from 'chalk';
+
+const l = (v: string, ...parms: any[]) => console.log(v, ...parms);
+
+const info = () => `[${new Date().toLocaleString()}]`;
+
 export const logging = {
-  error: (err: any, ...parms: any[]) => console.error(err, ...parms),
-  warn: (msg: string, ...parms: any[]) => console.warn(msg, ...parms),
-  log: (msg: string, ...parms: any[]) => console.log(msg, ...parms),
-  info: (msg: string, ...parms: any[]) => console.info(msg, ...parms),
-  debug: (msg: string, ...parms: any[]) => console.warn(msg, ...parms),
+  error: (msg: string, ...parms: any[]) => l(chalk.red(info(), msg), ...parms),
+  warn: (msg: string, ...parms: any[]) =>
+    l(chalk.yellow(info(), msg), ...parms),
+  log: (msg: string, ...parms: any[]) => l(chalk.green(info(), msg), ...parms),
+  info: (msg: string, ...parms: any[]) => l(chalk.gray(info(), msg), ...parms),
+  debug: (msg: string, ...parms: any[]) =>
+    l(chalk.white(info(), msg), ...parms),
 };

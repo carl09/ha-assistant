@@ -18,7 +18,8 @@
     "rxjs": "^7.5.5",
     "@babel/parser": "^7.18.8",
     "@babel/types": "^7.18.8",
-    "immer": "^9.0.15"
+    "immer": "^9.0.15",
+    "chalk": "^5.0.1"
   },
   "devDependencies": {
     "esbuild": "^0.14.43",

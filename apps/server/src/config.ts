@@ -6,6 +6,11 @@ export interface IConfig {
   ingressUrl?: string;
   homeAssistaneSocketUri: string;
   homeAssistaneApiKey: string;
+  deviceStore: string;
+}
+
+export interface IOptions {
+  dataStorePath?: string;
 }
 
 const readFileAsJson = (filePath: string): any => {
@@ -22,9 +27,9 @@ console.debug('App options', options);
 
 const port = process.env.SERVER_PORT ? parseInt(process.env.SERVER_PORT) : 4001;
 
-Object.keys(process.env).forEach((x) => {
-  console.log(`process.env.${x} = ${process.env[x]}`);
-});
+// Object.keys(process.env).forEach((x) => {
+//   console.log(`process.env.${x} = ${process.env[x]}`);
+// });
 
 export const getConfig = (): IConfig => {
   return {
@@ -33,5 +38,7 @@ export const getConfig = (): IConfig => {
     homeAssistaneApiKey: process.env.HASSIO_TOKEN || '',
     homeAssistaneSocketUri:
       process.env.HA_SOCKET_URL || 'ws://hassio/homeassistant/api/websocket',
+
+    deviceStore: process.env.DEVICE_STORE || '/data/devices.json',
   };
 };

@@ -11,7 +11,7 @@ console.log('window.config', config, location);
 export const App = () => {
   const [devices, setDevices] = useState<{ [key: string]: unknown }>();
 
-  const { sendMessage, lastJsonMessage, readyState } =
+  const { lastJsonMessage, readyState } =
     useWebSocket<messages>(config.socketUrl, {
       shouldReconnect: (e) => {
         return true;

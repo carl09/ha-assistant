@@ -2,6 +2,7 @@ import { Observable, combineLatestWith, map } from 'rxjs';
 import { getDevicesV2$ } from './devices';
 import { resolveValue } from './devices-props';
 import { HomeAssistantDataAccess } from './home-assistant-data-access';
+import { logging } from './utils/logging';
 
 export const getDeviceStatusV2$ = (socket: HomeAssistantDataAccess) =>
   new Observable<{ [key: string]: any }>((obs) => {
@@ -56,7 +57,7 @@ export const getDeviceStatusV2$ = (socket: HomeAssistantDataAccess) =>
           }
 
           if (update.entity_id in devices.allSubs) {
-            console.warn('found', update);
+            logging.info(`got update for ${update.entity_id}`);
             found = true;
 
             const [domain, name] = update.entity_id.split('.');

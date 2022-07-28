@@ -8,6 +8,7 @@ import { clientInit } from './client-endpoints';
 import { getConfig } from './config';
 import { webSocketInit } from './websocket-endpoint';
 import * as http from 'http';
+import { init, logging } from '@ha-assistant/listner';
 
 const cors = require('cors');
 
@@ -17,6 +18,8 @@ app.use(cors());
 
 const config = getConfig();
 
+init(config.deviceStore);
+
 clientInit(app, config);
 apiInit(app);
 
@@ -24,9 +27,8 @@ const server = http.createServer(app);
 
 webSocketInit(server);
 
-
 server.listen(config.port, () => {
-  console.log(`server started at http://localhost:${config.port}`);
+  logging.log(`server started at http://localhost:${config.port}`);
 });
 
 const handle = (signal: number) => {

@@ -54,7 +54,7 @@ export const webSocketInit = (server: Server) => {
     next: (d) => {
       lastDevices = d;
 
-      wss.clients.forEach(function each(client) {
+      wss.clients.forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {
           client.send(JSON.stringify({ type: 'devices', value: d }));
         }
