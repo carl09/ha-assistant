@@ -1,5 +1,5 @@
-import * as fs from 'fs';
-import * as path from 'path';
+import { readFileSync, existsSync } from 'fs';
+import { logging } from '@ha-assistant/listner';
 
 export interface IConfig {
   port: number;
@@ -15,11 +15,11 @@ export interface IOptions {
 
 const readFileAsJson = (filePath: string): any => {
   console.info('Reading File:', filePath);
-  const rawdata = fs.readFileSync(filePath);
+  const rawdata = readFileSync(filePath);
   return JSON.parse(rawdata.toString());
 };
 
-const options = fs.existsSync('/data/options.json')
+const options = existsSync('/data/options.json')
   ? readFileAsJson('/data/options.json')
   : JSON.parse(process?.env?.options || '{}');
 
@@ -27,9 +27,9 @@ console.debug('App options', options);
 
 const port = process.env.SERVER_PORT ? parseInt(process.env.SERVER_PORT) : 4001;
 
-// Object.keys(process.env).forEach((x) => {
-//   console.log(`process.env.${x} = ${process.env[x]}`);
-// });
+Object.keys(process.env).forEach((x) => {
+  logging.debug(`process.env.${x} = ${process.env[x]}`);
+});
 
 export const getConfig = (): IConfig => {
   return {
