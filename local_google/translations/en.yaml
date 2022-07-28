@@ -1,0 +1,13 @@
+configuration:
+  inferWebsocketUrl:
+    name: Infer Websocket URL
+    description: trying to resolve issues between internal and external url's
+  logLevel:
+    name: Log Level
+    description: Limit the amount of info that will sent to the logs
+  googleServiceAccountKey: 
+    name: Google Service Account Key Config Path
+    description: used for request sync process https://developers.google.com/assistant/smarthome/develop/request-sync
+network:
+  8089/tcp: Port for web server
+  3312/udp: UDP Port for listening to devices

@@ -1,0 +1,39 @@
+# Booleans
+
+true
+
+==>
+
+Program(BooleanLiteral)
+
+# VariableName
+
+one
+
+==>
+
+Program(VariableName)
+
+# Strings
+
+"hello"
+
+==>
+
+Program(String)
+
+# Function
+
+doit()
+
+==>
+
+Program(CallExpression(VariableName,ArgList("(",")")))
+
+# Function With String Arg
+
+doit("again")
+
+==>
+
+Program(CallExpression(VariableName,ArgList("(",String,")")))

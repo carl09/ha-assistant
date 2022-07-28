@@ -1,4 +1,6 @@
+import { IDevice, getAllDevices$, messages } from '@ha-assistant/listner';
 import {
+  logging,
   getHomeAssistantDataAccess,
   HomeAssistantDataAccess,
   getDeviceStatusV2$,
@@ -12,36 +14,57 @@ let socket: HomeAssistantDataAccess;
 export const webSocketInit = (server: Server) => {
   const config = getConfig();
 
-  let lastDevices: any;
+  let lastDevicesStatus: any;
+  let lastDevices: IDevice[];
 
   const wss = new WebSocket.Server({
     path: '/ws',
     server,
   });
 
-  console.log('created socket server', wss.path);
+  const sendAll = (message: messages) => {
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify(message));
+      }
+    });
+  };
+
+  logging.debug('created socket server', wss.path);
 
   wss.on('connection', (ws) => {
-    ws.send(JSON.stringify({ type: 'welcome', value: 'Hello' }));
+    const send = (message: messages) => {
+      ws.send(JSON.stringify(message));
+    };
+
+    send({ type: 'welcome', value: 'Hello' });
+
+    if (lastDevicesStatus) {
+      send({
+        type: 'devices-status',
+        status: lastDevicesStatus,
+        fromCache: true,
+      });
+    }
 
     if (lastDevices) {
-      ws.send(
-        JSON.stringify({ type: 'devices', value: lastDevices, fromCache: true })
-      );
+      send({
+        type: 'devices',
+        devices: lastDevices,
+        fromCache: true,
+      });
     }
 
     ws.on('message', (message) => {
-      console.log('from Client', message.toLocaleString());
-      ws.send(
-        JSON.stringify({
-          type: 'debug',
-          value: 'There be gold in them thar hills.',
-        })
-      );
+      logging.log('from Client', message.toLocaleString());
+      send({
+        type: 'debug',
+        value: 'There be gold in them thar hills.',
+      });
     });
 
     ws.on('close', (e) => {
-      console.log('client gone', e);
+      logging.log('client gone', e);
     });
   });
 
@@ -50,15 +73,17 @@ export const webSocketInit = (server: Server) => {
     config.homeAssistaneApiKey
   );
 
-  const deviceStatus$ = getDeviceStatusV2$(socket).subscribe({
+  getDeviceStatusV2$(socket).subscribe({
+    next: (d) => {
+      lastDevicesStatus = d;
+      sendAll({ type: 'devices-status', status: d });
+    },
+  });
+
+  getAllDevices$().subscribe({
     next: (d) => {
       lastDevices = d;
-
-      wss.clients.forEach((client) => {
-        if (client.readyState === WebSocket.OPEN) {
-          client.send(JSON.stringify({ type: 'devices', value: d }));
-        }
-      });
+      sendAll({ type: 'devices', devices: d });
     },
   });
 

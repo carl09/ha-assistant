@@ -1,0 +1,26 @@
+@top Program { expression* }
+
+@skip { space | LineComment }
+
+expression {
+  Identifier |
+  String |
+  Boolean |
+  Application { "(" expression* ")" }
+}
+
+@tokens {
+  Identifier { $[a-zA-Z_\-0-9]+ }
+
+  String { '"' (!["\\] | "\\" _)* '"' }
+
+  LineComment { ";" ![\n]* }
+
+  space { $[ \t\n\r]+ }
+
+  "(" ")"
+}
+
+Boolean { @specialize[@name=BooleanLiteral]<identifier, "true" | "false"> }
+
+@detectDelim

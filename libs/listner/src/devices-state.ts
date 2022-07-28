@@ -1,31 +1,90 @@
-import { Observable, combineLatestWith, map } from 'rxjs';
-import { getDevicesV2$ } from './devices';
-import { resolveValue } from './devices-props';
+import {
+  Observable,
+  combineLatestWith,
+  map,
+  catchError,
+  shareReplay,
+} from 'rxjs';
+import { getDevicesFromProps, resolveValue } from './devices-props';
 import { HomeAssistantDataAccess } from './home-assistant-data-access';
+import { getAllDevices$ } from './repo/devices';
 import { logging } from './utils/logging';
+
+interface IDeviceV2 {
+  id: string;
+  status: { [key: string]: any };
+  subs: { [key: string]: any };
+}
+
+const getDeviceSubsV2 = (device: {
+  [prop: string]: string;
+}): { [key: string]: any } =>
+  Object.keys(device).reduce<{ [key: string]: any }>((acc, x) => {
+    const list = getDevicesFromProps(device[x]);
+
+    if (list) {
+      list.forEach((item) => {
+        const key = `${item.domain}.${item.name}`;
+        acc[key] = true;
+      });
+    }
+    return acc;
+  }, {});
 
 export const getDeviceStatusV2$ = (socket: HomeAssistantDataAccess) =>
   new Observable<{ [key: string]: any }>((obs) => {
     let devicesState: { [key: string]: any } = {};
     const entitesState: { [key: string]: any } = {};
 
-    const entityStatus$ = getDevicesV2$
+    const getDevices$: Observable<{
+      devices: IDeviceV2[];
+      allSubs: { [key: string]: any };
+    }> = getAllDevices$().pipe(
+      map((devices) => {
+        return devices.map((device) => {
+          const subs = getDeviceSubsV2(device.states);
+
+          return {
+            id: device.id,
+            status: device.states,
+            subs,
+          };
+        });
+      }),
+      map((deviceSubs) => {
+        return {
+          devices: deviceSubs,
+          allSubs: deviceSubs.reduce<{ [key: string]: any }>((acc, i) => {
+            acc = { ...(acc || {}), ...i.subs };
+            return acc;
+          }, {}),
+        };
+      })
+    );
+
+    const entityStatus$ = getDevices$
       .pipe(
         combineLatestWith(socket.getEntityStatus()),
         map(([devices, entites]) => {
           entites.forEach((x) => {
+            if (!x || !x.entity_id) {
+              logging.error('getEntityStatus() entites empty');
+              return;
+            }
             const [domain, name] = x.entity_id.split('.');
             entitesState[domain] = { ...(entitesState[domain] || {}) };
             entitesState[domain][name] = {
               state: x.state,
             };
+            // TODO: Remove Attribute mapping
             Object.keys(x.attributes).forEach((a) => {
               entitesState[domain][name][a] = x.attributes[a];
             });
+            entitesState[domain][name]['attributes'] = { ...x.attributes };
           });
 
           return devices.devices.reduce<{ [key: string]: any }>((acc, y) => {
-            acc[y.name] = Object.keys(y.status).reduce<{ [key: string]: any }>(
+            acc[y.id] = Object.keys(y.status).reduce<{ [key: string]: any }>(
               (acc2, i) => ({
                 ...acc2,
                 [i]: resolveValue(y.status[i], entitesState),
@@ -34,6 +93,10 @@ export const getDeviceStatusV2$ = (socket: HomeAssistantDataAccess) =>
             );
             return acc;
           }, {});
+        }),
+        catchError((err, caught) => {
+          logging.error('getEntityStatus()', err);
+          return caught;
         })
       )
       .subscribe({
@@ -43,16 +106,16 @@ export const getDeviceStatusV2$ = (socket: HomeAssistantDataAccess) =>
         },
       });
 
-    const entityStatusUpdated$ = getDevicesV2$
+    const entityStatusUpdated$ = getDevices$
       .pipe(
         combineLatestWith(socket.getEntityStatusUpdated()),
         map(([devices, update]) => {
           let found = false;
 
-          if (update === undefined || update.entity_id === undefined) {
+          if (!update || update.entity_id === undefined) {
             return {
               found: false,
-              devices: {}
+              devices: {},
             };
           }
 
@@ -65,9 +128,11 @@ export const getDeviceStatusV2$ = (socket: HomeAssistantDataAccess) =>
             entitesState[domain][name] = {
               state: update.state,
             };
+            // TODO: Remove Attribute mapping
             Object.keys(update.attributes).forEach((a) => {
               entitesState[domain][name][a] = update.attributes[a];
             });
+            entitesState[domain][name]['attributes'] = { ...update.attributes };
           }
 
           let updatedDevices: { [key: string]: any } = {};
@@ -76,7 +141,7 @@ export const getDeviceStatusV2$ = (socket: HomeAssistantDataAccess) =>
             updatedDevices = devices.devices.reduce<{
               [key: string]: any;
             }>((acc, y) => {
-              acc[y.name] = Object.keys(y.status).reduce<{
+              acc[y.id] = Object.keys(y.status).reduce<{
                 [key: string]: any;
               }>(
                 (acc2, i) => ({
@@ -93,15 +158,22 @@ export const getDeviceStatusV2$ = (socket: HomeAssistantDataAccess) =>
             devices: updatedDevices,
             found,
           };
+        }),
+        catchError((err, caught) => {
+          logging.error('getEntityStatusUpdated()', err);
+          return caught;
         })
       )
       .subscribe({
         next: (msg) => {
           if (msg.found) {
-            devicesState = msg.devices;
-            obs.next(devicesState);
+            if (JSON.stringify(devicesState) !== JSON.stringify(msg.devices)) {
+              devicesState = msg.devices;
+              obs.next(devicesState);
+            } else {
+              logging.debug('Device state has not changed');
+            }
           }
-          //   console.log('entityStatusUpdated$', msg);
         },
       });
 
@@ -110,4 +182,4 @@ export const getDeviceStatusV2$ = (socket: HomeAssistantDataAccess) =>
       entityStatus$.unsubscribe();
       entityStatusUpdated$.unsubscribe();
     };
-  });
+  }).pipe(shareReplay(1));

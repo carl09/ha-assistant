@@ -1,4 +1,4 @@
-import { IHomeAssistantArea, IHomeAssistantDevice, IHomeAssistantEntity, IHomeAssistantEntityStatus } from './home-assistant-entities';
+import { IHomeAssistantArea, IHomeAssistantDevice, IHomeAssistantEntity, IHomeAssistantEntityStatus, IHomeAssistantService } from './home-assistant-entities';
 import { Observable, filter, map, shareReplay } from 'rxjs';
 import { HomeAssistantWebSocket, IMassageBase } from './home-assistant-web-socket';
 
@@ -11,6 +11,7 @@ export class HomeAssistantDataAccess {
   private areas?: Observable<IHomeAssistantArea[]>;
   private entities?: Observable<IHomeAssistantEntity[]>;
   private devices?: Observable<IHomeAssistantDevice[]>;
+  private services?: Observable<IHomeAssistantService>
 
   private counter = 1;
 
@@ -93,6 +94,25 @@ export class HomeAssistantDataAccess {
     }
 
     return this.entities;
+  }
+
+  getServices(): Observable<IHomeAssistantService> {
+    if (!this.services) {
+      this.services = this.createSubScription(
+        {
+          id: this.counter,
+          type: 'get_services'
+        },
+        this.counter++
+      ).pipe(
+        map(msg => {
+          return (msg as any).result; // as IHomeAssistantEntity[];
+        }),
+        shareReplay(1)
+      );
+    }
+
+    return this.services;
   }
 
   getDevices() {

@@ -1,5 +1,6 @@
 import { parse } from '@babel/parser';
 import { ExpressionStatement, Identifier, Program, Node } from '@babel/types';
+import { logging } from './utils/logging';
 
 export interface DeviceFromProps {
   domain: string;
@@ -25,7 +26,7 @@ const fn: { [key: string]: (...args: any[]) => any } = {
   toInt: (...args: any[]) => {
     // console.log('toInt', args[0]);
     return parseInt(args[0]);
-  }
+  },
 };
 
 const resolveType = (node: Node, object: any, resolve: boolean): any => {
@@ -64,7 +65,11 @@ const resolveType = (node: Node, object: any, resolve: boolean): any => {
     );
   }
 
-  console.error('resolveType', node.type, node);
+  if (node.type === 'BooleanLiteral') {
+    return node.value;
+  }
+
+  logging.error('unknown resolveType', node.type, node);
 };
 
 const resolveTypes = (nodes: Node[], object: any, resolve: boolean): any[] => {

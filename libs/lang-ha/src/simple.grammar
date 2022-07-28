@@ -1,0 +1,175 @@
+@precedence {
+  member,
+  statement @cut,
+  newArgs,
+  call,
+  exp @left,
+  times @left,
+  plus @left,
+  shift @left,
+  rel @left,
+  equal @left,
+  bitOr @left,
+  bitXor @left,
+  bitAnd @left,
+  and @left,
+  or @left,
+  ternary @right,
+  assign @right,
+  comma @left,
+  statement @cut,
+  predicate
+}
+
+@top Program { expression }
+
+expression[@isGroup=Expression] {
+  expressionNoComma | SequenceExpression
+}
+
+SequenceExpression {
+  expressionNoComma !comma ("," expressionNoComma)+
+}
+
+expressionNoComma {
+  Number |
+  String |
+  VariableName |
+  boolean |
+  ArrayExpression |
+  ObjectExpression { "{" commaSep<Property> ~destructure "}" } |
+  MemberExpression |
+  BinaryExpression |
+  ConditionalExpression { expressionNoComma !ternary questionOp expressionNoComma LogicOp<":"> expressionNoComma } |
+  CallExpression { expressionNoComma !call ArgList }
+}
+
+ArrayExpression {
+  "[" commaSep1<"..."? expressionNoComma | ""> ~destructure "]"
+}
+
+propName { PropertyDefinition | "[" expression "]" | Number | String }
+
+Property {
+  pkwMod<"async">? (pkwMod<"get"> | pkwMod<"set"> | Star)? propName |
+  propName ~destructure (":" expressionNoComma)? |
+  "..." expressionNoComma
+}
+
+BinaryExpression {
+  expressionNoComma !exp ArithOp<"**"> expressionNoComma |
+  expressionNoComma !times (divide | ArithOp<"%"> | ArithOp<"*">) expressionNoComma |
+  expressionNoComma !plus ArithOp<"+" | "-"> expressionNoComma |
+  expressionNoComma !shift BitOp<">>" ">"? | "<<"> expressionNoComma |
+  expressionNoComma !rel (LessThan | CompareOp<"<=" | ">" "="?> | kw<"instanceof">) expressionNoComma |
+  (expressionNoComma | PrivatePropertyName) !rel kw<"in"> expressionNoComma |
+  expressionNoComma !equal CompareOp<"==" "="? | "!=" "="?> expressionNoComma |
+  expressionNoComma !bitOr BitOp { "|" } expressionNoComma |
+  expressionNoComma !bitXor BitOp<"^"> expressionNoComma |
+  expressionNoComma !bitAnd BitOp { "&" } expressionNoComma |
+  expressionNoComma !and LogicOp<"&&"> expressionNoComma |
+  expressionNoComma !or LogicOp<"||" | "??"> expressionNoComma
+}
+
+MemberExpression {
+  expressionNoComma !member (("." | "?.") (PropertyName | PrivatePropertyName) | "[" expression "]")
+}
+
+ArgList {
+  "(" commaSep<"..."? expressionNoComma> ")"
+}
+
+commaSep<content> {
+  "" | content ("," content?)*
+}
+
+commaSep1<content> {
+  content ("," content)*
+}
+
+// Keywords
+
+kw<term> { @specialize[@name={term}]<identifier, term> }
+
+// Contextual keyword in property context
+
+pkwMod<term> { @extend[@name={term}]<word, term> }
+
+boolean { @specialize[@name=BooleanLiteral]<identifier, "true" | "false"> }
+
+Star { "*" }
+
+VariableName { identifier ~arrow }
+
+PropertyName { word }
+
+PropertyDefinition { word }
+
+PrivatePropertyName { privateIdentifier }
+
+questionOp[@name=LogicOp] { "?" }
+
+@skip { spaces | newline | LineComment | BlockComment }
+
+@tokens {
+  spaces[@export] { $[\u0009 \u000b\u00a0\u1680\u2000-\u200a\u202f\u205f\u3000\ufeff]+ }
+  newline[@export] { $[\r\n\u2028\u2029] }
+
+  LineComment { "//" ![\n]* }
+
+  // FIXME split into multiple tokens
+  BlockComment { "/*" blockCommentRest }
+
+  blockCommentRest { ![*] blockCommentRest | "*" blockCommentAfterStar }
+
+  blockCommentAfterStar { "/" | "*" blockCommentAfterStar | ![/*] blockCommentRest }
+
+  divide[@name=ArithOp] { "/" }
+
+  @precedence { BlockComment, LineComment, divide }
+
+  identifierChar { @asciiLetter | $[_$\u{a1}-\u{10ffff}] }
+
+  word { identifierChar (identifierChar | @digit)* }
+
+  identifier { word }
+
+  privateIdentifier { "#" word }
+
+  @precedence { spaces, newline, identifier }
+
+  @precedence { spaces, newline, word }
+
+  Number {
+    (@digit ("_" | @digit)* ("." ("_" | @digit)*)? | "." @digit ("_" | @digit)*)
+      (("e" | "E") ("+" | "-")? ("_" | @digit)+)? |
+    @digit ("_" | @digit)* "n" |
+    "0x" (@digit | $[a-fA-F] | "_")+ "n"? |
+    "0b" $[01_]+ "n"? |
+    "0o" $[0-7_]+ "n"?
+  }
+
+  String {
+    '"' (![\\\n"] | "\\" _)* '"'? |
+    "'" (![\\\n'] | "\\" _)* "'"?
+  }
+
+  ArithOp<expr> { expr }
+  LogicOp<expr> { expr }
+  BitOp<expr> { expr }
+  CompareOp<expr> { expr }
+  
+  LessThan[@name=CompareOp] { "<" }
+
+  "="[@name=Equals]
+  "..."[@name=Spread]
+  "=>"[@name=Arrow]
+
+  "(" ")" "[" "]" "{" "}"
+
+  "?." "." "," ";" ":"
+
+
+}
+
+@detectDelim

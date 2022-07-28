@@ -44,7 +44,9 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-import-resolver-typescript": "^3.2.5",
     "semver": "^7.3.7",
-    "@types/semver": "^7.3.10"
+    "@types/semver": "^7.3.10",
+    "js-yaml": "^4.1.0",
+    "@types/js-yaml": "^4.0.5"
   },
   "copyFiles": [
     {

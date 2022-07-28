@@ -1,61 +1,56 @@
-import { useEffect, useState } from 'react';
-import CodeMirror from '@uiw/react-codemirror';
-import { json } from '@codemirror/lang-json';
-import { IServerConfig, messages } from '@ha-assistant/listner';
+import {
+  ChangeEvent,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import {
+  IServerConfig,
+  logging,
+  messages,
+  IDevice,
+} from '@ha-assistant/listner';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { Devices } from './Devices/Devices';
+import { useWindowDimensions } from './utils/useWindowDimensions';
+import { Button } from './Components/Button';
+import { GoogleActions } from './Google-Actions/Google-Actions';
+import { mdiImport, mdiExport } from '@mdi/js';
 
 const config: IServerConfig = (window as any).config || {};
 
-console.log('window.config', config, location);
+logging.log('Starting Info', { config, location });
 
 export const App = () => {
-  const [devices, setDevices] = useState<{ [key: string]: unknown }>();
+  const [devicesStatus, setDevicesStatus] = useState<{
+    [key: string]: any;
+  }>();
 
-  const { lastJsonMessage, readyState } =
-    useWebSocket<messages>(config.socketUrl, {
-      shouldReconnect: (e) => {
-        return true;
-      },
-      reconnectAttempts: 10,
-      reconnectInterval: 3000,
-    });
+  const [devices, setDevices] = useState<IDevice[]>([]);
+
+  const fileInput = useRef<HTMLInputElement>(null);
+
+  const { width } = useWindowDimensions();
+
+  const { lastJsonMessage, readyState } = useWebSocket(config.socketUrl, {
+    shouldReconnect: () => {
+      return true;
+    },
+    reconnectAttempts: 10,
+    reconnectInterval: 3000,
+  });
 
   useEffect(() => {
     if (lastJsonMessage !== null) {
-      console.log('lastJsonMessage', lastJsonMessage);
-      if (lastJsonMessage.type === 'devices') {
-        setDevices(lastJsonMessage.value);
+      const msg = lastJsonMessage as messages;
+      logging.log('msg', msg);
+      if (msg.type === 'devices-status') {
+        setDevicesStatus(msg.status);
+      } else if (msg.type === 'devices') {
+        setDevices(msg.devices);
       }
     }
   }, [lastJsonMessage]);
-
-  // useEffect(() => {
-  //   const client = new WebSocket('ws://localhost:8080/ws');
-
-  //   client.onopen = (e) => {
-  //     client.send('Hello Server!');
-  //   };
-
-  //   client.onmessage = (e) => {
-  //     const message: messages = JSON.parse(e.data);
-  //     console.log('Message from server ', message);
-  //     if (message.type === 'devices') {
-  //       setDevices(message.value);
-  //     }
-  //   };
-
-  //   return () => client.close();
-  // }, []);
-
-  useEffect(() => {
-    fetch(`api`).then((resp) => {
-      resp.json().then((data) => {
-        setDevices({
-          test: data,
-        });
-      });
-    });
-  }, []);
 
   const connectionStatus = {
     [ReadyState.CONNECTING]: 'Connecting',
@@ -65,28 +60,65 @@ export const App = () => {
     [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
   }[readyState];
 
+  const onExport = () => {
+    // fetch('api/export');
+    window.open('api/export');
+  };
+
+  const onImport = (event: ChangeEvent<HTMLInputElement>) => {
+    logging.debug('onImport', event);
+    const file = event.target.files && event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const json = e.target?.result;
+        fetch(`api/import`, {
+          method: 'POST',
+          body: json,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+      };
+      reader.readAsText(file);
+
+      // const formData = new FormData();
+      // formData.append('model', file);
+      // fetch(`api/import`, {
+      //   method: 'POST',
+      //   body: formData,
+      //   headers: {
+      //     'Content-Type': 'multipart/form-data',
+      //   },
+      // });
+    }
+  };
+
   return (
     <>
-      <h1>Hello World {location.hostname}</h1>
-      <span>The WebSocket is currently {connectionStatus}</span>
+      <h1>
+        {location.hostname} {width} {connectionStatus}
+      </h1>
 
-      <p>{JSON.stringify(config)}</p>
+      <Devices devices={devices} devicesStatus={devicesStatus} />
 
-      {devices
-        ? Object.keys(devices).map((x) => (
-            <div key={x}>
-              <div>{x}</div>
-              <div>
-                {/* <pre>{JSON.stringify(devices[x], null, 2)}</pre> */}
-                <CodeMirror
-                  value={JSON.stringify(devices[x], null, 2)}
-                  height="200px"
-                  extensions={[json()]}
-                />
-              </div>
-            </div>
-          ))
-        : ''}
+      <input
+        type="file"
+        style={{ display: 'none' }}
+        ref={fileInput}
+        onChange={(e) => onImport(e)}
+      />
+
+      <div className="form-actions mb-8">
+        <Button
+          icon={mdiImport}
+          value="Import"
+          onClick={() => fileInput.current?.click()}
+        />
+        <Button icon={mdiExport} value="Export" onClick={() => onExport()} />
+      </div>
+
+      <GoogleActions />
     </>
   );
 };

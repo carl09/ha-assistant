@@ -8,7 +8,7 @@
     "dev": "run-p dev:build dev:run",
     "dev:build": "cross-env NODE_ENV=development webpack --watch --mode development",
     "dev:run": "node-dev dist/index.js",
-    "build": "cross-env NODE_ENV=production webpack",
+    "build": "cross-env NODE_ENV=development webpack",
     "copy": "copy-files-from-to",
     "release": "npm run build && npm run copy"
   },
@@ -21,7 +21,8 @@
     "dotenv": "^16.0.1",
     "cors": "^2.8.5",
     "utf-8-validate": "^5.0.9",
-    "bufferutil": "^4.0.6"
+    "bufferutil": "^4.0.6",
+    "actions-on-google": "^3.0.0"
   },
   "peerDependencies": {
     "@ha-assistant/listner": "*"

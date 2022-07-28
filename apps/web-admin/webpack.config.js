@@ -48,6 +48,7 @@ module.exports = {
     mainFields: ['es2015', 'module', 'main'],
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json', '.scss', '.css'],
     fallback: {
+      fs: false,
       crypto: false,
       url: false,
       stream: false,

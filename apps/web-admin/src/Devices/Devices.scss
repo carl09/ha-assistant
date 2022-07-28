@@ -1,0 +1,69 @@
+.devices-list {
+  display: flex;
+  margin-top: 8px;
+}
+
+.devices-list-row {
+  flex: 1;
+}
+
+.add-new-device {
+    text-decoration: none;
+    color: var(--gh2-color);
+}
+
+.device-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-gap: 1rem;
+
+  margin-top: 10px;
+}
+
+.device-grid-item {
+  background: var(--panel-bg-color);
+  padding: 1.5rem;
+  border-radius: 1rem;
+}
+
+.panel-link {
+  text-decoration: none;
+  color: var(--gh2-color);
+}
+
+.panel-header {
+  text-decoration: none;
+  padding-bottom: 8px;
+  border-bottom: 1px solid;
+  font-size: 1.2rem;
+}
+
+.panel-stats {
+  list-style-type: none;
+  padding-inline-start: 4px;
+  font-size: 0.85rem;
+}
+
+.panel-stats-item {
+  margin-bottom: 8px;
+}
+
+.format-number {
+  color: var(--gh2-code-number);
+  display: inline;
+}
+
+.format-unknown {
+  color: rgb(160, 0, 160);
+  display: inline;
+}
+
+.format-boolean {
+  color: var(--gh2-code-boolean);
+  display: inline;
+}
+
+.format-string {
+  color: var(--gh2-code-string);
+  display: inline;
+}
