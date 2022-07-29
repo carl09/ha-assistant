@@ -8,6 +8,13 @@ export interface IDeviceType {
   traits: string[];
 }
 
+export interface IDeviceTraitsStates {
+  type: 'string' | 'array' | 'number' | 'boolean' | 'integer' | 'object';
+  required?: boolean;
+  supportedValues?: string[];
+  hint: string;
+}
+
 export interface IDeviceTraits {
   type: string;
   humanName: string;
@@ -20,12 +27,7 @@ export interface IDeviceTraits {
     };
   };
   states: {
-    [name: string]: {
-      type: 'string' | 'array' | 'number' | 'boolean' | 'integer' | 'object';
-      required?: boolean;
-      supportedValues?: string[];
-      hint: string;
-    };
+    [name: string]: IDeviceTraitsStates;
   };
   commands: string[];
 }
@@ -80,6 +82,16 @@ export const deviceTypes: IDeviceType[] = [
     type: 'action.devices.types.AC_UNIT',
     humanName: 'AC Unit',
     traits: [],
+  },
+  {
+    type: 'action.devices.types.DEHUMIDIFIER',
+    humanName: 'Dehumidifier',
+    traits: [
+      'action.devices.traits.OnOff',
+      'action.devices.traits.FanSpeed',
+      'action.devices.traits.HumiditySetting',
+      'action.devices.traits.StartStop',
+    ],
   },
 ];
 
@@ -226,6 +238,29 @@ export const deviceTraits: { [trait: string]: IDeviceTraits } = {
     type: 'action.devices.traits.FanSpeed',
     humanName: 'FanSpeed',
     states: {},
+    attributes: {},
+    commands: [],
+  },
+  'action.devices.traits.HumiditySetting': {
+    type: 'action.devices.traits.HumiditySetting',
+    humanName: 'HumiditySetting',
+    states: {},
+    attributes: {},
+    commands: [],
+  },
+  'action.devices.traits.StartStop': {
+    type: 'action.devices.traits.StartStop',
+    humanName: 'StartStop',
+    states: {
+      'humiditySetpointPercent': {
+        type: 'integer',
+        hint: 'Indicates the current target humidity percentage of the device. Must fall within humiditySetpointRange.'
+      },
+      'humidityAmbientPercent': {
+        type: 'integer',
+        hint: 'Indicates the current ambient humidity reading of the device as a percentage.'
+      }
+    },
     attributes: {},
     commands: [],
   },

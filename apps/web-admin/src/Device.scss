@@ -1,0 +1,45 @@
+.device-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-row {
+  flex: 1;
+  margin-bottom: 8px;
+
+  .form-label {
+    display: inline-block;
+  }
+  .form-input {
+    display: block;
+    width: 100%;
+    font-family: var(--body-font);
+    font-size: 1rem;
+    // font-weight: 400;
+    // line-height: 1.5;
+
+    padding: 0.375rem 0.75rem;
+
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+  }
+
+  .form-select {
+    display: block;
+    width: 100%;
+    font-family: var(--body-font);
+    font-size: 1rem;
+    // font-weight: 400;
+    // line-height: 1.5;
+
+    padding: 0.375rem 0.75rem;
+
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+  }
+  
+
+  input[hidden] {
+    display: none;
+  }
+}

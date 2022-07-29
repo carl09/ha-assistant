@@ -9,11 +9,6 @@ export interface IDeviceSubs {
   }[];
 }
 
-export interface IDevice {
-  name: string;
-  subs: IDeviceSubs;
-}
-
 export interface IDeviceV2 {
   name: string;
   status: { [key: string]: any };

@@ -10,3 +10,4 @@ export * from './utils/helpers';
 export * from './utils/config';
 export * from './messages'
 export * from './repo/devices';
+export * from './google/device-types';
