@@ -1,15 +1,62 @@
 import { Observable, combineLatestWith, map } from 'rxjs';
-import { getDevicesV2$ } from './devices';
-import { resolveValue } from './devices-props';
+import { getDevicesFromProps, resolveValue } from './devices-props';
 import { HomeAssistantDataAccess } from './home-assistant-data-access';
+import { getAllDevices$ } from './repo/devices';
 import { logging } from './utils/logging';
+
+interface IDeviceV2 {
+  name: string;
+  status: { [key: string]: any };
+  subs: { [key: string]: any };
+}
+
+const getDeviceSubsV2 = (device: {
+  [prop: string]: string;
+}): { [key: string]: any } =>
+  Object.keys(device).reduce<{ [key: string]: any }>((acc, x) => {
+    const list = getDevicesFromProps(device[x]);
+
+    if (list) {
+      list.forEach((item) => {
+        const key = `${item.domain}.${item.name}`;
+        acc[key] = true;
+      });
+    }
+    return acc;
+  }, {});
 
 export const getDeviceStatusV2$ = (socket: HomeAssistantDataAccess) =>
   new Observable<{ [key: string]: any }>((obs) => {
     let devicesState: { [key: string]: any } = {};
     const entitesState: { [key: string]: any } = {};
 
-    const entityStatus$ = getDevicesV2$
+    const getDevices$: Observable<{
+      devices: IDeviceV2[];
+      allSubs: { [key: string]: any };
+    }> = getAllDevices$().pipe(
+      map((devices) => {
+        return devices.map((device) => {
+          const subs = getDeviceSubsV2(device.states);
+
+          return {
+            name: device.name,
+            status: device.states,
+            subs,
+          };
+        });
+      }),
+      map((deviceSubs) => {
+        return {
+          devices: deviceSubs,
+          allSubs: deviceSubs.reduce<{ [key: string]: any }>((acc, i) => {
+            acc = { ...(acc || {}), ...i.subs };
+            return acc;
+          }, {}),
+        };
+      })
+    );
+
+    const entityStatus$ = getDevices$
       .pipe(
         combineLatestWith(socket.getEntityStatus()),
         map(([devices, entites]) => {
@@ -43,7 +90,7 @@ export const getDeviceStatusV2$ = (socket: HomeAssistantDataAccess) =>
         },
       });
 
-    const entityStatusUpdated$ = getDevicesV2$
+    const entityStatusUpdated$ = getDevices$
       .pipe(
         combineLatestWith(socket.getEntityStatusUpdated()),
         map(([devices, update]) => {
@@ -52,7 +99,7 @@ export const getDeviceStatusV2$ = (socket: HomeAssistantDataAccess) =>
           if (update === undefined || update.entity_id === undefined) {
             return {
               found: false,
-              devices: {}
+              devices: {},
             };
           }
 

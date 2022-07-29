@@ -11,12 +11,20 @@ $open-sans: 'Open Sans', sans-serif;
 
   --body-font: #{$roboto-slab};
   --heading-font: #{open-sans};
+
+  --primary-color: white;
+  --primary-bg-color: #0288d1;
+  --primary-bg-color-hover: #0279b9;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --gh2-color: white;
     --gh2-bg-color: black;
+
+    --primary-color: black;
+    --primary-bg-color: #74d2fd;
+    --primary-bg-color-hover: #ccebfa;
   }
 }
 

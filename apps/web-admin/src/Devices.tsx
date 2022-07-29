@@ -35,23 +35,23 @@ export const Devices = ({ devices }: DevicesProps) => {
         <a href="#" onClick={(e) => addNewDevice(e)}>
           Add New
         </a>
-        <ul>
+        <div className="device-grid">
           {(devices || []).map((x) => {
             return (
-              <li key={x.id}>
+              <div className="device-grid-item" key={x.id}>
                 <a href="#" onClick={(e) => selectDevice(e, x)}>
                   {x.name}
                 </a>
-              </li>
+              </div>
             );
           })}
-        </ul>
+        </div>
       </div>
-      <div className="devices-list-row">
-        {(device || addNew) && (
+      {(device || addNew) && (
+        <div className="devices-list-row">
           <Device device={device} onDone={() => clearSelected()} />
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

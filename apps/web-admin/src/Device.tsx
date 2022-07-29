@@ -1,4 +1,4 @@
-import { useEffect, forwardRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Path, useForm, UseFormRegister } from 'react-hook-form';
 import {
   IDevice,
@@ -12,7 +12,7 @@ import './Device.scss';
 
 type DeviceProps = {
   device?: IDevice;
-  onDone?(): () => void;
+  onDone?: () => void;
 };
 
 type InputProps = {
@@ -21,6 +21,7 @@ type InputProps = {
   register: UseFormRegister<any>;
   required?: boolean;
   hidden?: boolean;
+  description?: string;
 };
 
 type SelectProps = {
@@ -30,21 +31,35 @@ type SelectProps = {
   required?: boolean;
 };
 
-const Input = ({ label, name, register, required, hidden }: InputProps) => (
+const Input = ({
+  label,
+  name,
+  register,
+  required,
+  hidden,
+  description,
+}: InputProps) => (
   <div className="form-row">
-    <label htmlFor={name} className="form-label">{!hidden && label}</label>
+    {!hidden && (
+      <label htmlFor={name} className="form-label">
+        {label}
+      </label>
+    )}
     <input
       className="form-input"
       id={name}
       hidden={hidden}
       {...register(name, { required })}
     />
+    {description && <div className="form-desc">{description}</div>}
   </div>
 );
 
 const DeviceSelect = ({ name, label, register, required }: SelectProps) => (
   <div className="form-row">
-    <label htmlFor={name} className="form-label">{label}</label>
+    <label htmlFor={name} className="form-label">
+      {label}
+    </label>
     <select className="form-select" id={name} {...register(name, { required })}>
       <option value=""></option>
       {deviceTypes.map((x) => {
@@ -68,6 +83,9 @@ export const Device = ({ device, onDone }: DeviceProps) => {
     watch,
   } = useForm();
 
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  const [deleteId, setDeleteId] = useState<string>();
   const [traits, setTraits] = useState<string[]>();
   const [states, setStates] = useState<{
     [name: string]: IDeviceTraitsStates;
@@ -102,12 +120,28 @@ export const Device = ({ device, onDone }: DeviceProps) => {
   };
 
   const deleteDevice = (id: string) => {
-    fetch(`api/device/${id}`, {
-      method: 'DELETE',
-    }).then(() => {
-      reset();
-      onDone && onDone();
-    });
+    setDeleteId(id);
+    dialogRef.current?.showModal();
+  };
+
+  const deleteAction = (remove: boolean) => {
+    if (remove) {
+      fetch(`api/device/${deleteId}`, {
+        method: 'DELETE',
+      }).then(() => {
+        reset();
+        onDone && onDone();
+      });
+      logging.warn('Deleting');
+    } else {
+      logging.warn('Not Deleting');
+    }
+    dialogRef.current?.close();
+  };
+
+  const dialogCancelOrClose = () => {
+    setDeleteId(undefined);
+    logging.warn('dialogCancelOrClose');
   };
 
   useEffect(() => {
@@ -142,43 +176,84 @@ export const Device = ({ device, onDone }: DeviceProps) => {
   }, [device, reset]);
 
   return (
-    <form className="device-form" onSubmit={handleSubmit(onSubmit)}>
-      {/* <input {...register('name', { required: true })} /> */}
-      <Input label="Id" name="id" hidden register={register} required />
-      <Input label="Name" name="name" register={register} required />
-      <DeviceSelect
-        label="Device Type"
-        name="deviceType"
-        register={register}
-        required
-      />
+    <>
+      <form className="device-form" onSubmit={handleSubmit(onSubmit)}>
+        {/* <input {...register('name', { required: true })} /> */}
+        <section>
+          <h3>Detail</h3>
+          <Input label="Id" name="id" hidden register={register} required />
+          <Input label="Name" name="name" register={register} required />
+          <DeviceSelect
+            label="Device Type"
+            name="deviceType"
+            register={register}
+            required
+          />
+        </section>
+        <section>
+          <h3>States</h3>
+          {states &&
+            Object.keys(states).map((x) => {
+              return (
+                <Input
+                  key={x}
+                  label={x}
+                  name={`states.${x}`}
+                  description={states[x].hint}
+                  register={register}
+                />
+              );
+            })}
+        </section>
 
-      {Object.keys(states || {}).map((x) => {
-        return (
-          <Input key={x} label={x}  name={`states.${x}`} register={register} />
-        );
-      })}
+        {errors.name && <span>This field is required</span>}
+        {errors.deviceType && <span>This field is required</span>}
+        <div className="form-actions">
+          <input className="form-action primary" type="submit" />
+          <input
+            className="form-action"
+            type="reset"
+            onClick={() => {
+              reset();
+              onDone && onDone();
+            }}
+            value="Cancel"
+          />
+          {device && (
+            <input
+              className="form-action"
+              type="button"
+              onClick={() => {
+                deleteDevice(device?.id);
+              }}
+              value="Delete"
+            />
+          )}
+        </div>
+      </form>
 
-      {errors.name && <span>This field is required</span>}
-      {errors.deviceType && <span>This field is required</span>}
-
-      <input type="submit" />
-      <input
-        type="reset"
-        onClick={() => {
-          reset();
-          onDone && onDone();
-        }}
-      />
-      {device && (
-        <input
-          type="button"
-          onClick={() => {
-            deleteDevice(device?.id);
-          }}
-          value="Delete"
-        />
-      )}
-    </form>
+      <dialog
+        onCancel={() => dialogCancelOrClose()}
+        onClose={() => dialogCancelOrClose()}
+        ref={dialogRef}
+        className="device-delete-dialog"
+      >
+        <p>Are you Sure</p>
+        <div className="form-actions">
+          <input
+            className="form-action primary"
+            type="button"
+            value="No"
+            onClick={() => deleteAction(false)}
+          />
+          <input
+            className="form-action"
+            type="button"
+            value="Yes"
+            onClick={() => deleteAction(true)}
+          />
+        </div>
+      </dialog>
+    </>
   );
 };
