@@ -79,7 +79,7 @@ export const Device = ({ device, onDone }: DeviceProps) => {
     logging.log('onSubmit', data);
 
     device && device.id
-      ? fetch(`/api/device/${device.id}`, {
+      ? fetch(`api/device/${device.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ export const Device = ({ device, onDone }: DeviceProps) => {
           reset();
           onDone && onDone();
         })
-      : fetch('/api/device', {
+      : fetch('api/device', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -102,7 +102,7 @@ export const Device = ({ device, onDone }: DeviceProps) => {
   };
 
   const deleteDevice = (id: string) => {
-    fetch(`/api/device/${id}`, {
+    fetch(`api/device/${id}`, {
       method: 'DELETE',
     }).then(() => {
       reset();
