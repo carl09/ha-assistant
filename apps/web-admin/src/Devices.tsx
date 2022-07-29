@@ -6,8 +6,9 @@ import './Devices.scss';
 
 type DevicesProps = {
   devices?: IDevice[];
+  devicesStatus?: { [key: string]: any };
 };
-export const Devices = ({ devices }: DevicesProps) => {
+export const Devices = ({ devices, devicesStatus }: DevicesProps) => {
   const [device, setDevice] = useState<IDevice>();
   const [addNew, setAddNew] = useState<boolean>(false);
 
@@ -42,6 +43,17 @@ export const Devices = ({ devices }: DevicesProps) => {
                 <a href="#" onClick={(e) => selectDevice(e, x)}>
                   {x.name}
                 </a>
+                {devicesStatus && devicesStatus[x.name] && (
+                  <ul>
+                    {Object.keys(devicesStatus[x.name]).map((y) => {
+                      return (
+                        <li key={`${x.id}-${y}`}>
+                          {y} : {devicesStatus[x.name][y]}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
               </div>
             );
           })}

@@ -1,6 +1,4 @@
 import { useEffect, useState } from 'react';
-import CodeMirror from '@uiw/react-codemirror';
-import { json } from '@codemirror/lang-json';
 import {
   IServerConfig,
   logging,
@@ -16,7 +14,7 @@ console.log('window.config', config, location);
 
 export const App = () => {
   const [devicesStatus, setDevicesStatus] = useState<{
-    [key: string]: unknown;
+    [key: string]: any;
   }>();
 
   const [devices, setDevices] = useState<IDevice[]>([]);
@@ -56,23 +54,7 @@ export const App = () => {
       <h1>{location.hostname}</h1>
       <span>The WebSocket is currently {connectionStatus}</span>
 
-      <Devices devices={devices} />
-
-      {devicesStatus
-        ? Object.keys(devicesStatus).map((x) => (
-            <div key={x}>
-              <div>{x}</div>
-              <div>
-                {/* <pre>{JSON.stringify(devices[x], null, 2)}</pre> */}
-                <CodeMirror
-                  value={JSON.stringify(devicesStatus[x], null, 2)}
-                  height="200px"
-                  extensions={[json()]}
-                />
-              </div>
-            </div>
-          ))
-        : ''}
+      <Devices devices={devices} devicesStatus={devicesStatus} />
     </>
   );
 };
