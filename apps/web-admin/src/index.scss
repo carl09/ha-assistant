@@ -15,6 +15,8 @@ $open-sans: 'Open Sans', sans-serif;
   --primary-color: white;
   --primary-bg-color: #0288d1;
   --primary-bg-color-hover: #0279b9;
+
+  --panel-bg-color: #ebebeb;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -25,6 +27,8 @@ $open-sans: 'Open Sans', sans-serif;
     --primary-color: black;
     --primary-bg-color: #74d2fd;
     --primary-bg-color-hover: #ccebfa;
+
+    --panel-bg-color: #2c2c2c;
   }
 }
 

@@ -4,6 +4,60 @@ import { Device } from './Device';
 
 import './Devices.scss';
 
+type DeviceSummaryProps = {
+  device: IDevice;
+  deviceStats: { [key: string]: string };
+  onSelect: (device: IDevice) => void;
+};
+
+const DeviceValueFormat = ({ value }: { value: boolean | number | string }) => {
+  if (typeof value === 'number') {
+    return <div className="format-number">{value}</div>;
+  }
+  if (typeof value === 'boolean') {
+    return <div className="format-boolean">{value}</div>;
+  }
+  if (typeof value === 'string') {
+    return <div className="format-string">{value}</div>;
+  }
+  return <div className="format-unknown">{value}</div>;
+};
+
+const DeviceSummary = ({
+  device,
+  deviceStats,
+  onSelect,
+}: DeviceSummaryProps) => {
+  const selectDevice = (e: React.MouseEvent, d: IDevice) => {
+    e.preventDefault();
+    onSelect && onSelect(device);
+  };
+
+  return (
+    <>
+      <a
+        href="#"
+        className="panel-link"
+        onClick={(e) => selectDevice(e, device)}
+      >
+        <div className="panel-header">{device.name}</div>
+      </a>
+
+      {deviceStats && (
+        <ul className="panel-stats">
+          {Object.keys(deviceStats).map((y) => {
+            return (
+              <li className="panel-stats-item" key={`${device.id}-${y}`}>
+                {y} : <DeviceValueFormat value={deviceStats[y]} />
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </>
+  );
+};
+
 type DevicesProps = {
   devices?: IDevice[];
   devicesStatus?: { [key: string]: any };
@@ -12,8 +66,7 @@ export const Devices = ({ devices, devicesStatus }: DevicesProps) => {
   const [device, setDevice] = useState<IDevice>();
   const [addNew, setAddNew] = useState<boolean>(false);
 
-  const selectDevice = (e: React.MouseEvent, d: IDevice) => {
-    e.preventDefault();
+  const selectDevice = (d: IDevice) => {
     logging.log(`selected ${d.name}`);
     setAddNew(false);
     setDevice(d);
@@ -33,27 +86,18 @@ export const Devices = ({ devices, devicesStatus }: DevicesProps) => {
   return (
     <div className="devices-list">
       <div className="devices-list-row">
-        <a href="#" onClick={(e) => addNewDevice(e)}>
+        <a href="#" className='add-new-device' onClick={(e) => addNewDevice(e)}>
           Add New
         </a>
         <div className="device-grid">
           {(devices || []).map((x) => {
             return (
               <div className="device-grid-item" key={x.id}>
-                <a href="#" onClick={(e) => selectDevice(e, x)}>
-                  {x.name}
-                </a>
-                {devicesStatus && devicesStatus[x.name] && (
-                  <ul>
-                    {Object.keys(devicesStatus[x.name]).map((y) => {
-                      return (
-                        <li key={`${x.id}-${y}`}>
-                          {y} : {devicesStatus[x.name][y]}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                )}
+                <DeviceSummary
+                  device={x}
+                  deviceStats={devicesStatus && devicesStatus[x.name]}
+                  onSelect={(d) => selectDevice(d)}
+                />
               </div>
             );
           })}
