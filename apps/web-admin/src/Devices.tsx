@@ -23,6 +23,11 @@ const DeviceValueFormat = ({ value }: { value: boolean | number | string }) => {
   return <div className="format-unknown">{value}</div>;
 };
 
+const snakeToTitle = (value: string): string => {
+  const result = value.replace(/([A-Z])/g, ' $1');
+  return result.charAt(0).toUpperCase() + result.slice(1);
+};
+
 const DeviceSummary = ({
   device,
   deviceStats,
@@ -48,7 +53,7 @@ const DeviceSummary = ({
           {Object.keys(deviceStats).map((y) => {
             return (
               <li className="panel-stats-item" key={`${device.id}-${y}`}>
-                {y} : <DeviceValueFormat value={deviceStats[y]} />
+                {snakeToTitle(y)}: <DeviceValueFormat value={deviceStats[y]} />
               </li>
             );
           })}
@@ -86,7 +91,7 @@ export const Devices = ({ devices, devicesStatus }: DevicesProps) => {
   return (
     <div className="devices-list">
       <div className="devices-list-row">
-        <a href="#" className='add-new-device' onClick={(e) => addNewDevice(e)}>
+        <a href="#" className="add-new-device" onClick={(e) => addNewDevice(e)}>
           Add New
         </a>
         <div className="device-grid">
