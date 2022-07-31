@@ -9,6 +9,7 @@ import {
 } from '@ha-assistant/listner';
 
 import './Device.scss';
+import { snakecaseToTitlecase } from './utils/format';
 
 type DeviceProps = {
   device?: IDevice;
@@ -92,6 +93,7 @@ export const Device = ({ device, onDone }: DeviceProps) => {
   }>();
 
   const watchDeviceType = watch('deviceType');
+  const watchName = watch('name');
 
   const onSubmit = (data: any) => {
     logging.log('onSubmit', data);
@@ -178,8 +180,9 @@ export const Device = ({ device, onDone }: DeviceProps) => {
   return (
     <>
       <form className="device-form" onSubmit={handleSubmit(onSubmit)}>
-        {/* <input {...register('name', { required: true })} /> */}
-        <section>
+        <h2>{watchName}</h2>
+
+        <section className="device-section">
           <h3>Detail</h3>
           <Input label="Id" name="id" hidden register={register} required />
           <Input label="Name" name="name" register={register} required />
@@ -190,14 +193,14 @@ export const Device = ({ device, onDone }: DeviceProps) => {
             required
           />
         </section>
-        <section>
+        <section className="device-section">
           <h3>States</h3>
           {states &&
             Object.keys(states).map((x) => {
               return (
                 <Input
                   key={x}
-                  label={x}
+                  label={snakecaseToTitlecase(x)}
                   name={`states.${x}`}
                   description={states[x].hint}
                   register={register}

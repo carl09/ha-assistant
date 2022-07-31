@@ -145,10 +145,13 @@ export const getDeviceStatusV2$ = (socket: HomeAssistantDataAccess) =>
       .subscribe({
         next: (msg) => {
           if (msg.found) {
-            devicesState = msg.devices;
-            obs.next(devicesState);
+            if (JSON.stringify(devicesState) !== JSON.stringify(msg.devices)) {
+              devicesState = msg.devices;
+              obs.next(devicesState);
+            } else {
+              logging.debug('Device state has not changed');
+            }
           }
-          //   console.log('entityStatusUpdated$', msg);
         },
       });
 

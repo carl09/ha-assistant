@@ -6,7 +6,8 @@ import {
   IDevice,
 } from '@ha-assistant/listner';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
-import { Devices } from './Devices';
+import { Devices } from './Devices/Devices';
+import { useWindowDimensions } from './utils/useWindowDimensions';
 
 const config: IServerConfig = (window as any).config || {};
 
@@ -18,6 +19,8 @@ export const App = () => {
   }>();
 
   const [devices, setDevices] = useState<IDevice[]>([]);
+
+  const { width } = useWindowDimensions();
 
   const { lastJsonMessage, readyState } = useWebSocket<messages>(
     config.socketUrl,
@@ -51,9 +54,7 @@ export const App = () => {
 
   return (
     <>
-      <h1>{location.hostname}</h1>
-      <span>The WebSocket is currently {connectionStatus}</span>
-
+      <h1>{location.hostname} { width } {connectionStatus}</h1>
       <Devices devices={devices} devicesStatus={devicesStatus} />
     </>
   );
