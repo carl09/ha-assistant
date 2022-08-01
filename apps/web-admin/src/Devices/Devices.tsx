@@ -1,6 +1,6 @@
 import { IDevice, logging } from '@ha-assistant/listner';
 import { useState } from 'react';
-import { Device } from '../Device';
+import { DeviceEdit } from '../Device-Edit/Device-Edit';
 
 import './Devices.scss';
 import { useWindowDimensions } from '../utils/useWindowDimensions';
@@ -62,7 +62,7 @@ export const Devices = ({ devices, devicesStatus }: DevicesProps) => {
       )}
       {isEditing && (
         <div className="devices-list-row">
-          <Device device={device} onDone={() => clearSelected()} />
+          <DeviceEdit device={device} onDone={() => clearSelected()} />
         </div>
       )}
     </div>

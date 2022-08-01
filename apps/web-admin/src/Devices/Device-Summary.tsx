@@ -1,4 +1,4 @@
-import { IDevice } from '@ha-assistant/listner';
+import { IDevice, logging } from '@ha-assistant/listner';
 import { snakecaseToTitlecase } from '../utils/format';
 import { DeviceValueFormat } from './Device-Value-Format';
 

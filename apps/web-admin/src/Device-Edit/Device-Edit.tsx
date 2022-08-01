@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Path, useForm, UseFormRegister } from 'react-hook-form';
+import { useForm, UseFormRegister } from 'react-hook-form';
 import {
   IDevice,
   logging,
@@ -8,8 +8,8 @@ import {
   IDeviceTraitsStates,
 } from '@ha-assistant/listner';
 
-import './Device.scss';
-import { snakecaseToTitlecase } from './utils/format';
+import './Device-Edit.scss';
+import { snakecaseToTitlecase } from '../utils/format';
 
 type DeviceProps = {
   device?: IDevice;
@@ -74,8 +74,7 @@ const DeviceSelect = ({ name, label, register, required }: SelectProps) => (
   </div>
 );
 
-export const Device = ({ device, onDone }: DeviceProps) => {
-  // logging.log('Device', device, onDone);
+export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
   const {
     register,
     handleSubmit,
@@ -87,7 +86,6 @@ export const Device = ({ device, onDone }: DeviceProps) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   const [deleteId, setDeleteId] = useState<string>();
-  const [traits, setTraits] = useState<string[]>();
   const [states, setStates] = useState<{
     [name: string]: IDeviceTraitsStates;
   }>();
@@ -157,14 +155,18 @@ export const Device = ({ device, onDone }: DeviceProps) => {
 
     logging.debug('deviceType', dt);
 
-    setTraits(dt?.traits);
-
     const s = dt?.traits.reduce<{ [name: string]: IDeviceTraitsStates }>(
       (acc, t) => {
         logging.debug('trate', t);
         return { ...acc, ...deviceTraits[t].states };
       },
-      {}
+      {
+        "online": {
+          type: 'boolean',
+          required: true,
+          hint: 'If the device is online',
+        } as IDeviceTraitsStates
+      }
     );
 
     setStates(s);
