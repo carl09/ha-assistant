@@ -10,6 +10,12 @@ import {
 import { getConfig } from './config';
 import { firstValueFrom } from 'rxjs';
 
+type LookupItem = {
+  label: string;
+  detail: string;
+  info?: string
+};
+
 export const apiInit = (app: Express) => {
   const config = getConfig();
 
@@ -72,16 +78,30 @@ export const apiInit = (app: Express) => {
       const entity = entities.find((x) => x.entity_id === `${d}.${n}`) as any;
       logging.debug('found enity', entity);
       if (a) {
-        res.send(Object.keys((entity || {})[a] || {}));
+        res.send(Object.keys((entity || {})[a] || {}).map<LookupItem>(x => {
+          return {
+            label: x,
+            detail: `${typeof entity[a][x]} - ${entity[a][x]}`
+          }
+        }) );
       } else {
-        res.send(Object.keys(entity || {}));
+        res.send(Object.keys(entity || {}).map<LookupItem>(x => {
+          return {
+            label: x,
+            detail: `${typeof entity[x]} - ${entity[x]}`
+          }
+        }) );
       }
     } else {
       const entities = await firstValueFrom(socket.getEntities());
-      const results = entities.reduce<string[]>((acc, i) => {
+      const results = entities.reduce<LookupItem[]>((acc, i) => {
         if (i.entity_id.startsWith(domain)) {
           const [, d] = i.entity_id.split('.');
-          return [...acc, d];
+          const item: LookupItem = {
+            label: d,
+            detail: i.name
+          }
+          return [...acc, item];
         }
         return acc;
       }, []);

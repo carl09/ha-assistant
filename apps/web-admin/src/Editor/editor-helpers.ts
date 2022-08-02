@@ -14,20 +14,43 @@ const dontCompleteIn = [
   'PropertyDefinition',
 ];
 
-const lookupFunctions = ['equals', 'toInt', 'toNum'];
+const lookupFunctions: LookupItem[] = [
+  {
+    label: 'equals',
+    detail: 'compare to values',
+  },
+  {
+    label: 'toInt',
+    detail: 'converts string to int',
+  },
+  {
+    label: 'toNum',
+    detail: 'converts string to number',
+    info: 'some really foon info to help me'
+  },
+];
+
+type LookupItem = {
+  label: string;
+  detail: string;
+  info?: string
+};
 
 const asyncCompleteProperties = async (
   from: number,
   name: string
 ): Promise<CompletionResult> => {
-  const res = await fetch(`/api/editor/lookup/${name}`);
-  const json = await res.json();
+  const res = await fetch(`api/editor/lookup/${name}`);
+  const json: string[] | LookupItem[] = await res.json();
 
   return {
     from,
     options: [
-      ...json.map((x: string) => {
-        return { label: x, type: 'class' };
+      ...json.map((x: string | LookupItem) => {
+        if (typeof x === 'string') {
+          return { label: x, type: 'class' };
+        }
+        return { label: x.label, type: 'class', detail: x.detail, info: x.info };
       }),
     ],
     validFor: /^[\w$]*$/,
@@ -37,8 +60,8 @@ const asyncCompleteProperties = async (
 const asyncCompleteRootProperties = async (
   from: number
 ): Promise<CompletionResult> => {
-  const res = await fetch(`/api/editor/lookup`);
-  const json = await res.json();
+  const res = await fetch(`api/editor/lookup`);
+  const json: string[] | LookupItem[] = await res.json();
 
   logging.debug('result', json);
 
@@ -46,10 +69,13 @@ const asyncCompleteRootProperties = async (
     from,
     options: [
       ...lookupFunctions.map((x) => {
-        return { label: x, type: 'function' };
+        return { label: x.label, type: 'function', detail: x.detail, info: x.info };
       }),
-      ...json.map((x: string) => {
-        return { label: x, type: 'class' };
+      ...json.map((x: string | LookupItem) => {
+        if (typeof x === 'string') {
+          return { label: x, type: 'class' };
+        }
+        return { label: x.label, type: 'class', detail: x.detail, info: x.info };
       }),
     ],
     validFor: /^[\w$]*$/,
