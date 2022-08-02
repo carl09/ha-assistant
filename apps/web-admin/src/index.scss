@@ -4,23 +4,30 @@
 :root {
   --color-f: #ff0000;
   --gh2-color: black;
-  --gh2-bg-color: white;
+  --gh2-bg-color: rgb(250, 250, 250);
 
   --body-font: 'Roboto', sans-serif;
-  --heading-font: 'Montserrat', sans-serif;;
+  --heading-font: 'Montserrat', sans-serif;
 
-  --primary-color: white;
+  --primary-color: rgb(250, 250, 250);
   --primary-bg-color: #0288d1;
   --primary-bg-color-hover: #0279b9;
 
   --panel-bg-color: #ebebeb;
 
   --gh2-border-radius: 8px;
+
+  --gh2-code-boolean: blue;
+  --gh2-code-string: #f53131;
+  --gh2-code-number: rgb(22 153 22);
+  --gh2-code-function: #0036f9;
+  --gh2-code-property: orange;
+  --gh2-code-variable: purple;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --gh2-color: white;
+    --gh2-color: rgb(250, 250, 250);
     --gh2-bg-color: black;
 
     --primary-color: black;
@@ -28,6 +35,10 @@
     --primary-bg-color-hover: #ccebfa;
 
     --panel-bg-color: #2c2c2c;
+
+    --gh2-code-boolean: #6c8fdf;
+    --gh2-code-number: rgb(104 179 104);
+    --gh2-code-variable: #cf5bcf;
   }
 }
 
@@ -53,3 +64,17 @@ h6 {
   font-weight: 500;
   line-height: 1.2;
 }
+
+svg {
+  width: 1.5rem;
+
+  &.device-icon {
+    grid-area: icon;
+    align-self: center;
+    justify-self: center;
+    fill: #333;
+    margin-right: 0.25rem;
+  }
+}
+
+

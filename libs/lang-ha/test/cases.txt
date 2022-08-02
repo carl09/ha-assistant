@@ -1,41 +1,39 @@
 # Booleans
 
 true
-false
 
 ==>
 
-Program(Boolean, Boolean)
+Program(BooleanLiteral)
 
-# Identifiers
+# VariableName
 
 one
-Two_Three
 
 ==>
 
-Program(Identifier, Identifier)
+Program(VariableName)
 
 # Strings
 
 "hello"
-"one\"\\two"
 
 ==>
 
-Program(String, String)
+Program(String)
 
-# Applications
+# Function
 
-(begin
-  (when true
-    (print (concat "hello" " " "world")))
-  (print "DONE"))
+doit()
 
 ==>
 
-Program(Application(
-  Identifier,
-  Application(Identifier, Boolean, Application(
-    Identifier, Application(Identifier, String, String, String)))
-  Application(Identifier, String)))
+Program(CallExpression(VariableName,ArgList("(",")")))
+
+# Function With String Arg
+
+doit("again")
+
+==>
+
+Program(CallExpression(VariableName,ArgList("(",String,")")))

@@ -1,5 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { useForm, UseFormRegister } from 'react-hook-form';
+import {
+  Control,
+  Controller,
+  FieldValues,
+  useForm,
+  UseFormRegister,
+} from 'react-hook-form';
 import {
   IDevice,
   logging,
@@ -10,6 +16,10 @@ import {
 
 import './Device-Edit.scss';
 import { snakecaseToTitlecase } from '../utils/format';
+import { Editor } from '../Editor/Editor';
+import { mdiDelete, mdiContentSave, mdiClose } from '@mdi/js';
+import Icon from '@mdi/react';
+import { Button } from '../components/button';
 
 type DeviceProps = {
   device?: IDevice;
@@ -23,6 +33,13 @@ type InputProps = {
   required?: boolean;
   hidden?: boolean;
   description?: string;
+};
+
+type InputEditorProps = {
+  name: string;
+  label: string;
+  description?: string;
+  control: Control<FieldValues, any>;
 };
 
 type SelectProps = {
@@ -74,8 +91,37 @@ const DeviceSelect = ({ name, label, register, required }: SelectProps) => (
   </div>
 );
 
+const InputEditor = ({
+  label,
+  name,
+  description,
+  control,
+}: InputEditorProps) => (
+  <div className="form-row">
+    <label htmlFor={name} className="form-label">
+      {label}
+    </label>
+
+    <Controller
+      name={name}
+      control={control}
+      render={({ field: { onChange, onBlur, value, name, ref } }) => (
+        <Editor value={value} name={name} onChange={onChange} />
+      )}
+    />
+    {/* <input
+      className="form-input"
+      id={name}
+      hidden={hidden}
+      {...register(name, { required })}
+    /> */}
+    {description && <div className="form-desc">{description}</div>}
+  </div>
+);
+
 export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
   const {
+    control,
     register,
     handleSubmit,
     formState: { errors },
@@ -161,11 +207,11 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
         return { ...acc, ...deviceTraits[t].states };
       },
       {
-        "online": {
+        online: {
           type: 'boolean',
           required: true,
           hint: 'If the device is online',
-        } as IDeviceTraitsStates
+        } as IDeviceTraitsStates,
       }
     );
 
@@ -179,6 +225,10 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
     reset(device);
   }, [device, reset]);
 
+  if (errors && Object.keys(errors).length) {
+    logging.error('errors', errors);
+  }
+
   return (
     <>
       <form className="device-form" onSubmit={handleSubmit(onSubmit)}>
@@ -186,7 +236,7 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
 
         <section className="device-section">
           <h3>Detail</h3>
-          <Input label="Id" name="id" hidden register={register} required />
+          <Input label="Id" name="id" hidden register={register} />
           <Input label="Name" name="name" register={register} required />
           <DeviceSelect
             label="Device Type"
@@ -200,39 +250,60 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
           {states &&
             Object.keys(states).map((x) => {
               return (
-                <Input
+                <InputEditor
                   key={x}
                   label={snakecaseToTitlecase(x)}
                   name={`states.${x}`}
                   description={states[x].hint}
-                  register={register}
+                  control={control}
                 />
+                // <Input
+                //   key={x}
+                //   label={snakecaseToTitlecase(x)}
+                //   name={`states.${x}`}
+                //   description={states[x].hint}
+                //   register={register}
+                // />
               );
             })}
         </section>
 
         {errors.name && <span>This field is required</span>}
         {errors.deviceType && <span>This field is required</span>}
+
         <div className="form-actions">
-          <input className="form-action primary" type="submit" />
-          <input
+          <Button
+            value="Save"
+            icon={mdiContentSave}
+            type="submit"
+            isPrimary
+            onClick={handleSubmit(onSubmit)}
+          />
+          {/* <button
+            className="form-action primary"
+            type="submit"
+            onClick={handleSubmit(onSubmit)}
+          >
+            <Icon className="device-icon" path={mdiContentSave} /> Save
+          </button> */}
+          <button
             className="form-action"
             type="reset"
             onClick={() => {
               reset();
               onDone && onDone();
             }}
-            value="Cancel"
-          />
+          >
+            <Icon className="device-icon" path={mdiClose} /> Cancel
+          </button>
           {device && (
-            <input
-              className="form-action"
+            <button
               type="button"
-              onClick={() => {
-                deleteDevice(device?.id);
-              }}
-              value="Delete"
-            />
+              className="form-action"
+              onClick={() => deleteDevice(device?.id)}
+            >
+              <Icon className="device-icon" path={mdiDelete} /> Delete
+            </button>
           )}
         </div>
       </form>

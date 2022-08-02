@@ -8,7 +8,7 @@ import {
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { Devices } from './Devices/Devices';
 import { useWindowDimensions } from './utils/useWindowDimensions';
-import { Editor } from './Editor/Editor';
+import Icon from '@mdi/react';
 
 const config: IServerConfig = (window as any).config || {};
 
@@ -59,7 +59,7 @@ export const App = () => {
         {location.hostname} {width} {connectionStatus}
       </h1>
 
-      <Editor />
+      {/* <Editor /> */}
 
       <Devices devices={devices} devicesStatus={devicesStatus} />
     </>

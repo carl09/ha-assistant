@@ -49,7 +49,7 @@
 }
 
 .format-number {
-  color: rgb(0, 185, 0);
+  color: var(--gh2-code-number);
   display: inline;
 }
 
@@ -59,11 +59,11 @@
 }
 
 .format-boolean {
-  color: blue;
+  color: var(--gh2-code-boolean);
   display: inline;
 }
 
 .format-string {
-  color: red;
+  color: var(--gh2-code-string);
   display: inline;
 }

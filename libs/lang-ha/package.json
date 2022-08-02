@@ -5,7 +5,8 @@
   "scripts": {
     "test": "mocha test/test.js",
     "prepare": "rollup -c",
-    "dev": "rollup -c"
+    "dev": "rollup -c",
+    "release": "echo nothing in lib"
   },
   "type": "module",
   "main": "dist/index.cjs",

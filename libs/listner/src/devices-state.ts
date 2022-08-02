@@ -66,9 +66,11 @@ export const getDeviceStatusV2$ = (socket: HomeAssistantDataAccess) =>
             entitesState[domain][name] = {
               state: x.state,
             };
+            // TODO: Remove Attribute mapping
             Object.keys(x.attributes).forEach((a) => {
               entitesState[domain][name][a] = x.attributes[a];
             });
+            entitesState[domain][name]['attributes'] = {...x.attributes};
           });
 
           return devices.devices.reduce<{ [key: string]: any }>((acc, y) => {
@@ -112,9 +114,11 @@ export const getDeviceStatusV2$ = (socket: HomeAssistantDataAccess) =>
             entitesState[domain][name] = {
               state: update.state,
             };
+            // TODO: Remove Attribute mapping
             Object.keys(update.attributes).forEach((a) => {
               entitesState[domain][name][a] = update.attributes[a];
             });
+            entitesState[domain][name]['attributes'] = {...update.attributes};
           }
 
           let updatedDevices: { [key: string]: any } = {};

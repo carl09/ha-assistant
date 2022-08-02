@@ -5,6 +5,9 @@ import { DeviceEdit } from '../Device-Edit/Device-Edit';
 import './Devices.scss';
 import { useWindowDimensions } from '../utils/useWindowDimensions';
 import { DeviceSummary } from './Device-Summary';
+import { mdiAccount, mdiPlusCircleOutline } from '@mdi/js';
+import Icon from '@mdi/react';
+import { Button } from '../components/button';
 
 type DevicesProps = {
   devices?: IDevice[];
@@ -39,11 +42,10 @@ export const Devices = ({ devices, devicesStatus }: DevicesProps) => {
     <div className="devices-list">
       {showList && (
         <div className="devices-list-row">
-          <input
-            className="form-action"
-            type="button"
-            value="Add New"
+          <Button
             onClick={() => addNewDevice()}
+            icon={mdiPlusCircleOutline}
+            value="Add New"
           />
           <div className="device-grid">
             {(devices || []).map((x) => {

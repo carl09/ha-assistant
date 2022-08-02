@@ -1,4 +1,3 @@
-export * from './devices';
 export * from './devices-state';
 export * from './devices-props';
 export * from './home-assistant-web-socket';

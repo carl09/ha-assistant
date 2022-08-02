@@ -6,12 +6,10 @@
   "module": "./dist/index.js",
   "typings": "./dist/index.d.ts",
   "scripts": {
-    "build": "node esbuild.config.cjs",
-    "postbuild": "tsc --emitDeclarationOnly --outDir dist",
-    "dev": "node esbuild.config.cjs --watch",
+    "build": "tsup --dts",
     "lint": "eslint \"src/*\"",
     "release": "echo nothing in lib",
-    "foo": "tsup --dts"
+    "dev": "tsup --dts --watch"
   },
   "license": "ISC",
   "dependencies": {
