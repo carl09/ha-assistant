@@ -9,7 +9,7 @@ export const clientInit = (app: Express, config: IConfig) => {
   app.get('/config.js', (req, res) => {
     logging.debug('Client', req.protocol, req.get('host'), req.originalUrl);
 
-    logging.log('/config.js :scheme', req.get(':scheme'));
+    logging.warn('/config.js :scheme', req.get(':scheme'));
 
     const host =
       process.env.NODE_ENV === 'development'
