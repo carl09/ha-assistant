@@ -279,31 +279,23 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
             isPrimary
             onClick={handleSubmit(onSubmit)}
           />
-          {/* <button
-            className="form-action primary"
-            type="submit"
-            onClick={handleSubmit(onSubmit)}
-          >
-            <Icon className="device-icon" path={mdiContentSave} /> Save
-          </button> */}
-          <button
-            className="form-action"
+          <Button
+            value="Cancel"
+            icon={mdiClose}
             type="reset"
             onClick={() => {
               reset();
               onDone && onDone();
             }}
-          >
-            <Icon className="device-icon" path={mdiClose} /> Cancel
-          </button>
+          />
           {device && (
-            <button
-              type="button"
-              className="form-action"
-              onClick={() => deleteDevice(device?.id)}
-            >
-              <Icon className="device-icon" path={mdiDelete} /> Delete
-            </button>
+            <Button
+              value="Delete"
+              icon={mdiDelete}
+              onClick={() => {
+                deleteDevice(device?.id);
+              }}
+            />
           )}
         </div>
       </form>
