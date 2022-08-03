@@ -21,6 +21,7 @@ const getDeviceClimate = (deviceName: string) => ({
 export interface IDevice {
   id: string;
   name: string;
+  room?: string;
   states: { [prop: string]: string };
   attributes: { [prop: string]: string };
   traits: string[];

@@ -13,17 +13,22 @@ import { firstValueFrom } from 'rxjs';
 type LookupItem = {
   label: string;
   detail: string;
-  info?: string
+  info?: string;
 };
 
 export const apiInit = (app: Express) => {
   const config = getConfig();
 
-  app.get('/api', (req, res) => {
-    res.send({
-      name: 'hello',
-    });
-  });
+  const socket = getHomeAssistantDataAccess(
+    config.homeAssistaneSocketUri,
+    config.homeAssistaneApiKey
+  );
+
+  // app.get('/api', (req, res) => {
+  //   res.send({
+  //     name: 'hello',
+  //   });
+  // });
 
   app.post('/api/device', (req, res) => {
     logging.log('Got body:', req.body);
@@ -47,10 +52,11 @@ export const apiInit = (app: Express) => {
     res.sendStatus(200);
   });
 
-  const socket = getHomeAssistantDataAccess(
-    config.homeAssistaneSocketUri,
-    config.homeAssistaneApiKey
-  );
+  app.get('/api/areas', async (req, res) => {
+    logging.debug('areas');
+    const rooms = await firstValueFrom(socket.getAreas());
+    res.send(rooms);
+  });
 
   app.get('/api/editor/lookup', async (req, res) => {
     const entities = await firstValueFrom(socket.getEntities());
@@ -78,19 +84,23 @@ export const apiInit = (app: Express) => {
       const entity = entities.find((x) => x.entity_id === `${d}.${n}`) as any;
       logging.debug('found enity', entity);
       if (a) {
-        res.send(Object.keys((entity || {})[a] || {}).map<LookupItem>(x => {
-          return {
-            label: x,
-            detail: `${typeof entity[a][x]} - ${entity[a][x]}`
-          }
-        }) );
+        res.send(
+          Object.keys((entity || {})[a] || {}).map<LookupItem>((x) => {
+            return {
+              label: x,
+              detail: `${typeof entity[a][x]} - ${entity[a][x]}`,
+            };
+          })
+        );
       } else {
-        res.send(Object.keys(entity || {}).map<LookupItem>(x => {
-          return {
-            label: x,
-            detail: `${typeof entity[x]} - ${entity[x]}`
-          }
-        }) );
+        res.send(
+          Object.keys(entity || {}).map<LookupItem>((x) => {
+            return {
+              label: x,
+              detail: `${typeof entity[x]} - ${entity[x]}`,
+            };
+          })
+        );
       }
     } else {
       const entities = await firstValueFrom(socket.getEntities());
@@ -99,8 +109,8 @@ export const apiInit = (app: Express) => {
           const [, d] = i.entity_id.split('.');
           const item: LookupItem = {
             label: d,
-            detail: i.name
-          }
+            detail: i.name,
+          };
           return [...acc, item];
         }
         return acc;

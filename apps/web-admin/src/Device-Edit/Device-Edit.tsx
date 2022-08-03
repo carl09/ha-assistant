@@ -7,14 +7,16 @@ import {
   deviceTraits,
   IDeviceTraitsStates,
   IDeviceTraitsAttributes,
+  IHomeAssistantArea,
 } from '@ha-assistant/listner';
 import './Device-Edit.scss';
 import { snakecaseToTitlecase } from '../utils/format';
 import { mdiDelete, mdiContentSave, mdiClose } from '@mdi/js';
-import { Button } from '../_components/Button';
+import { Button } from '../Components/Button';
 import { Input } from './Input';
 import { DeviceSelect } from './Device-Select';
 import { InputEditor } from './Input-Editor';
+import { Select } from './Select';
 
 type DeviceProps = {
   device?: IDevice;
@@ -34,6 +36,7 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   const [deleteId, setDeleteId] = useState<string>();
+  const [rooms, setRooms] = useState<string[]>();
   const [states, setStates] = useState<{
     [name: string]: IDeviceTraitsStates;
   }>();
@@ -93,6 +96,15 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
   };
 
   useEffect(() => {
+    fetch('api/areas').then((resp) => {
+      resp.json().then((areas: IHomeAssistantArea[]) => {
+        logging.debug('areas', areas);
+        setRooms(areas.map((x) => x.name));
+      });
+    });
+  }, []);
+
+  useEffect(() => {
     reset({});
   }, [reset]);
 
@@ -146,6 +158,13 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
             name="deviceType"
             register={register}
             required
+          />
+          <Select
+            label="Room"
+            name="room"
+            control={control}
+            options={rooms}
+            hasEmptyOption
           />
         </section>
         <section className="device-section">

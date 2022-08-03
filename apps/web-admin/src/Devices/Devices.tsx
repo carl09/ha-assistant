@@ -5,7 +5,7 @@ import './Devices.scss';
 import { useWindowDimensions } from '../utils/useWindowDimensions';
 import { DeviceSummary } from './Device-Summary';
 import { mdiPlusCircleOutline } from '@mdi/js';
-import { Button } from '../_components/Button';
+import { Button } from '../Components/Button';
 
 type DevicesProps = {
   devices?: IDevice[];

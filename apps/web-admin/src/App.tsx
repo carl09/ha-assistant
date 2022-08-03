@@ -8,11 +8,10 @@ import {
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { Devices } from './Devices/Devices';
 import { useWindowDimensions } from './utils/useWindowDimensions';
-import Icon from '@mdi/react';
 
 const config: IServerConfig = (window as any).config || {};
 
-console.log('window.config', config, location);
+logging.log('Starting Info', { config, location });
 
 export const App = () => {
   const [devicesStatus, setDevicesStatus] = useState<{
@@ -58,8 +57,6 @@ export const App = () => {
       <h1>
         {location.hostname} {width} {connectionStatus}
       </h1>
-
-      {/* <Editor /> */}
 
       <Devices devices={devices} devicesStatus={devicesStatus} />
     </>
