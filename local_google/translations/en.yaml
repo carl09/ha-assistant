@@ -1,7 +1,7 @@
 configuration:
-  forceHttpsForWs:
-    name: Force Https For Web Socket
-    description: The domain name to use for the proxy.
+  inferWebsocketUrl:
+    name: Infer Websocket URL
+    description: trying to resolve issues between internal and external url's
   logLevel:
     name: Log Level
     description: Limit the amount of info that will sent to the logs

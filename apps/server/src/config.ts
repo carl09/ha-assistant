@@ -7,6 +7,7 @@ export interface IConfig {
   homeAssistaneSocketUri: string;
   homeAssistaneApiKey: string;
   deviceStore: string;
+  inferWebsocketUrl?: boolean;
 }
 
 export interface IOptions {
@@ -21,7 +22,10 @@ const readFileAsJson = (filePath: string): any => {
 
 const options = existsSync('/data/options.json')
   ? readFileAsJson('/data/options.json')
-  : JSON.parse(process?.env?.options || '{}');
+  : {
+      logLevel: process.env.LOG_LEVEL,
+      inferWebsocketUrl: process.env.INFER_WEBSOCKET_URL,
+    };
 
 logging.debug('App options', options);
 
@@ -29,9 +33,9 @@ setLogLevel(options.logLevel);
 
 const port = process.env.SERVER_PORT ? parseInt(process.env.SERVER_PORT) : 4001;
 
-Object.keys(process.env).forEach((x) => {
-  logging.debug(`process.env.${x} = ${process.env[x]}`);
-});
+// Object.keys(process.env).forEach((x) => {
+//   logging.debug(`process.env.${x} = ${process.env[x]}`);
+// });
 
 export const getConfig = (): IConfig => {
   return {
@@ -42,5 +46,6 @@ export const getConfig = (): IConfig => {
       process.env.HA_SOCKET_URL || 'ws://hassio/homeassistant/api/websocket',
 
     deviceStore: process.env.DEVICE_STORE || '/data/devices.json',
+    inferWebsocketUrl: options.inferWebsocketUrl,
   };
 };

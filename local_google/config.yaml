@@ -1,5 +1,5 @@
 name: Google Home V2
-version: 0.0.48
+version: 0.0.49
 slug: google_home_local_v2
 description: Google Home to Home Assistant manager V2
 arch:
@@ -15,12 +15,7 @@ options:
   logLevel: Debug
 schema:
   logLevel: list(Debug|Info|Warn|Error)
-  forceHttpsForWs: str?
-  # clientDomain:
-  #   - domain: str
-  #     forceSecure: bool
-  #     port: port
-  #     includeIngress: bool
+  inferWebsocketUrl: bool?
 ports:
   8089/tcp: 8089
   3312/udp: 3312

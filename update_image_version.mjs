@@ -13,6 +13,4 @@ const updatedConfig = prettier.format(yaml.dump(config), {
   parser: 'yaml',
 });
 
-console.log(updatedConfig)
-
 fs.writeFileSync('./local_google/config.yaml', updatedConfig, 'utf8');
