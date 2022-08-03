@@ -1,0 +1,7 @@
+configuration:
+  forceHttpForWs:
+    name: Force Https For Web Socket
+    description: The domain name to use for the proxy.
+network:
+  8089/tcp: Port for web server
+  3312/udp: UDP Port for listening to devices
