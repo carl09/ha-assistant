@@ -1,123 +1,25 @@
 import { useEffect, useRef, useState } from 'react';
-import {
-  Control,
-  Controller,
-  FieldValues,
-  useForm,
-  UseFormRegister,
-} from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import {
   IDevice,
   logging,
   deviceTypes,
   deviceTraits,
   IDeviceTraitsStates,
+  IDeviceTraitsAttributes,
 } from '@ha-assistant/listner';
-
 import './Device-Edit.scss';
 import { snakecaseToTitlecase } from '../utils/format';
-import { Editor } from '../Editor/Editor';
 import { mdiDelete, mdiContentSave, mdiClose } from '@mdi/js';
-import Icon from '@mdi/react';
-import { Button } from '../components/button';
+import { Button } from '../_components/Button';
+import { Input } from './Input';
+import { DeviceSelect } from './Device-Select';
+import { InputEditor } from './Input-Editor';
 
 type DeviceProps = {
   device?: IDevice;
   onDone?: () => void;
 };
-
-type InputProps = {
-  name: string;
-  label: string;
-  register: UseFormRegister<any>;
-  required?: boolean;
-  hidden?: boolean;
-  description?: string;
-};
-
-type InputEditorProps = {
-  name: string;
-  label: string;
-  description?: string;
-  control: Control<FieldValues, any>;
-};
-
-type SelectProps = {
-  name: string;
-  label: string;
-  register: UseFormRegister<any>;
-  required?: boolean;
-};
-
-const Input = ({
-  label,
-  name,
-  register,
-  required,
-  hidden,
-  description,
-}: InputProps) => (
-  <div className="form-row">
-    {!hidden && (
-      <label htmlFor={name} className="form-label">
-        {label}
-      </label>
-    )}
-    <input
-      className="form-input"
-      id={name}
-      hidden={hidden}
-      {...register(name, { required })}
-    />
-    {description && <div className="form-desc">{description}</div>}
-  </div>
-);
-
-const DeviceSelect = ({ name, label, register, required }: SelectProps) => (
-  <div className="form-row">
-    <label htmlFor={name} className="form-label">
-      {label}
-    </label>
-    <select className="form-select" id={name} {...register(name, { required })}>
-      <option value=""></option>
-      {deviceTypes.map((x) => {
-        return (
-          <option key={x.type} value={x.type}>
-            {x.humanName}
-          </option>
-        );
-      })}
-    </select>
-  </div>
-);
-
-const InputEditor = ({
-  label,
-  name,
-  description,
-  control,
-}: InputEditorProps) => (
-  <div className="form-row">
-    <label htmlFor={name} className="form-label">
-      {label}
-    </label>
-
-    <Controller
-      name={name}
-      control={control}
-      render={({ field: { onChange, onBlur, value, name, ref } }) => (
-        <Editor value={value} name={name} onChange={onChange} />
-      )}
-    />
-    {/* <input
-      className="form-input"
-      id={name}
-      hidden={hidden}
-      {...register(name, { required })}
-    /> */}
-    {description && <div className="form-desc">{description}</div>}
-  </div>
-);
 
 export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
   const {
@@ -134,6 +36,10 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
   const [deleteId, setDeleteId] = useState<string>();
   const [states, setStates] = useState<{
     [name: string]: IDeviceTraitsStates;
+  }>();
+
+  const [attributes, setAttributes] = useState<{
+    [name: string]: IDeviceTraitsAttributes;
   }>();
 
   const watchDeviceType = watch('deviceType');
@@ -178,16 +84,12 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
         reset();
         onDone && onDone();
       });
-      logging.warn('Deleting');
-    } else {
-      logging.warn('Not Deleting');
     }
     dialogRef.current?.close();
   };
 
   const dialogCancelOrClose = () => {
     setDeleteId(undefined);
-    logging.warn('dialogCancelOrClose');
   };
 
   useEffect(() => {
@@ -195,12 +97,7 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
   }, [reset]);
 
   useEffect(() => {
-    logging.debug('watchDeviceType', watchDeviceType);
-
     const dt = deviceTypes.find((x) => x.type === watchDeviceType);
-
-    logging.debug('deviceType', dt);
-
     const s = dt?.traits.reduce<{ [name: string]: IDeviceTraitsStates }>(
       (acc, t) => {
         logging.debug('trate', t);
@@ -215,9 +112,15 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
       }
     );
 
-    setStates(s);
+    const a = dt?.traits.reduce<{ [name: string]: IDeviceTraitsAttributes }>(
+      (acc, t) => {
+        return { ...acc, ...deviceTraits[t].attributes };
+      },
+      {}
+    );
 
-    logging.debug('states', s);
+    setStates(s);
+    setAttributes(a);
   }, [watchDeviceType]);
 
   useEffect(() => {
@@ -256,14 +159,25 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
                   name={`states.${x}`}
                   description={states[x].hint}
                   control={control}
+                  type={states[x].type}
                 />
-                // <Input
-                //   key={x}
-                //   label={snakecaseToTitlecase(x)}
-                //   name={`states.${x}`}
-                //   description={states[x].hint}
-                //   register={register}
-                // />
+              );
+            })}
+        </section>
+
+        <section className="device-section">
+          <h3>Attributes</h3>
+          {attributes &&
+            Object.keys(attributes).map((x) => {
+              return (
+                <InputEditor
+                  key={x}
+                  label={snakecaseToTitlecase(x)}
+                  name={`attributes.${x}`}
+                  description={attributes[x].hint}
+                  control={control}
+                  type={attributes[x].type}
+                />
               );
             })}
         </section>

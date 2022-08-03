@@ -15,16 +15,18 @@ export interface IDeviceTraitsStates {
   hint: string;
 }
 
+export interface IDeviceTraitsAttributes {
+  type: 'string' | 'array' | 'number' | 'boolean' | 'integer' | 'object';
+  required?: boolean;
+  supportedValues?: string[];
+  hint: string;
+}
+
 export interface IDeviceTraits {
   type: string;
   humanName: string;
   attributes: {
-    [name: string]: {
-      type: 'string' | 'array' | 'number' | 'boolean' | 'integer' | 'object';
-      required?: boolean;
-      supportedValues?: string[];
-      hint: string;
-    };
+    [name: string]: IDeviceTraitsAttributes;
   };
   states: {
     [name: string]: IDeviceTraitsStates;
@@ -252,14 +254,14 @@ export const deviceTraits: { [trait: string]: IDeviceTraits } = {
     type: 'action.devices.traits.StartStop',
     humanName: 'StartStop',
     states: {
-      'humiditySetpointPercent': {
+      humiditySetpointPercent: {
         type: 'integer',
-        hint: 'Indicates the current target humidity percentage of the device. Must fall within humiditySetpointRange.'
+        hint: 'Indicates the current target humidity percentage of the device. Must fall within humiditySetpointRange.',
       },
-      'humidityAmbientPercent': {
+      humidityAmbientPercent: {
         type: 'integer',
-        hint: 'Indicates the current ambient humidity reading of the device as a percentage.'
-      }
+        hint: 'Indicates the current ambient humidity reading of the device as a percentage.',
+      },
     },
     attributes: {},
     commands: [],

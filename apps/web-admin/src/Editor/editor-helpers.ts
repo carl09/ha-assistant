@@ -26,14 +26,14 @@ const lookupFunctions: LookupItem[] = [
   {
     label: 'toNum',
     detail: 'converts string to number',
-    info: 'some really foon info to help me'
+    info: 'some really foon info to help me',
   },
 ];
 
 type LookupItem = {
   label: string;
   detail: string;
-  info?: string
+  info?: string;
 };
 
 const asyncCompleteProperties = async (
@@ -50,7 +50,12 @@ const asyncCompleteProperties = async (
         if (typeof x === 'string') {
           return { label: x, type: 'class' };
         }
-        return { label: x.label, type: 'class', detail: x.detail, info: x.info };
+        return {
+          label: x.label,
+          type: 'class',
+          detail: x.detail,
+          info: x.info,
+        };
       }),
     ],
     validFor: /^[\w$]*$/,
@@ -69,13 +74,23 @@ const asyncCompleteRootProperties = async (
     from,
     options: [
       ...lookupFunctions.map((x) => {
-        return { label: x.label, type: 'function', detail: x.detail, info: x.info };
+        return {
+          label: x.label,
+          type: 'function',
+          detail: x.detail,
+          info: x.info,
+        };
       }),
       ...json.map((x: string | LookupItem) => {
         if (typeof x === 'string') {
           return { label: x, type: 'class' };
         }
-        return { label: x.label, type: 'class', detail: x.detail, info: x.info };
+        return {
+          label: x.label,
+          type: 'class',
+          detail: x.detail,
+          info: x.info,
+        };
       }),
     ],
     validFor: /^[\w$]*$/,
@@ -128,5 +143,6 @@ export const defaultTheme = EditorView.baseTheme({
     fontSize: '1rem;',
     padding: '0.375rem 0.75rem',
     backgroundColor: 'field',
+    color: 'fieldtext',
   },
 });

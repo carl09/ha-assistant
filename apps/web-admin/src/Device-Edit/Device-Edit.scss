@@ -22,11 +22,21 @@
   }
 }
 
+.form-label-type {
+  display: inline;
+    font-size: .85rem;
+}
+
 .device-section {
   padding: 8px;
   border: 1px solid white;
   border-radius: var(--gh2-border-radius);
-  margin-bottom: 8px;
+  margin-bottom: 16px;
+
+  h3 {
+    border-bottom: 1px solid;
+    padding-bottom: 8px;
+  }
 }
 
 .form-row {

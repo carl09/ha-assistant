@@ -1,13 +1,11 @@
 import { IDevice, logging } from '@ha-assistant/listner';
 import { useState } from 'react';
 import { DeviceEdit } from '../Device-Edit/Device-Edit';
-
 import './Devices.scss';
 import { useWindowDimensions } from '../utils/useWindowDimensions';
 import { DeviceSummary } from './Device-Summary';
-import { mdiAccount, mdiPlusCircleOutline } from '@mdi/js';
-import Icon from '@mdi/react';
-import { Button } from '../components/button';
+import { mdiPlusCircleOutline } from '@mdi/js';
+import { Button } from '../_components/Button';
 
 type DevicesProps = {
   devices?: IDevice[];
