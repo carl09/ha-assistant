@@ -1,9 +1,7 @@
-import { deviceTypes } from '@ha-assistant/listner';
 import {
   Control,
   Controller,
   FieldValues,
-  UseFormRegister,
 } from 'react-hook-form';
 
 type SelectProps = {
@@ -53,25 +51,5 @@ export const Select = ({
         );
       }}
     />
-
-    {/* <select className="form-select" id={name} {...register(name, { required })}>
-      {hasEmptyOption && <option value=""></option>}
-      {options &&
-        options.map((x) => {
-          if (typeof x === 'string') {
-            return (
-              <option key={x} value={x}>
-                {x}
-              </option>
-            );
-          }
-
-          return (
-            <option key={x.value} value={x.value}>
-              {x.label}
-            </option>
-          );
-        })}
-    </select> */}
   </div>
 );

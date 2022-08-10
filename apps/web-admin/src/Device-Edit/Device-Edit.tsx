@@ -7,7 +7,6 @@ import {
   deviceTraits,
   IHomeAssistantArea,
   IDeviceTraitsProps,
-  deleteDevice,
   IDeviceCommandProps,
 } from '@ha-assistant/listner';
 import './Device-Edit.scss';
@@ -18,13 +17,24 @@ import { Input } from './Input';
 import { DeviceSelect } from './Device-Select';
 import { InputEditor } from './Input-Editor';
 import { Select } from './Select';
-import { createDevice, getAreas, updateDevice } from '../Services/device.service';
-
+import {
+  createDevice,
+  deleteDevice,
+  getAreas,
+  updateDevice,
+} from '../Services/device.service';
+import { DeviceTraits } from './Device-Traits';
 
 type DeviceProps = {
   device?: IDevice;
   onDone?: () => void;
 };
+
+// const defaultValues = {
+//   deviceType: undefined,
+//   traits: undefined,
+//   name: undefined,
+// };
 
 export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
   const {
@@ -34,7 +44,10 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
     formState: { errors },
     reset,
     watch,
-  } = useForm();
+    setValue,
+  } = useForm({
+    // defaultValues,
+  });
 
   const dialogRef = useRef<HTMLDialogElement>(null);
 
@@ -50,6 +63,7 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
   }>();
 
   const watchDeviceType = watch('deviceType');
+  const watchTraits: string[] | undefined = watch('traits');
   const watchName = watch('name');
 
   const onSubmit = (data: any) => {
@@ -96,41 +110,55 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
 
   useEffect(() => {
     const dt = deviceTypes.find((x) => x.type === watchDeviceType);
-    const s = dt?.traits.reduce<{ [name: string]: IDeviceTraitsProps }>(
-      (acc, t) => {
-        logging.debug('trate', t);
-        return { ...acc, ...deviceTraits[t].states };
-      },
-      {
-        online: {
-          type: 'boolean',
-          required: true,
-          hint: 'If the device is online',
-        } as IDeviceTraitsProps,
+    if (dt) {
+      if (dt.type !== device?.deviceType) {
+        setValue('traits', dt.traits);
       }
-    );
+    } else {
+      setValue('traits', []);
+    }
+  }, [watchDeviceType, setValue, device]);
 
-    const a = dt?.traits.reduce<{ [name: string]: IDeviceTraitsProps }>(
-      (acc, t) => {
-        return { ...acc, ...deviceTraits[t].attributes };
-      },
-      {}
-    );
+  useEffect(() => {
+    if (watchTraits) {
+      const s = watchTraits.reduce<{ [name: string]: IDeviceTraitsProps }>(
+        (acc, t) => {
+          logging.debug('trate', t);
+          return { ...acc, ...deviceTraits[t].states };
+        },
+        {
+          online: {
+            type: 'boolean',
+            required: true,
+            hint: 'If the device is online',
+          } as IDeviceTraitsProps,
+        }
+      );
 
-    const c = dt?.traits.reduce<IDeviceCommandProps[]>((acc, t) => {
-      return [...acc, ...deviceTraits[t].commands];
-    }, []);
+      const a = watchTraits.reduce<{ [name: string]: IDeviceTraitsProps }>(
+        (acc, t) => {
+          return { ...acc, ...deviceTraits[t].attributes };
+        },
+        {}
+      );
 
-    setStates(s);
-    setAttributes(a);
-    setCommands(c);
+      const c = watchTraits.reduce<IDeviceCommandProps[]>((acc, t) => {
+        return [...acc, ...deviceTraits[t].commands];
+      }, []);
 
-    console.info('Commands', c);
-  }, [watchDeviceType]);
+      setStates(s);
+      setAttributes(a);
+      setCommands(c);
+    } else {
+      setStates(undefined);
+      setAttributes(undefined);
+      setCommands(undefined);
+    }
+  }, [watchTraits]);
 
   useEffect(() => {
     logging.log('Device.useEffect', device);
-    reset(device);
+    reset(device || {}, { keepValues: false });
   }, [device, reset]);
 
   if (errors && Object.keys(errors).length) {
@@ -146,12 +174,6 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
           <h3>Detail</h3>
           <Input label="Id" name="id" hidden register={register} />
           <Input label="Name" name="name" register={register} required />
-          <DeviceSelect
-            label="Device Type"
-            name="deviceType"
-            register={register}
-            required
-          />
           <Select
             label="Room"
             name="room"
@@ -159,16 +181,13 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
             options={rooms}
             hasEmptyOption
           />
-
-          <select className="form-select" multiple {...register('traits')}>
-            {Object.keys(deviceTraits).map((x) => {
-              return (
-                <option key={x} value={x}>
-                  {x}
-                </option>
-              );
-            })}
-          </select>
+          <DeviceSelect
+            label="Device Type"
+            name="deviceType"
+            register={register}
+            required
+          />
+          <DeviceTraits label="Traits" name="traits" register={register} />
         </section>
         <section className="device-section">
           <h3>States</h3>
