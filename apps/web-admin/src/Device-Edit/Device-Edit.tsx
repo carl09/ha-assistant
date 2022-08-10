@@ -7,8 +7,6 @@ import {
   deviceTraits,
   IHomeAssistantArea,
   IDeviceTraitsProps,
-  createDevice,
-  updateDevice,
   deleteDevice,
   IDeviceCommandProps,
 } from '@ha-assistant/listner';
@@ -20,7 +18,8 @@ import { Input } from './Input';
 import { DeviceSelect } from './Device-Select';
 import { InputEditor } from './Input-Editor';
 import { Select } from './Select';
-import { getAreas } from '../Services/device.service';
+import { createDevice, getAreas, updateDevice } from '../Services/device.service';
+
 
 type DeviceProps = {
   device?: IDevice;
@@ -160,6 +159,16 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
             options={rooms}
             hasEmptyOption
           />
+
+          <select className="form-select" multiple {...register('traits')}>
+            {Object.keys(deviceTraits).map((x) => {
+              return (
+                <option key={x} value={x}>
+                  {x}
+                </option>
+              );
+            })}
+          </select>
         </section>
         <section className="device-section">
           <h3>States</h3>
