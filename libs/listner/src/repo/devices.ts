@@ -26,6 +26,7 @@ export interface IDevice {
   attributes: { [prop: string]: string };
   traits: string[];
   deviceType: string;
+  commands?: { [prop: string]: { command: string; args?: any } };
 }
 
 let base$: Observable<{ [id: string]: IDevice }>;

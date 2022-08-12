@@ -1,5 +1,3 @@
-import chalk from 'chalk';
-
 const l = (v: string, ...parms: any[]) => console.log(v, ...parms);
 
 const info = () => `[${new Date().toLocaleString()}]`;
@@ -20,27 +18,54 @@ export const setLogLevel = (level: string) => {
 
 export const logging = {
   error: (msg: string, ...parms: any[]) => {
-    l(chalk.red(info(), 'ERROR:', msg), ...parms);
+    l('ERROR:', msg, ...parms);
   },
 
   warn: (msg: string, ...parms: any[]) => {
     if (logLevel <= 2) {
-      l(chalk.yellow(info(), 'WARNING:', msg), ...parms);
+      l('WARNING:', msg, ...parms);
     }
   },
   log: (msg: string, ...parms: any[]) => {
     if (logLevel <= 1) {
-      l(chalk.green(info(), 'LOG:', msg), ...parms);
+      l('LOG:', msg, ...parms);
     }
   },
   info: (msg: string, ...parms: any[]) => {
     if (logLevel <= 1) {
-      l(chalk.green(info(), 'INFO:', msg), ...parms);
+      l('INFO:', msg, ...parms);
     }
   },
   debug: (msg: string, ...parms: any[]) => {
     if (logLevel <= 0) {
-      l(chalk.gray(info(), 'DEBUG:', msg), ...parms);
+      l('DEBUG:', msg, ...parms);
     }
   },
 };
+
+// export const logging = {
+//   error: (msg: string, ...parms: any[]) => {
+//     l(chalk.red(info(), 'ERROR:', msg), ...parms);
+//   },
+
+//   warn: (msg: string, ...parms: any[]) => {
+//     if (logLevel <= 2) {
+//       l(chalk.yellow(info(), 'WARNING:', msg), ...parms);
+//     }
+//   },
+//   log: (msg: string, ...parms: any[]) => {
+//     if (logLevel <= 1) {
+//       l(chalk.green(info(), 'LOG:', msg), ...parms);
+//     }
+//   },
+//   info: (msg: string, ...parms: any[]) => {
+//     if (logLevel <= 1) {
+//       l(chalk.green(info(), 'INFO:', msg), ...parms);
+//     }
+//   },
+//   debug: (msg: string, ...parms: any[]) => {
+//     if (logLevel <= 0) {
+//       l(chalk.gray(info(), 'DEBUG:', msg), ...parms);
+//     }
+//   },
+// };

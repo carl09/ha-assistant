@@ -1,9 +1,4 @@
-import {
-  ChangeEvent,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import {
   IServerConfig,
   logging,
@@ -16,6 +11,7 @@ import { useWindowDimensions } from './utils/useWindowDimensions';
 import { Button } from './Components/Button';
 import { GoogleActions } from './Google-Actions/Google-Actions';
 import { mdiImport, mdiExport } from '@mdi/js';
+import { Fake } from './Device-Edit/Input-Command';
 
 const config: IServerConfig = (window as any).config || {};
 
@@ -94,11 +90,21 @@ export const App = () => {
     }
   };
 
+  const [v, setV] = useState<any>();
+
   return (
     <>
       <h1>
         {location.hostname} {width} {connectionStatus}
       </h1>
+{/* 
+      <Fake
+        value={v}
+        onChange={(x) => {
+          console.log('onChange', x);
+          setV(x);
+        }}
+      /> */}
 
       <Devices devices={devices} devicesStatus={devicesStatus} />
 
@@ -122,4 +128,3 @@ export const App = () => {
     </>
   );
 };
-

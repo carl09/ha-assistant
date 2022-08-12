@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, KeyboardEvent } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   IDevice,
@@ -24,6 +24,7 @@ import {
   updateDevice,
 } from '../Services/device.service';
 import { DeviceTraits } from './Device-Traits';
+import { InputCommand } from './Input-Command';
 
 type DeviceProps = {
   device?: IDevice;
@@ -97,6 +98,15 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
     setDeleteId(undefined);
   };
 
+  const handleKeypress = (event: KeyboardEvent<HTMLFormElement>) => {
+    const charCode = String.fromCharCode(event.which).toLowerCase();
+    if (event.ctrlKey && charCode === 's') {
+      logging.debug('CTRL+S Pressed');
+      handleSubmit(onSubmit)();
+      event.preventDefault();
+    }
+  };
+
   useEffect(() => {
     getAreas().then((areas: IHomeAssistantArea[]) => {
       logging.debug('areas', areas);
@@ -149,6 +159,7 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
       setStates(s);
       setAttributes(a);
       setCommands(c);
+      console.log('commands', c);
     } else {
       setStates(undefined);
       setAttributes(undefined);
@@ -167,7 +178,11 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
 
   return (
     <>
-      <form className="device-form" onSubmit={handleSubmit(onSubmit)}>
+      <form
+        onKeyDown={(e) => handleKeypress(e)}
+        className="device-form"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <h2>{watchName}</h2>
 
         <section className="device-section">
@@ -229,15 +244,15 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
           <h3>Commands</h3>
           {commands &&
             commands.map((x) => {
+              const [commandName] = x.command.split('.').slice(-1);
               return (
-                <InputEditor
+                <InputCommand
                   key={x.command}
-                  label={snakecaseToTitlecase(x.command)}
-                  name={`commands.${x.command}`}
-                  description="desc"
+                  label={snakecaseToTitlecase(commandName)}
+                  name={`commands.${commandName}`}
                   control={control}
                   type="type"
-                  mode="services"
+                  commandPrams={x.params}
                 />
               );
             })}

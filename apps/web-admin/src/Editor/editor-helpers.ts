@@ -6,6 +6,8 @@ import { EditorView } from '@codemirror/view';
 import {
   asyncEntityProperties,
   asyncRootEntityProperties,
+  asyncRootServicesProperties,
+  asyncServicesProperties,
 } from './autocompleate-helpers';
 
 const completePropertyAfter = ['PropertyName', '.', '?.'];
@@ -17,16 +19,19 @@ const dontCompleteIn = [
   'PropertyDefinition',
 ];
 
-const createAutoCompleate = (
-  rootLookup: (from: number) => Promise<CompletionResult>,
-  detailLookup: (from: number, name: string) => Promise<CompletionResult>
+export const createAutoCompleate = (
+  rootLookup: (from: number) => Promise<CompletionResult> | CompletionResult,
+  detailLookup: (from: number, name: string) => Promise<CompletionResult> | CompletionResult
 ) => {
-  return (context: CompletionContext): Promise<CompletionResult> | null => {
+  return (
+    context: CompletionContext
+  ): Promise<CompletionResult> | CompletionResult | null => {
     const nodeBefore = syntaxTree(context.state).resolveInner(context.pos, -1);
 
     if (
       completePropertyAfter.includes(nodeBefore.name) &&
-      nodeBefore.parent?.name == 'MemberExpression'
+      nodeBefore.parent?.name == 'MemberExpression' &&
+      detailLookup
     ) {
       const object = nodeBefore.parent.getChild('Expression');
       if (object?.name == 'VariableName') {
@@ -57,8 +62,8 @@ export const completeEntityScope = createAutoCompleate(
 );
 
 export const completeServiceScope = createAutoCompleate(
-  asyncRootEntityProperties,
-  asyncEntityProperties
+  asyncRootServicesProperties,
+  asyncServicesProperties
 );
 
 export const defaultHighlightStyle = HighlightStyle.define([

@@ -13,6 +13,16 @@ const getEntityDomains = async () => {
   return json;
 };
 
+const getEntityServices = async (domain?: string) => {
+  const res = await fetch(
+    domain
+      ? `api/editor/entity/services/${domain}`
+      : `api/editor/entity/services`
+  );
+  const json: string[] | LookupItem[] = await res.json();
+  return json;
+};
+
 const getEntityDetail = async (name: string) => {
   const res = await fetch(`api/editor/lookup/${name}`);
   const json: string[] | LookupItem[] = await res.json();
@@ -25,7 +35,7 @@ const getBuiltinFunctions = async () => {
   return json;
 };
 
-const toCompletion = (
+export const toCompletion = (
   item: string | LookupItem,
   type: 'function' | 'class'
 ): Completion => {
@@ -40,6 +50,19 @@ const toCompletion = (
     type,
     detail: item.detail,
     info: item.info,
+  };
+};
+
+export const asyncServicesProperties = async (
+  from: number,
+  name: string
+): Promise<CompletionResult> => {
+  const json = await getEntityServices(name);
+
+  return {
+    from,
+    options: [...json.map((x) => toCompletion(x, 'class'))],
+    validFor: /^[\w$]*$/,
   };
 };
 
@@ -69,6 +92,24 @@ export const asyncRootEntityProperties = async (
     options: [
       ...functions.map((x) => toCompletion(x, 'function')),
       ...domains.map((x) => toCompletion(x, 'class')),
+    ],
+    validFor: /^[\w$]*$/,
+  };
+};
+
+export const asyncRootServicesProperties = async (
+  from: number
+): Promise<CompletionResult> => {
+  const services = await getEntityServices();
+  const functions = await getBuiltinFunctions();
+
+  logging.debug('result', services);
+
+  return {
+    from,
+    options: [
+      ...functions.map((x) => toCompletion(x, 'function')),
+      ...services.map((x) => toCompletion(x, 'class')),
     ],
     validFor: /^[\w$]*$/,
   };

@@ -69,6 +69,14 @@ const resolveType = (node: Node, object: any, resolve: boolean): any => {
     return node.value;
   }
 
+  if (node.type === 'ConditionalExpression') {
+    const test = resolveType(node.test, object, resolve);
+
+    return test
+      ? resolveType(node.consequent, object, resolve)
+      : resolveType(node.alternate, object, resolve);
+  }
+
   logging.error('unknown resolveType', node.type, node);
 };
 
@@ -121,8 +129,6 @@ export const getDevicesFromProps = (
   const deviceProp = cleanSwitchDomain(stringOrExpression);
 
   const referances = findReferances(deviceProp);
-
-  // console.log('getDevicesFromProps.referances', referances);
 
   if (!referances) {
     return;

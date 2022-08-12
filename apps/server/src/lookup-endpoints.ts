@@ -57,6 +57,30 @@ export const lookupInit = (app: Express) => {
     res.send(results);
   });
 
+  app.get('/api/editor/entity/services/:domain?', async (req, res) => {
+    const domain = req.params.domain as string;
+    logging.log('domain', domain);
+
+    const entities = await firstValueFrom(socket.getServices());
+
+    if (domain && domain in entities) {
+      logging.debug('domain', entities[domain]);
+
+      const results = Object.keys(entities[domain]).map((x) => {
+        return {
+          label: x,
+          detail: `${entities[domain][x].description}`,
+        };
+      });
+      res.send(results);
+    } else if (domain) {
+      res.send([]);
+    } else {
+      const results = Object.keys(entities);
+      res.send(results);
+    }
+  });
+
   app.get('/api/editor/lookup/:domain', async (req, res) => {
     var domain = req.params.domain;
     logging.log('Got lookup domain:', domain);

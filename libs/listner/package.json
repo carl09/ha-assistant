@@ -9,7 +9,9 @@
     "build": "tsup --dts",
     "lint": "eslint \"src/*\"",
     "release": "echo nothing in lib",
-    "dev": "tsup --dts --watch"
+    "dev": "tsup --dts --watch",
+    "test": "jest",
+    "test:watch": "jest --watch --silent=false"
   },
   "license": "ISC",
   "dependencies": {
@@ -17,12 +19,14 @@
     "@babel/parser": "^7.18.8",
     "@babel/types": "^7.18.8",
     "immer": "^9.0.15",
-    "chalk": "^5.0.1",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/uuid": "^8.3.4",
     "typescript": "^4.7.4",
-    "tsup": "^6.2.0"
+    "tsup": "^6.2.0",
+    "jest": "^28.1.3",
+    "@types/jest": "^28.1.6",
+    "ts-jest": "^28.0.7"
   }
 }
