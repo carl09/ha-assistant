@@ -1,3 +1,4 @@
+import { logging } from '@ha-assistant/listner';
 import {
   SmartHomeV1ExecuteRequestPayload,
   SmartHomeV1ExecutePayload,
@@ -6,6 +7,10 @@ import {
 export const onExecute = (
   payload: SmartHomeV1ExecuteRequestPayload
 ): Promise<SmartHomeV1ExecutePayload> => {
+
+  logging.log('onExecute', payload);
+  // resolveValue
+
   return Promise.resolve({
     commands: [
       {
