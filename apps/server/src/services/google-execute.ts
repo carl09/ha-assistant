@@ -11,6 +11,14 @@ export const onExecute = (
   logging.log('onExecute', payload);
   // resolveValue
 
+  // onExecute { commands: [ { devices: [Array], execution: [Array] } ] }
+
+
+  payload.commands.forEach(x => {
+    logging.log('commands', x);
+  })
+
+
   return Promise.resolve({
     commands: [
       {
