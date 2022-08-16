@@ -1,44 +1,75 @@
-import { IDevice, logging } from '@ha-assistant/listner';
-import { useState } from 'react';
+import { IDevice, logging, messages } from '@ha-assistant/listner';
+import { useEffect, useState } from 'react';
 import { DeviceEdit } from '../Device-Edit/Device-Edit';
 import './Devices.scss';
 import { useWindowDimensions } from '../utils/useWindowDimensions';
 import { DeviceSummary } from './Device-Summary';
 import { mdiPlusCircleOutline } from '@mdi/js';
 import { Button } from '../Components/Button';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
 
 type DevicesProps = {
-  devices?: IDevice[];
-  devicesStatus?: { [key: string]: any };
+  socketUrl: string;
+  // devices?: IDevice[];
+  // devicesStatus?: { [key: string]: any };
+  onEditDevice: (device: IDevice) => void;
+  onNewDevice: () => void;
+  onConnectionStatus: (state: ReadyState) => void;
 };
-export const Devices = ({ devices, devicesStatus }: DevicesProps) => {
-  const [device, setDevice] = useState<IDevice>();
-  const [addNew, setAddNew] = useState<boolean>(false);
+export const Devices = ({
+  socketUrl,
+  onEditDevice,
+  onNewDevice,
+  onConnectionStatus
+}: DevicesProps) => {
+  
+  const { lastJsonMessage, readyState } = useWebSocket(socketUrl, {
+    shouldReconnect: () => {
+      return true;
+    },
+    reconnectAttempts: 10,
+    reconnectInterval: 3000,
+  });
+
+  const [devicesStatus, setDevicesStatus] = useState<{
+    [key: string]: any;
+  }>();
+
+  const [devices, setDevices] = useState<IDevice[]>([]);
+
   const { width } = useWindowDimensions();
+
+  useEffect(() => {
+    if (lastJsonMessage !== null) {
+      const msg = lastJsonMessage as messages;
+      logging.log('msg', msg);
+      if (msg.type === 'devices-status') {
+        setDevicesStatus(msg.status);
+      } else if (msg.type === 'devices') {
+        setDevices(msg.devices);
+      }
+    }
+  }, [lastJsonMessage]);
+
+  useEffect(() => {
+    onConnectionStatus && onConnectionStatus(readyState);
+  }, [readyState])
 
   const selectDevice = (d: IDevice) => {
     logging.log(`selected ${d.name}`);
-    setAddNew(false);
-    setDevice(d);
+    onEditDevice && onEditDevice(d);
   };
 
   const addNewDevice = () => {
-    setDevice(undefined);
-    setAddNew(true);
+    onNewDevice && onNewDevice();
   };
 
-  const clearSelected = () => {
-    setDevice(undefined);
-    setAddNew(false);
-  };
-
-  const isSmallScreen = width < 1000;
-  const isEditing = device || addNew;
-  const showList = !(isEditing && isSmallScreen);
+  // const isSmallScreen = width < 1000;
+  // const isEditing = device || addNew;
+  // const showList = !(isEditing && isSmallScreen);
 
   return (
     <div className="devices-list">
-      {showList && (
         <div className="devices-list-row">
           <Button
             onClick={() => addNewDevice()}
@@ -59,12 +90,11 @@ export const Devices = ({ devices, devicesStatus }: DevicesProps) => {
             })}
           </div>
         </div>
-      )}
-      {isEditing && (
+      {/* {isEditing && (
         <div className="devices-list-row">
           <DeviceEdit device={device} onDone={() => clearSelected()} />
         </div>
-      )}
+      )} */}
     </div>
   );
 };

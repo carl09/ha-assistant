@@ -1,60 +1,38 @@
-import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useRef, useState } from 'react';
 import {
   IServerConfig,
   logging,
-  messages,
   IDevice,
 } from '@ha-assistant/listner';
-import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { ReadyState } from 'react-use-websocket';
 import { Devices } from './Devices/Devices';
 import { useWindowDimensions } from './utils/useWindowDimensions';
 import { Button } from './Components/Button';
 import { GoogleActions } from './Google-Actions/Google-Actions';
 import { mdiImport, mdiExport } from '@mdi/js';
-import { Fake } from './Device-Edit/Input-Command';
+import { DeviceEdit } from './Device-Edit/Device-Edit';
 
 const config: IServerConfig = (window as any).config || {};
 
 logging.log('Starting Info', { config, location });
 
 export const App = () => {
-  const [devicesStatus, setDevicesStatus] = useState<{
-    [key: string]: any;
-  }>();
-
-  const [devices, setDevices] = useState<IDevice[]>([]);
-
   const fileInput = useRef<HTMLInputElement>(null);
 
+  const [connectionStatus, setConnectionStatus] =
+    useState<string>('Uninstantiated');
+
   const { width } = useWindowDimensions();
+  const [device, setDevice] = useState<IDevice>();
+  const [addNew, setAddNew] = useState<boolean>(false);
 
-  const { lastJsonMessage, readyState } = useWebSocket(config.socketUrl, {
-    shouldReconnect: () => {
-      return true;
-    },
-    reconnectAttempts: 10,
-    reconnectInterval: 3000,
-  });
-
-  useEffect(() => {
-    if (lastJsonMessage !== null) {
-      const msg = lastJsonMessage as messages;
-      logging.log('msg', msg);
-      if (msg.type === 'devices-status') {
-        setDevicesStatus(msg.status);
-      } else if (msg.type === 'devices') {
-        setDevices(msg.devices);
-      }
-    }
-  }, [lastJsonMessage]);
-
-  const connectionStatus = {
-    [ReadyState.CONNECTING]: 'Connecting',
-    [ReadyState.OPEN]: 'Open',
-    [ReadyState.CLOSING]: 'Closing',
-    [ReadyState.CLOSED]: 'Closed',
-    [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
-  }[readyState];
+  // const connectionStatus = {
+  //   [ReadyState.CONNECTING]: 'Connecting',
+  //   [ReadyState.OPEN]: 'Open',
+  //   [ReadyState.CLOSING]: 'Closing',
+  //   [ReadyState.CLOSED]: 'Closed',
+  //   [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
+  // }[readyState];
 
   const onExport = () => {
     // fetch('api/export');
@@ -77,36 +55,60 @@ export const App = () => {
         });
       };
       reader.readAsText(file);
-
-      // const formData = new FormData();
-      // formData.append('model', file);
-      // fetch(`api/import`, {
-      //   method: 'POST',
-      //   body: formData,
-      //   headers: {
-      //     'Content-Type': 'multipart/form-data',
-      //   },
-      // });
     }
   };
 
-  const [v, setV] = useState<any>();
+  const updateConnectionStatus = (readyState: ReadyState) => {
+    const state = {
+      [ReadyState.CONNECTING]: 'Connecting',
+      [ReadyState.OPEN]: 'Open',
+      [ReadyState.CLOSING]: 'Closing',
+      [ReadyState.CLOSED]: 'Closed',
+      [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
+    }[readyState];
+    setConnectionStatus(state);
+  };
+
+  const clearSelected = () => {
+    setDevice(undefined);
+    setAddNew(false);
+  };
+
+  const isSmallScreen = width < 1000;
+  const isEditing = device || addNew;
+  const showList = !(isEditing && isSmallScreen);
 
   return (
     <>
       <h1>
         {location.hostname} {width} {connectionStatus}
       </h1>
-{/* 
-      <Fake
-        value={v}
-        onChange={(x) => {
-          console.log('onChange', x);
-          setV(x);
-        }}
-      /> */}
 
-      <Devices devices={devices} devicesStatus={devicesStatus} />
+      <div className="devices-list">
+        {showList && (
+          <div className="devices-list-row">
+            {config.socketUrl && (
+              <Devices
+                socketUrl={config.socketUrl}
+                onConnectionStatus={(e) => updateConnectionStatus(e)}
+                onEditDevice={(d) => {
+                  setDevice(d);
+                  setAddNew(false);
+                }}
+                onNewDevice={() => {
+                  setAddNew(true);
+                  setDevice(undefined);
+                }}
+              />
+            )}
+          </div>
+        )}
+        {isEditing && (
+          <div className="devices-list-row">
+            <DeviceEdit device={device} onDone={() => clearSelected()} />
+          </div>
+        )}
+      </div>
 
       <input
         type="file"

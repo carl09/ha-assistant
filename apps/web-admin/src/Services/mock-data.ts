@@ -91,20 +91,7 @@ export const mockExecute = async () => {
               {
                 devices: [
                   {
-                    id: '123',
-                    customData: {
-                      fooValue: 74,
-                      barValue: true,
-                      bazValue: 'sheepdip',
-                    },
-                  },
-                  {
-                    id: '456',
-                    customData: {
-                      fooValue: 36,
-                      barValue: false,
-                      bazValue: 'moarsheep',
-                    },
+                    id: '104c6816-c98c-4a6a-9ed3-4c2cc2bf9115',
                   },
                 ],
                 execution: [

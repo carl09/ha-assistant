@@ -18,6 +18,12 @@ const getDeviceClimate = (deviceName: string) => ({
   thermostatHumidityAmbient: `toInt(sensor.${deviceName}_humidity.state)`,
 });
 
+export interface IDeviceCommand {
+  command: string;
+  args?: any;
+  target: string;
+}
+
 export interface IDevice {
   id: string;
   name: string;
@@ -26,7 +32,7 @@ export interface IDevice {
   attributes: { [prop: string]: string };
   traits: string[];
   deviceType: string;
-  commands?: { [prop: string]: { command: string; args?: any } };
+  commands?: { [prop: string]: IDeviceCommand };
 }
 
 let base$: Observable<{ [id: string]: IDevice }>;

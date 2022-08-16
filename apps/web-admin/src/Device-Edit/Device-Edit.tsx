@@ -246,14 +246,35 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
             commands.map((x) => {
               const [commandName] = x.command.split('.').slice(-1);
               return (
-                <InputCommand
-                  key={x.command}
-                  label={snakecaseToTitlecase(commandName)}
-                  name={`commands.${commandName}`}
-                  control={control}
-                  type="type"
-                  commandPrams={x.params}
-                />
+                <>
+                  <InputEditor
+                    key={`${x}command`}
+                    label={`${snakecaseToTitlecase(commandName)} command`}
+                    name={`commands.${x}.command`}
+                    description="HA Command Name"
+                    control={control}
+                    type="string"
+                    mode="services"
+                    commandPrams={x.params}
+                  />
+                  <InputEditor
+                    key={`${x}target`}
+                    label={`${snakecaseToTitlecase(commandName)} target`}
+                    name={`commands.${x}.target`}
+                    description="HA Command Target"
+                    control={control}
+                    type="string"
+                    mode="entities"
+                  />
+                </>
+                // <InputCommand
+                //   key={x.command}
+                //   label={snakecaseToTitlecase(commandName)}
+                //   name={`commands.${commandName}`}
+                //   control={control}
+                //   type="type"
+                //   commandPrams={x.params}
+                // />
               );
             })}
         </section>

@@ -1,3 +1,4 @@
+import { IDeviceTraitsProps } from '@ha-assistant/listner';
 import { Control, Controller, FieldValues } from 'react-hook-form';
 import { Editor } from '../Editor/Editor';
 
@@ -8,6 +9,7 @@ type InputEditorProps = {
   type?: string;
   control: Control<FieldValues, any>;
   mode: 'entities' | 'services';
+  commandPrams?: { [name: string]: IDeviceTraitsProps };
 };
 
 export const InputEditor = ({
@@ -17,6 +19,7 @@ export const InputEditor = ({
   control,
   type,
   mode,
+  commandPrams,
 }: InputEditorProps) => (
   <div className="form-row">
     <label htmlFor={name} className="form-label">
@@ -27,7 +30,17 @@ export const InputEditor = ({
       name={name}
       control={control}
       render={({ field: { onChange, value, name } }) => (
-        <Editor value={value} name={name} onChange={onChange} mode={mode} />
+        <Editor
+          value={value}
+          name={name}
+          onChange={onChange}
+          mode={mode}
+          extraRootItems={
+            commandPrams && {
+              googleEvents: Object.keys(commandPrams),
+            }
+          }
+        />
       )}
     />
     {description && <div className="form-desc">{description}</div>}

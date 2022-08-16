@@ -1,10 +1,9 @@
-import { IDeviceTraitsProps, logging } from '@ha-assistant/listner';
-import { ChangeEvent, useState, useEffect } from 'react';
+import { IDeviceTraitsProps } from '@ha-assistant/listner';
+import { useState, useEffect } from 'react';
 import { Control, Controller, FieldValues } from 'react-hook-form';
 import { Editor } from '../Editor/Editor';
-import { get } from '../utils/format';
 
-type ControlValue = { command?: string; args?: string; commandTarget?: string };
+type ControlValue = { command?: string; args?: string; target?: string };
 
 type InputCommandProps = {
   name: string;
@@ -25,34 +24,34 @@ export const Fake = ({ value, onChange, commandPrams }: FakeProps) => {
   {
     console.log('Fake.value', value);
 
-    const [command, setCommand] = useState<string | undefined>();
+    const [commandName, setCommandName] = useState<string | undefined>();
     const [commandArgs, setCommandArgs] = useState<string | undefined>();
     const [commandTarget, setCommandTarget] = useState<string | undefined>();
 
     useEffect(() => {
       if (value) {
-        setCommand(value.command);
+        setCommandName(value.command);
         setCommandArgs(value.args);
-        setCommandTarget(value.commandTarget);
+        setCommandTarget(value.target);
       }
     }, []);
 
     useEffect(() => {
-      console.log('useEffect command', command, commandTarget);
+      console.log('useEffect command', { commandName, commandTarget });
       onChange &&
         onChange({
-          command,
+          command: commandName,
           args: commandArgs,
-          commandTarget,
+          target: commandTarget,
         });
-    }, [command, commandArgs, commandTarget]);
+    }, [commandName, commandArgs, commandTarget]);
 
     return (
       <>
         <Editor
           value={value?.command}
           onChange={(e) => {
-            setCommand(e);
+            setCommandName(e);
           }}
           name="command"
           mode="services"
@@ -63,11 +62,11 @@ export const Fake = ({ value, onChange, commandPrams }: FakeProps) => {
           }
         />
         <Editor
-          value={value?.commandTarget}
+          value={value?.target}
           onChange={(e) => {
             setCommandTarget(e);
           }}
-          name="commandTarget"
+          name="target"
           mode="entities"
         />
       </>
