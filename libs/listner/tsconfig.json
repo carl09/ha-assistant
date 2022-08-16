@@ -16,7 +16,7 @@
     "importHelpers": true,
     "target": "ES6",
     "module": "CommonJS",
-    "lib": ["es2020", "dom"],
+    "lib": ["ES2022", "dom"],
     "esModuleInterop": true
   },
   "include": ["./src/**/*.ts"]

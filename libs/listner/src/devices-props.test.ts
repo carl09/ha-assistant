@@ -35,11 +35,35 @@ describe('resolveValue', () => {
     expect(r).toBe('now');
   });
 
-  // test('variable', () => {
-  //   const r = resolveValue('foo ? "help" : "now"', { foo: false });
+  test('turnery false debugging', () => {
+    const r = resolveValue('googleEvents.on ? "switch.turn_on" : "switch.turn_off"', {
+      googleEvents: { on: false },
+    });
 
-  //   expect(r).toBe('now');
-  // });
+    expect(r).toBe('switch.turn_off');
+  });
+
+  test('turnery false debugging', () => {
+    const r = resolveValue('googleEvents.on ? "switch.turn_on" : "switch.turn_off"', {
+      googleEvents: { on: true },
+    });
+
+    expect(r).toBe('switch.turn_on');
+  });
+
+  test('turnery false debugging 2', () => {
+    const r = resolveValue('googleEvents.on ? switch.turn_on : switch.turn_off', {
+      googleEvents: { on: false },
+    });
+
+    expect(r).toBe('switch.turn_off');
+  });
+
+  // // test('variable', () => {
+  // //   const r = resolveValue('foo ? "help" : "now"', { foo: false });
+
+  // //   expect(r).toBe('now');
+  // // });
 
   test('sensor.d1_mini_3_humidity.state', () => {
     const r = resolveValue('sensor.d1_mini_3_humidity.state', {
@@ -55,27 +79,27 @@ describe('resolveValue', () => {
 
   
 
-  test('switch.kogan_8.state', () => {
-    const r = resolveValue('switch.kogan_8.state', {
-      switch: {
-        kogan_8: {
-          state: 'on',
-        },
-      },
-    });
+  // test('switch.kogan_8.state', () => {
+  //   const r = resolveValue('switch.kogan_8.state', {
+  //     switch: {
+  //       kogan_8: {
+  //         state: 'on',
+  //       },
+  //     },
+  //   });
 
-    expect(r).toBe('on');
-  });
+  //   expect(r).toBe('on');
+  // });
 
-  test('equals(switch.kogan_8.state, "on")', () => {
-    const r = resolveValue('equals(switch.kogan_8.state, "on")', {
-      switch: {
-        kogan_8: {
-          state: 'off',
-        },
-      },
-    });
+  // test('equals(switch.kogan_8.state, "on")', () => {
+  //   const r = resolveValue('equals(switch.kogan_8.state, "on")', {
+  //     switch: {
+  //       kogan_8: {
+  //         state: 'off',
+  //       },
+  //     },
+  //   });
 
-    expect(r).toBe(false);
-  });
+  //   expect(r).toBe(false);
+  // });
 });

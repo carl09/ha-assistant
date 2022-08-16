@@ -11,6 +11,13 @@ export interface IMassageBase {
     event_type?: string;
   };
   event_type?: string;
+
+  domain?: string;
+  service?: string;
+  service_data?: { [key: string]: any };
+  target?: {
+    entity_id: string;
+  };
 }
 
 export class HomeAssistantWebSocket {

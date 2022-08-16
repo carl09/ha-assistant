@@ -1,15 +1,30 @@
-import { getDeviceById$, IDeviceCommand, logging } from '@ha-assistant/listner';
+import {
+  getDeviceById$,
+  getHomeAssistantDataAccess,
+  HomeAssistantDataAccess,
+  IDeviceCommand,
+  logging,
+  resolveValue,
+} from '@ha-assistant/listner';
 import {
   SmartHomeV1ExecuteRequestPayload,
   SmartHomeV1ExecutePayload,
-  SmartHomeV1ExecuteResponseCommands
+  SmartHomeV1ExecuteResponseCommands,
 } from 'actions-on-google';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, lastValueFrom } from 'rxjs';
+import { getConfig } from '../config';
 
 export const onExecute = async (
   payload: SmartHomeV1ExecuteRequestPayload
 ): Promise<SmartHomeV1ExecutePayload> => {
   logging.log('onExecute', payload);
+
+  const config = getConfig();
+
+  let socket: HomeAssistantDataAccess = getHomeAssistantDataAccess(
+    config.homeAssistaneSocketUri,
+    config.homeAssistaneApiKey
+  );
   // resolveValue
 
   // onExecute { commands: [ { devices: [Array], execution: [Array] } ] }
@@ -25,43 +40,44 @@ export const onExecute = async (
           const [commandName] = exe.command.split('.').slice(-1);
           const commandDetail = (device.commands || {})[commandName];
 
-          logging.log('commands to run ', commandDetail);
+          logging.log('commands to run ', commandDetail, exe.params);
+
+          if (commandDetail) {
+            const serviceCall = resolveValue<string>(commandDetail.command, {
+              googleEvents: exe.params,
+            });
+
+            const entityId = resolveValue<string>(commandDetail.target, {
+              googleEvents: exe.params,
+            });
+
+            logging.log('commands serviceCall ', serviceCall);
+
+            const [domain, service] = serviceCall.split('.');
+
+            const exeResuls = await lastValueFrom(
+              socket.callService(domain, service, {}, entityId)
+            );
+
+            console.log('exeResuls', exeResuls);
+          }
         });
       }
 
       return d.id;
     });
 
-
-    // const r: SmartHomeV1ExecuteResponseCommands = {
- 
-    // }
-
-    return await Promise.all(deviceExecutions);
+    return Promise.all(deviceExecutions);
   });
 
-  await Promise.all(c);
+  const results = (await Promise.all(c)).flat();
 
-  // LOG: commands {
-  //   devices: [ { id: '104c6816-c98c-4a6a-9ed3-4c2cc2bf9115' } ],
-  //   execution: [ { command: 'action.devices.commands.OnOff', params: [Object] } ]
-  // }
+  const googleResults: SmartHomeV1ExecuteResponseCommands = {
+    ids: results,
+    status: 'SUCCESS',
+  };
 
-  return Promise.resolve({
-    commands: [
-      {
-        ids: ['123'],
-        status: 'SUCCESS',
-        states: {
-          on: true,
-          online: true,
-        },
-      },
-      {
-        ids: ['456'],
-        status: 'ERROR',
-        errorCode: 'deviceTurnedOff',
-      },
-    ],
-  });
+  return {
+    commands: [googleResults],
+  };
 };

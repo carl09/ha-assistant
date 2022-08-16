@@ -1,5 +1,6 @@
 import { parse } from '@babel/parser';
 import { ExpressionStatement, Identifier, Program, Node } from '@babel/types';
+import { get } from './utils/helpers';
 import { logging } from './utils/logging';
 
 export interface DeviceFromProps {
@@ -9,10 +10,12 @@ export interface DeviceFromProps {
 }
 
 const cleanSwitchDomain = (v: string): string =>
-  v.replace('switch.', '__switch.');
+  v.replaceAll('switch.', '__switch.')
+  .replaceAll("'__switch.", "'switch.")
+  .replaceAll("\"__switch.", "\"switch.");
 
 const restoreSwitchDomain = (v: string): string =>
-  v.replace('__switch', 'switch');
+  v.replaceAll('__switch', 'switch');
 
 const fn: { [key: string]: (...args: any[]) => any } = {
   equals: (...args: any[]) => {
@@ -42,7 +45,7 @@ const resolveType = (node: Node, object: any, resolve: boolean): any => {
     const o = resolveType(node.object, object, resolve);
     const p = resolveType(node.property, object, resolve);
     if (resolve) {
-      const r = typeof o === 'string' ? object[o][p] : o[p];
+      const r = typeof o === 'string' ? get(object, `${o}.${p}`, `${o}.${p}`) : o[p];
       return r;
     }
 
@@ -84,7 +87,7 @@ const resolveTypes = (nodes: Node[], object: any, resolve: boolean): any[] => {
   return nodes.map((x) => resolveType(x, object, resolve));
 };
 
-export const resolveValue = (value: string, object: any) => {
+export const resolveValue = <T>(value: string, object: any): T => {
   const ast = parse(cleanSwitchDomain(value), {
     sourceType: 'module',
     plugins: [],
