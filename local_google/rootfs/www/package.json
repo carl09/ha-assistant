@@ -21,7 +21,8 @@
     "dotenv": "^16.0.1",
     "cors": "^2.8.5",
     "utf-8-validate": "^5.0.9",
-    "bufferutil": "^4.0.6"
+    "bufferutil": "^4.0.6",
+    "actions-on-google": "^3.0.0"
   },
   "peerDependencies": {
     "@ha-assistant/listner": "*"
