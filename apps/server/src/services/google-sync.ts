@@ -4,23 +4,25 @@ import {
   SmartHomeV1SyncPayload,
 } from 'actions-on-google';
 import { firstValueFrom } from 'rxjs';
+import { getConfig } from '../config';
 
 export const onSync = async (): Promise<SmartHomeV1SyncPayload> => {
   const devices = await firstValueFrom(getAllDevices$());
+  const config = getConfig();
 
   return Promise.resolve({
-    agentUserId: '1836.15267389',
+    agentUserId: config.googleAgentUserId,
     devices: devices.map<SmartHomeV1SyncDevices>((x) => {
       return {
         id: x.id,
         type: x.deviceType,
         traits: x.traits,
         name: {
-            defaultNames: [x.name],
-            name: x.name,
-            nicknames: [x.name]
+          defaultNames: [x.name],
+          name: x.name,
+          nicknames: [x.name],
         },
-        willReportState: false,
+        willReportState: !!config.googleKeyFile,
         roomHint: x.room,
         // deviceInfo: {
         //     manufacturer: 'HomeAssistant',

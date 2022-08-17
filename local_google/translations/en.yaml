@@ -8,6 +8,12 @@ configuration:
   googleServiceAccountKey: 
     name: Google Service Account Key Config Path
     description: used for request sync process https://developers.google.com/assistant/smarthome/develop/request-sync
+  googleKeyFile:
+    name: Google Service Key File Location
+    description: The path to the google key file for the service account
+  googleAgentUserId:
+    name: Google Agent User Id
+    description: A unique id for google to sync with
 network:
   8089/tcp: Port for web server
   3312/udp: UDP Port for listening to devices

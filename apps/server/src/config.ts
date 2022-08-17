@@ -8,6 +8,8 @@ export interface IConfig {
   homeAssistaneApiKey: string;
   deviceStore: string;
   inferWebsocketUrl?: boolean;
+  googleKeyFile?: string;
+  googleAgentUserId: string;
 }
 
 export interface IOptions {
@@ -25,6 +27,8 @@ const options = existsSync('/data/options.json')
   : {
       logLevel: process.env.LOG_LEVEL,
       inferWebsocketUrl: process.env.INFER_WEBSOCKET_URL,
+      googleKeyFile: process.env.GOOGLE_KEY_FILE,
+      googleAgentUserId: process.env.GOOGLE_AGENT_USER_ID,
     };
 
 logging.debug('App options', options);
@@ -47,5 +51,10 @@ export const getConfig = (): IConfig => {
 
     deviceStore: process.env.DEVICE_STORE || '/data/devices.json',
     inferWebsocketUrl: options.inferWebsocketUrl,
+    googleKeyFile:
+      options.googleKeyFile && existsSync(options.googleKeyFile)
+        ? options.googleKeyFile
+        : undefined,
+    googleAgentUserId: options.googleAgentUserId,
   };
 };

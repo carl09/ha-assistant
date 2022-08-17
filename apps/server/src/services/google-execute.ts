@@ -2,7 +2,6 @@ import {
   getDeviceById$,
   getHomeAssistantDataAccess,
   HomeAssistantDataAccess,
-  IDeviceCommand,
   logging,
   resolveValue,
 } from '@ha-assistant/listner';
@@ -25,9 +24,6 @@ export const onExecute = async (
     config.homeAssistaneSocketUri,
     config.homeAssistaneApiKey
   );
-  // resolveValue
-
-  // onExecute { commands: [ { devices: [Array], execution: [Array] } ] }
 
   const c = payload.commands.map(async (x) => {
     logging.log('commands', x);
@@ -40,7 +36,7 @@ export const onExecute = async (
           const [commandName] = exe.command.split('.').slice(-1);
           const commandDetail = (device.commands || {})[commandName];
 
-          logging.log('commands to run ', commandDetail, exe.params);
+          logging.info('commands to run ', commandDetail, exe.params);
 
           if (commandDetail) {
             const serviceCall = resolveValue<string>(commandDetail.command, {
@@ -51,7 +47,7 @@ export const onExecute = async (
               googleEvents: exe.params,
             });
 
-            logging.log('commands serviceCall ', serviceCall);
+            logging.debug('commands serviceCall ', serviceCall);
 
             const [domain, service] = serviceCall.split('.');
 
@@ -59,7 +55,7 @@ export const onExecute = async (
               socket.callService(domain, service, {}, entityId)
             );
 
-            console.log('exeResuls', exeResuls);
+            logging.debug('exeResuls', exeResuls);
           }
         });
       }
@@ -76,6 +72,10 @@ export const onExecute = async (
     ids: results,
     status: 'SUCCESS',
   };
+
+  logging.log('execute response to google', {
+    commands: [googleResults],
+  });
 
   return {
     commands: [googleResults],

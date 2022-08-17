@@ -10,6 +10,7 @@ import {
 } from '@ha-assistant/listner';
 import { getConfig } from './config';
 import { firstValueFrom } from 'rxjs';
+import { requestSync } from './google-endpoints';
 
 type LookupItem = {
   label: string;
@@ -35,6 +36,7 @@ export const apiInit = (app: Express) => {
     logging.log('Got body:', req.body);
     const device: IDevice = req.body;
     createDevice(device);
+    requestSync();
     res.sendStatus(201);
   });
 
@@ -43,6 +45,7 @@ export const apiInit = (app: Express) => {
     logging.log('Got body:', id, req.body);
     const device: IDevice = req.body;
     updateDevice(id, device);
+    requestSync();
     res.sendStatus(200);
   });
 
@@ -50,6 +53,7 @@ export const apiInit = (app: Express) => {
     var id = req.params.id;
     logging.log('Got delete:', id);
     deleteDevice(id);
+    requestSync();
     res.sendStatus(200);
   });
 

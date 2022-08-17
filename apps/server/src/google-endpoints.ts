@@ -1,5 +1,10 @@
 import { type Express } from 'express';
-import { logging } from '@ha-assistant/listner';
+import {
+  getDeviceStatusV2$,
+  getHomeAssistantDataAccess,
+  HomeAssistantDataAccess,
+  logging,
+} from '@ha-assistant/listner';
 import {
   SmartHomeV1Request,
   SmartHomeV1SyncResponse,
@@ -13,6 +18,10 @@ import { onSync } from './services/google-sync';
 import { onQuery } from './services/google-query';
 import { onDisconnect } from './services/google-disconnect';
 import { onExecute } from './services/google-execute';
+import { getConfig } from './config';
+import { tap } from 'rxjs';
+import { v4 as uuidv4 } from 'uuid';
+import { google } from 'googleapis';
 
 // https://developers.google.com/assistant/smarthome/develop/process-intents#disconnect-request
 
@@ -25,7 +34,103 @@ const getUser = (headers: Headers): Promise<string> => {
   });
 };
 
+export const requestSync = async () => {
+  const config = getConfig();
+
+  const homegraphClient = google.homegraph({
+    version: 'v1',
+    auth: new google.auth.GoogleAuth({
+      keyFile: config.googleKeyFile,
+      scopes: 'https://www.googleapis.com/auth/homegraph',
+    }),
+  });
+
+  try {
+    const res = await homegraphClient.devices.requestSync({
+      requestBody: {
+        agentUserId: config.googleAgentUserId,
+        async: true,
+      },
+    });
+    logging.log('requestSync res', res);
+  } catch (err) {
+    logging.error('requestSync', err);
+  }
+};
+
+const reportState = async (updates: { [key: string]: any }) => {
+  logging.debug('reportState', updates);
+
+  const config = getConfig();
+
+  const homegraphClient = google.homegraph({
+    version: 'v1',
+    auth: new google.auth.GoogleAuth({
+      keyFile: config.googleKeyFile,
+      scopes: 'https://www.googleapis.com/auth/homegraph',
+    }),
+  });
+
+  try {
+    const res = await homegraphClient.devices.reportStateAndNotification({
+      requestBody: {
+        agentUserId: config.googleAgentUserId,
+        requestId: uuidv4(),
+        payload: {
+          devices: {
+            states: updates,
+          },
+        },
+      },
+    });
+
+    logging.log('reportState res', res);
+  } catch (err: any) {
+    logging.error(`reportState ${err.code}`);
+  }
+};
+
 export const googleInit = (app: Express) => {
+  const config = getConfig();
+
+  let socket: HomeAssistantDataAccess = getHomeAssistantDataAccess(
+    config.homeAssistaneSocketUri,
+    config.homeAssistaneApiKey
+  );
+
+  logging.debug('googleKeyFile', config.googleKeyFile);
+  if (config.googleKeyFile) {
+    let lastDevicesStatus: any;
+
+    getDeviceStatusV2$(socket)
+      .pipe(
+        tap((newDevicesStatus) => {
+          if (lastDevicesStatus) {
+            const changes: any = {};
+
+            Object.keys(newDevicesStatus).forEach((key) => {
+              // console.log('Chacking for changes', key);
+              if (
+                JSON.stringify(newDevicesStatus[key]) !==
+                JSON.stringify(lastDevicesStatus[key])
+              ) {
+                changes[key] = newDevicesStatus[key];
+              }
+            });
+
+            if (Object.keys(changes).length !== 0) {
+              reportState(changes);
+            }
+          }
+        })
+      )
+      .subscribe({
+        next: (d) => {
+          lastDevicesStatus = d;
+        },
+      });
+  }
+
   app.post('/api/fulfillment', async (req, res) => {
     // const user = await getUser(req.headers);
     const payload: SmartHomeV1Request = req.body;
@@ -35,6 +140,9 @@ export const googleInit = (app: Express) => {
     const results = payload.inputs.map(async (x) => {
       if (x.intent === 'action.devices.SYNC') {
         const sync = await onSync();
+
+        logging.info('action.devices.SYNC payload', sync);
+
         return {
           requestId: payload.requestId,
           payload: sync,
@@ -43,6 +151,8 @@ export const googleInit = (app: Express) => {
         const query = await onQuery(
           (x as SmartHomeV1QueryRequestInputs).payload
         );
+
+        logging.info('action.devices.QUERY payload', query);
         return {
           requestId: payload.requestId,
           payload: query,
@@ -64,6 +174,4 @@ export const googleInit = (app: Express) => {
       return res.send(x[0]);
     });
   });
-
-
 };
