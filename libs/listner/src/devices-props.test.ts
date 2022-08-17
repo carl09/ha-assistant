@@ -59,12 +59,6 @@ describe('resolveValue', () => {
     expect(r).toBe('switch.turn_off');
   });
 
-  // // test('variable', () => {
-  // //   const r = resolveValue('foo ? "help" : "now"', { foo: false });
-
-  // //   expect(r).toBe('now');
-  // // });
-
   test('sensor.d1_mini_3_humidity.state', () => {
     const r = resolveValue('sensor.d1_mini_3_humidity.state', {
       sensor: {
@@ -76,8 +70,6 @@ describe('resolveValue', () => {
 
     expect(r).toBe('off');
   });
-
-  
 
   // test('switch.kogan_8.state', () => {
   //   const r = resolveValue('switch.kogan_8.state', {
@@ -102,4 +94,40 @@ describe('resolveValue', () => {
 
   //   expect(r).toBe(false);
   // });
+});
+
+describe('resolveValue toGoogleThermostatMode', () => {
+  test('no mapping', () => {
+    const r = resolveValue('toGoogleThermostatMode("heat")', {});
+
+    expect(r).toBe('heat');
+  });
+
+  test('mapping', () => {
+    const r = resolveValue('toGoogleThermostatMode("heat_cool")', {});
+
+    expect(r).toBe('heatcool');
+  });
+
+  test('undefined', () => {
+    const r = resolveValue('toGoogleThermostatMode()', {});
+
+    expect(r).toBeUndefined;
+  });
+
+  test('simple array', () => {
+    const r = resolveValue('toGoogleThermostatMode(["heat", "cool"])', {});
+
+    expect(r).toStrictEqual(['heat', 'cool']);
+  });
+
+  test('simple array', () => {
+    const r = resolveValue('toGoogleThermostatMode(toArray(demo.val))', {
+      demo: {
+        val: 'heat, cool',
+      },
+    });
+
+    expect(r).toStrictEqual(['heat', 'cool']);
+  });
 });

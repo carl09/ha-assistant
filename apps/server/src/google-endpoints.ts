@@ -23,8 +23,6 @@ import { tap } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { google } from 'googleapis';
 
-// https://developers.google.com/assistant/smarthome/develop/process-intents#disconnect-request
-
 const getUser = (headers: Headers): Promise<string> => {
   const authorization = headers.authorization as string;
   const accessToken = (authorization || '').substr(7);
@@ -52,7 +50,7 @@ export const requestSync = async () => {
         async: true,
       },
     });
-    logging.log('requestSync res', res);
+    logging.log('requestSync res done');
   } catch (err) {
     logging.error('requestSync', err);
   }
@@ -84,7 +82,7 @@ const reportState = async (updates: { [key: string]: any }) => {
       },
     });
 
-    logging.log('reportState res', res);
+    logging.log('reportState res done');
   } catch (err: any) {
     logging.error(`reportState ${err.code}`);
   }

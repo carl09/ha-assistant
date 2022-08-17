@@ -1,4 +1,9 @@
-import { getAllDevices$ } from '@ha-assistant/listner';
+import { resolveValue } from './../../../../libs/listner/src/devices-props';
+import {
+  getAllDevices$,
+  getHomeAssistantDataAccess,
+  HomeAssistantDataAccess,
+} from '@ha-assistant/listner';
 import {
   SmartHomeV1SyncDevices,
   SmartHomeV1SyncPayload,
@@ -7,8 +12,29 @@ import { firstValueFrom } from 'rxjs';
 import { getConfig } from '../config';
 
 export const onSync = async (): Promise<SmartHomeV1SyncPayload> => {
-  const devices = await firstValueFrom(getAllDevices$());
   const config = getConfig();
+
+  let socket: HomeAssistantDataAccess = getHomeAssistantDataAccess(
+    config.homeAssistaneSocketUri,
+    config.homeAssistaneApiKey
+  );
+
+  const devices = await firstValueFrom(getAllDevices$());
+  const allDeviceStatusArray = await firstValueFrom(socket.getEntityStatus());
+
+  const allDeviceStatus = allDeviceStatusArray.reduce<{[key: string]: any}>((acc, x) =>{
+    const [domain, name] = x.entity_id.split('.');
+
+    if (!(domain in acc)){
+      acc[domain] = {}
+    }
+
+    acc[domain][name] = x;
+
+    return acc;
+  }, {})
+
+  // console.log('allDevicestatus', allDeviceStatus);
 
   return Promise.resolve({
     agentUserId: config.googleAgentUserId,
@@ -24,6 +50,12 @@ export const onSync = async (): Promise<SmartHomeV1SyncPayload> => {
         },
         willReportState: !!config.googleKeyFile,
         roomHint: x.room,
+        attributes: Object.keys(x.attributes || {}).reduce<{
+          [key: string]: any;
+        }>((acc, key) => {
+          acc[key] = resolveValue(x.attributes[key], allDeviceStatus);
+          return acc;
+        }, {}),
         // deviceInfo: {
         //     manufacturer: 'HomeAssistant',
         //     model: '',

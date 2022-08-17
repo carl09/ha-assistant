@@ -40,6 +40,14 @@ export const lookupInit = (app: Express) => {
         detail: 'converts string to number',
         info: 'some really foon info to help me',
       },
+      {
+        label: 'toGoogleThermostatMode',
+        detail: 'converts HA modes to Google'
+      },
+      {
+        label: 'toArray',
+        detail: 'converts string to a array, default , seperated'
+      }
     ];
     res.send(lookupFunctions);
   });

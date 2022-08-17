@@ -10,14 +10,15 @@ export interface DeviceFromProps {
 }
 
 const cleanSwitchDomain = (v: string): string =>
-  v.replaceAll('switch.', '__switch.')
-  .replaceAll("'__switch.", "'switch.")
-  .replaceAll("\"__switch.", "\"switch.");
+  v
+    .replaceAll('switch.', '__switch.')
+    .replaceAll("'__switch.", "'switch.")
+    .replaceAll('"__switch.', '"switch.');
 
 const restoreSwitchDomain = (v: string): string =>
   v.replaceAll('__switch', 'switch');
 
-const fn: { [key: string]: (...args: any[]) => any } = {
+export const deviceMappingFunctions: { [key: string]: (...args: any[]) => any } = {
   equals: (...args: any[]) => {
     // console.log('equals', args);
     return args[0] === args[1];
@@ -29,6 +30,56 @@ const fn: { [key: string]: (...args: any[]) => any } = {
   toInt: (...args: any[]) => {
     // console.log('toInt', args[0]);
     return parseInt(args[0]);
+  },
+  toGoogleThermostatMode: (...args: any[]) => {
+    // off, heat_cool, cool, heat, fan_only, dry
+
+    const f = (value: string): string =>
+      value in mapping ? mapping[value] : value;
+
+    const mapping: { [key: string]: string } = {
+      heat_cool: 'heatcool',
+      fan_only: 'fan-only',
+    };
+    const mode = args[0];
+
+    console.log('toGoogleThermostatMode mode', mode);
+
+    if (mode) {
+      if (typeof mode === 'string') {
+        return f(mode);
+      }
+      if (Array.isArray(mode)) {
+        return mode.map((x) => f(x));
+      }
+    }
+    return undefined;
+
+    // 'off',
+    //       'heat',
+    //       'cool',
+    //       'on',
+    //       'heatcool',
+    //       'auto',
+    //       'fan-only',
+    //       'purifier',
+    //       'eco',
+    //       'dry',
+  },
+  toArray: (...args: any[]) => {
+    const [item, seperator] = args;
+    if (item) {
+      if (Array.isArray(item)) {
+        return item;
+      }
+      if (seperator && typeof item === 'string') {
+        return item.split(seperator).map((x) => x.trim());
+      }
+      if (typeof item === 'string') {
+        return item.split(',').map((x) => x.trim());
+      }
+    }
+    return undefined;
   },
 };
 
@@ -45,7 +96,8 @@ const resolveType = (node: Node, object: any, resolve: boolean): any => {
     const o = resolveType(node.object, object, resolve);
     const p = resolveType(node.property, object, resolve);
     if (resolve) {
-      const r = typeof o === 'string' ? get(object, `${o}.${p}`, `${o}.${p}`) : o[p];
+      const r =
+        typeof o === 'string' ? get(object, `${o}.${p}`, `${o}.${p}`) : o[p];
       return r;
     }
 
@@ -63,7 +115,7 @@ const resolveType = (node: Node, object: any, resolve: boolean): any => {
   }
 
   if (node.type === 'CallExpression') {
-    return fn[(node.callee as Identifier).name](
+    return deviceMappingFunctions[(node.callee as Identifier).name](
       ...resolveTypes(node.arguments, object, resolve)
     );
   }
@@ -78,6 +130,13 @@ const resolveType = (node: Node, object: any, resolve: boolean): any => {
     return test
       ? resolveType(node.consequent, object, resolve)
       : resolveType(node.alternate, object, resolve);
+  }
+
+  if (node.type === 'ArrayExpression') {
+    return node.elements.map((x) => {
+      console.log('ArrayExpression', x);
+      return x ? resolveType(x, object, resolve) : undefined;
+    });
   }
 
   logging.error('unknown resolveType', node.type, node);
