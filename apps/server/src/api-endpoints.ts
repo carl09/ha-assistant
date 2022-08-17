@@ -36,7 +36,9 @@ export const apiInit = (app: Express) => {
     logging.log('Got body:', req.body);
     const device: IDevice = req.body;
     createDevice(device);
-    requestSync();
+    setTimeout(() => {
+      requestSync();
+    }, 500);
     res.sendStatus(201);
   });
 
@@ -45,7 +47,9 @@ export const apiInit = (app: Express) => {
     logging.log('Got body:', id, req.body);
     const device: IDevice = req.body;
     updateDevice(id, device);
-    requestSync();
+    setTimeout(() => {
+      requestSync();
+    }, 500);
     res.sendStatus(200);
   });
 
@@ -53,7 +57,9 @@ export const apiInit = (app: Express) => {
     var id = req.params.id;
     logging.log('Got delete:', id);
     deleteDevice(id);
-    requestSync();
+    setTimeout(() => {
+      requestSync();
+    }, 500);
     res.sendStatus(200);
   });
 
