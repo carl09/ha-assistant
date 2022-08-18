@@ -16,6 +16,16 @@ const cleanSwitchDomain = (v: string): string =>
     .replaceAll("'__switch.", "'switch.")
     .replaceAll('"__switch.', '"switch.');
 
+const wrapIfRawObject = (v: string): string => {
+  if (v){
+    const cleanValue = v.trim();
+    if (cleanValue.startsWith('{') && cleanValue.endsWith('}')){
+      return `(${cleanValue})`
+    }
+  }
+  return v;
+}
+
 const restoreSwitchDomain = (v: string): string =>
   v.replaceAll('__switch', 'switch');
 
@@ -109,7 +119,7 @@ export const resolveValue = <T>(
     return undefined;
   }
 
-  const ast = parse(cleanSwitchDomain(value), {
+  const ast = parse(cleanSwitchDomain(wrapIfRawObject(value)), {
     sourceType: 'module',
     plugins: [],
   });

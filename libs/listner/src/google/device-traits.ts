@@ -86,16 +86,16 @@ export const deviceTraits: { [trait: string]: IDeviceTraits } = {
         type: 'object',
         hint: 'Contains two float values that indicate the supported temperature range for this device (in degrees Celsius).',
       },
-      minThresholdCelsius: {
-        type: 'number',
-        required: true,
-        hint: 'Minimum threshold of the temperature range.',
-      },
-      maxThresholdCelsius: {
-        type: 'number',
-        required: true,
-        hint: 'Maximum threshold of the temperature range.',
-      },
+      // minThresholdCelsius: {
+      //   type: 'number',
+      //   required: true,
+      //   hint: 'Minimum threshold of the temperature range.',
+      // },
+      // maxThresholdCelsius: {
+      //   type: 'number',
+      //   required: true,
+      //   hint: 'Maximum threshold of the temperature range.',
+      // },
       thermostatTemperatureUnit: {
         type: 'string',
         required: true,

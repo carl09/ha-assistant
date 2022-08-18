@@ -40,7 +40,7 @@ export class HomeAssistantWebSocket {
         next: () => {
           logging.error('Home Assistant Web Socket Closed');
           setTimeout(() => {
-            logging.debug('Re connecting');
+            logging.log('Re connecting');
             this.initWebSocket();
           }, 5000);
         },

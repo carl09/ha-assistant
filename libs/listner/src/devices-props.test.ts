@@ -78,6 +78,8 @@ describe('resolveValue', () => {
     expect(r).toStrictEqual({ hvac_mode: 'heat' });
   });
 
+  // { minThresholdCelsius: toInt(climate.wroom_32_1_climate.attributes.min_temp), maxThresholdCelsius: toInt(climate.wroom_32_1_climate.attributes.max_temp) }
+
   test('working with objects with prop vale', () => {
     const r = resolveValue('({ hvac_mode: foo.bar })', {
       foo: {
@@ -86,6 +88,17 @@ describe('resolveValue', () => {
     });
 
     expect(r).toStrictEqual({ hvac_mode: 'cold' });
+  });
+
+  test('working with objects with 2 prop vale', () => {
+    const r = resolveValue('({ hvac_mode: foo.bar, temp: foo.buz })', {
+      foo: {
+        bar: 'cold',
+        buz: 'hot'
+      },
+    });
+
+    expect(r).toStrictEqual({ hvac_mode: 'cold', temp: 'hot' });
   });
 
   test('turnery false debugging', () => {

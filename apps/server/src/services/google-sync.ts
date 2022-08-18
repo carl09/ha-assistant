@@ -1,3 +1,4 @@
+import { logging } from './../../../../libs/listner/src/utils/logging';
 import { resolveValue } from './../../../../libs/listner/src/devices-props';
 import {
   getAllDevices$,
@@ -22,17 +23,22 @@ export const onSync = async (): Promise<SmartHomeV1SyncPayload> => {
   const devices = await firstValueFrom(getAllDevices$());
   const allDeviceStatusArray = await firstValueFrom(socket.getEntityStatus());
 
-  const allDeviceStatus = allDeviceStatusArray.reduce<{[key: string]: any}>((acc, x) =>{
-    const [domain, name] = x.entity_id.split('.');
+  const allDeviceStatus = allDeviceStatusArray.reduce<{ [key: string]: any }>(
+    (acc, x) => {
+      if (x && x.entity_id) {
+        const [domain, name] = x.entity_id.split('.');
 
-    if (!(domain in acc)){
-      acc[domain] = {}
-    }
+        if (!(domain in acc)) {
+          acc[domain] = {};
+        }
 
-    acc[domain][name] = x;
+        acc[domain][name] = x;
+      }
 
-    return acc;
-  }, {})
+      return acc;
+    },
+    {}
+  );
 
   // console.log('allDevicestatus', allDeviceStatus);
 
@@ -53,8 +59,9 @@ export const onSync = async (): Promise<SmartHomeV1SyncPayload> => {
         attributes: Object.keys(x.attributes || {}).reduce<{
           [key: string]: any;
         }>((acc, key) => {
+          logging.debug(`${x.name} raw attributes`, key, x.attributes[key]);
           acc[key] = resolveValue(x.attributes[key], allDeviceStatus);
-          console.log(`${x.name} attributes`, key, acc[key], x.attributes[key]);
+          logging.debug(`${x.name} attributes`, key, acc[key]);
           return acc;
         }, {}),
         // deviceInfo: {

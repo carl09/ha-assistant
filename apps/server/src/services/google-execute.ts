@@ -44,14 +44,9 @@ export const onExecute = async (
             });
 
             const args = commandDetail.args
-              ? resolveValue<{}>(
-                  commandDetail.args.startsWith('{')
-                    ? `(${commandDetail.args})`
-                    : commandDetail.args,
-                  {
-                    googleEvents: exe.params,
-                  }
-                ) || {}
+              ? resolveValue<{}>(commandDetail.args, {
+                  googleEvents: exe.params,
+                }) || {}
               : undefined;
 
             const entityId = resolveValue<string>(commandDetail.target, {
