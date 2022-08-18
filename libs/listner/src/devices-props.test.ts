@@ -13,6 +13,12 @@ describe('resolveValue', () => {
     expect(r).toBe(1);
   });
 
+  test('string', () => {
+    const r = resolveValue('"C"', {});
+
+    expect(r).toBe("C");
+  });
+
   test('not condition false', () => {
     const r = resolveValue('!foo.bar', {
       foo: {

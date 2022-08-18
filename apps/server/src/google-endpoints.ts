@@ -51,7 +51,7 @@ export const requestSync = async () => {
     const res = await homegraphClient.devices.requestSync({
       requestBody: {
         agentUserId: config.googleAgentUserId,
-        async: true,
+        async: false,
       },
     });
     logging.log('requestSync res done');

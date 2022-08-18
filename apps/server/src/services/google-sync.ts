@@ -54,6 +54,7 @@ export const onSync = async (): Promise<SmartHomeV1SyncPayload> => {
           [key: string]: any;
         }>((acc, key) => {
           acc[key] = resolveValue(x.attributes[key], allDeviceStatus);
+          console.log(`${x.name} attributes`, key, acc[key], x.attributes[key]);
           return acc;
         }, {}),
         // deviceInfo: {

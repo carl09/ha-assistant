@@ -108,6 +108,10 @@ export const resolveValue = <T>(value: string, object: any): T => {
 
   const body = (ast.program as Program).body;
 
+  if (!body || body.length === 0){
+    return resolveValue(`(${value})`, object);
+  }
+
   const expressionStatement: ExpressionStatement[] = body.filter(
     (x) => x.type === 'ExpressionStatement'
   ) as ExpressionStatement[];
