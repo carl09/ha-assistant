@@ -100,7 +100,15 @@ const resolveTypes = (nodes: Node[], object: any, resolve: boolean): any[] => {
   return nodes.map((x) => resolveType(x, object, resolve));
 };
 
-export const resolveValue = <T>(value: string, object: any): T => {
+export const resolveValue = <T>(
+  value: string,
+  object: any,
+  killnext?: boolean
+): T | undefined => {
+  if (!value) {
+    return undefined;
+  }
+
   const ast = parse(cleanSwitchDomain(value), {
     sourceType: 'module',
     plugins: [],
@@ -108,8 +116,11 @@ export const resolveValue = <T>(value: string, object: any): T => {
 
   const body = (ast.program as Program).body;
 
-  if (!body || body.length === 0){
-    return resolveValue(`(${value})`, object);
+  if (!body || body.length === 0) {
+    if (killnext) {
+      return undefined;
+    }
+    return resolveValue(`(${value})`, object, true);
   }
 
   const expressionStatement: ExpressionStatement[] = body.filter(
