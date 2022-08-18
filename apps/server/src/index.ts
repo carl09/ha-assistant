@@ -14,6 +14,7 @@ import { authInit } from './auth-endpoints';
 import { googleInit } from './google-endpoints';
 import { lookupInit } from './lookup-endpoints';
 import { existsSync, readFileSync } from 'fs';
+import { initDeviceState } from './common';
 
 const cors = require('cors');
 
@@ -26,16 +27,16 @@ app.use(express.urlencoded({ extended: true })) // for parsing application/x-www
 const config = getConfig();
 
 init(config.deviceStore);
-
+const deviceStats$ = initDeviceState()
 clientInit(app, config);
 apiInit(app);
 lookupInit(app);
 authInit(app);
-googleInit(app);
+googleInit(app, deviceStats$);
 
 const server = http.createServer(app);
 
-webSocketInit(server);
+webSocketInit(server, deviceStats$);
 
 app.use(function (req, res, next) {
   logging.warn('404', req.url, req.method);

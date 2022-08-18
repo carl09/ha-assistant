@@ -1,10 +1,5 @@
 import { type Express } from 'express';
-import {
-  getDeviceStatusV2$,
-  getHomeAssistantDataAccess,
-  HomeAssistantDataAccess,
-  logging,
-} from '@ha-assistant/listner';
+import { logging } from '@ha-assistant/listner';
 import {
   SmartHomeV1Request,
   SmartHomeV1SyncResponse,
@@ -19,7 +14,7 @@ import { onQuery } from './services/google-query';
 import { onDisconnect } from './services/google-disconnect';
 import { onExecute } from './services/google-execute';
 import { getConfig } from './config';
-import { tap } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { google } from 'googleapis';
 
@@ -96,19 +91,19 @@ const reportState = async (updates: { [key: string]: any }) => {
   }
 };
 
-export const googleInit = (app: Express) => {
+export const googleInit = (
+  app: Express,
+  deviceStats$: Observable<{
+    [key: string]: any;
+  }>
+) => {
   const config = getConfig();
-
-  let socket: HomeAssistantDataAccess = getHomeAssistantDataAccess(
-    config.homeAssistaneSocketUri,
-    config.homeAssistaneApiKey
-  );
 
   logging.debug('googleKeyFile', config.googleKeyFile);
   if (config.googleKeyFile) {
     let lastDevicesStatus: any;
 
-    getDeviceStatusV2$(socket)
+    deviceStats$
       .pipe(
         tap((newDevicesStatus) => {
           if (lastDevicesStatus) {
@@ -155,7 +150,8 @@ export const googleInit = (app: Express) => {
         } as SmartHomeV1SyncResponse;
       } else if (x.intent === 'action.devices.QUERY') {
         const query = await onQuery(
-          (x as SmartHomeV1QueryRequestInputs).payload
+          (x as SmartHomeV1QueryRequestInputs).payload,
+          deviceStats$
         );
 
         logging.info('action.devices.QUERY payload', query);

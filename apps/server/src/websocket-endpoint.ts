@@ -6,12 +6,15 @@ import {
   getDeviceStatusV2$,
 } from '@ha-assistant/listner';
 import { Server } from 'http';
+import { Observable } from 'rxjs';
 import WebSocket from 'ws';
 import { getConfig } from './config';
 
 let socket: HomeAssistantDataAccess;
 
-export const webSocketInit = (server: Server) => {
+export const webSocketInit = (server: Server, deviceStats$: Observable<{
+  [key: string]: any;
+}>) => {
   const config = getConfig();
 
   let lastDevicesStatus: any;
@@ -73,7 +76,7 @@ export const webSocketInit = (server: Server) => {
     config.homeAssistaneApiKey
   );
 
-  getDeviceStatusV2$(socket).subscribe({
+  deviceStats$.subscribe({
     next: (d) => {
       lastDevicesStatus = d;
       sendAll({ type: 'devices-status', status: d });
