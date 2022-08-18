@@ -258,6 +258,16 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
                     commandPrams={x.params}
                   />
                   <InputEditor
+                    key={`${commandName}args`}
+                    label={`${snakecaseToTitlecase(commandName)} args`}
+                    name={`commands.${commandName}.args`}
+                    description="HA Args"
+                    control={control}
+                    type="string"
+                    mode="entities"
+                    commandPrams={x.params}
+                  />
+                  <InputEditor
                     key={`${commandName}target`}
                     label={`${snakecaseToTitlecase(commandName)} target`}
                     name={`commands.${commandName}.target`}

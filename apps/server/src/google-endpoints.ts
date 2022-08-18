@@ -35,6 +35,10 @@ const getUser = (headers: Headers): Promise<string> => {
 export const requestSync = async () => {
   const config = getConfig();
 
+  if (!config.googleKeyFile) {
+    return;
+  }
+
   const homegraphClient = google.homegraph({
     version: 'v1',
     auth: new google.auth.GoogleAuth({
@@ -57,9 +61,13 @@ export const requestSync = async () => {
 };
 
 const reportState = async (updates: { [key: string]: any }) => {
-  logging.debug('reportState', updates);
-
   const config = getConfig();
+
+  if (!config.googleKeyFile) {
+    return;
+  }
+
+  logging.debug('reportState', updates);
 
   const homegraphClient = google.homegraph({
     version: 'v1',

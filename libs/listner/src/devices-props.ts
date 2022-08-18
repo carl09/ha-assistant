@@ -1,5 +1,6 @@
 import { parse } from '@babel/parser';
 import { ExpressionStatement, Identifier, Program, Node } from '@babel/types';
+import { deviceMappingFunctions } from './devices-props-functions';
 import { get } from './utils/helpers';
 import { logging } from './utils/logging';
 
@@ -17,71 +18,6 @@ const cleanSwitchDomain = (v: string): string =>
 
 const restoreSwitchDomain = (v: string): string =>
   v.replaceAll('__switch', 'switch');
-
-export const deviceMappingFunctions: { [key: string]: (...args: any[]) => any } = {
-  equals: (...args: any[]) => {
-    // console.log('equals', args);
-    return args[0] === args[1];
-  },
-  toNum: (...args: any[]) => {
-    // console.log('toNum', args[0]);
-    return parseFloat(args[0]);
-  },
-  toInt: (...args: any[]) => {
-    // console.log('toInt', args[0]);
-    return parseInt(args[0]);
-  },
-  toGoogleThermostatMode: (...args: any[]) => {
-    // off, heat_cool, cool, heat, fan_only, dry
-
-    const f = (value: string): string =>
-      value in mapping ? mapping[value] : value;
-
-    const mapping: { [key: string]: string } = {
-      heat_cool: 'heatcool',
-      fan_only: 'fan-only',
-    };
-    const mode = args[0];
-
-    console.log('toGoogleThermostatMode mode', mode);
-
-    if (mode) {
-      if (typeof mode === 'string') {
-        return f(mode);
-      }
-      if (Array.isArray(mode)) {
-        return mode.map((x) => f(x));
-      }
-    }
-    return undefined;
-
-    // 'off',
-    //       'heat',
-    //       'cool',
-    //       'on',
-    //       'heatcool',
-    //       'auto',
-    //       'fan-only',
-    //       'purifier',
-    //       'eco',
-    //       'dry',
-  },
-  toArray: (...args: any[]) => {
-    const [item, seperator] = args;
-    if (item) {
-      if (Array.isArray(item)) {
-        return item;
-      }
-      if (seperator && typeof item === 'string') {
-        return item.split(seperator).map((x) => x.trim());
-      }
-      if (typeof item === 'string') {
-        return item.split(',').map((x) => x.trim());
-      }
-    }
-    return undefined;
-  },
-};
 
 const resolveType = (node: Node, object: any, resolve: boolean): any => {
   if (node.type === 'StringLiteral') {
@@ -134,9 +70,15 @@ const resolveType = (node: Node, object: any, resolve: boolean): any => {
 
   if (node.type === 'ArrayExpression') {
     return node.elements.map((x) => {
-      console.log('ArrayExpression', x);
       return x ? resolveType(x, object, resolve) : undefined;
     });
+  }
+
+  if (node.type === 'UnaryExpression') {
+    if (node.operator === "!"){
+      return !resolveType(node.argument, object, resolve)
+    }
+    throw `Unknown UnaryExpression ${node.operator}`;
   }
 
   logging.error('unknown resolveType', node.type, node);

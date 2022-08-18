@@ -13,6 +13,26 @@ describe('resolveValue', () => {
     expect(r).toBe(1);
   });
 
+  test('not condition false', () => {
+    const r = resolveValue('!foo.bar', {
+      foo: {
+        bar: true,
+      },
+    });
+
+    expect(r).toBe(false);
+  });
+
+  test('not condition true', () => {
+    const r = resolveValue('!foo.bar', {
+      foo: {
+        bar: false,
+      },
+    });
+
+    expect(r).toBe(true);
+  });
+
   // test('addition', () => {
   //   const r = resolveValue('1 + 1', {});
 
@@ -36,25 +56,34 @@ describe('resolveValue', () => {
   });
 
   test('turnery false debugging', () => {
-    const r = resolveValue('googleEvents.on ? "switch.turn_on" : "switch.turn_off"', {
-      googleEvents: { on: false },
-    });
+    const r = resolveValue(
+      'googleEvents.on ? "switch.turn_on" : "switch.turn_off"',
+      {
+        googleEvents: { on: false },
+      }
+    );
 
     expect(r).toBe('switch.turn_off');
   });
 
   test('turnery false debugging', () => {
-    const r = resolveValue('googleEvents.on ? "switch.turn_on" : "switch.turn_off"', {
-      googleEvents: { on: true },
-    });
+    const r = resolveValue(
+      'googleEvents.on ? "switch.turn_on" : "switch.turn_off"',
+      {
+        googleEvents: { on: true },
+      }
+    );
 
     expect(r).toBe('switch.turn_on');
   });
 
   test('turnery false debugging 2', () => {
-    const r = resolveValue('googleEvents.on ? switch.turn_on : switch.turn_off', {
-      googleEvents: { on: false },
-    });
+    const r = resolveValue(
+      'googleEvents.on ? switch.turn_on : switch.turn_off',
+      {
+        googleEvents: { on: false },
+      }
+    );
 
     expect(r).toBe('switch.turn_off');
   });

@@ -5,8 +5,9 @@ const info = () => `[${new Date().toLocaleString()}]`;
 export const LoggingLevel = {
   Debug: 0,
   Info: 1,
-  Warn: 2,
-  Error: 3,
+  Log: 2,
+  Warn: 3,
+  Error: 4,
 } as const;
 
 let logLevel = LoggingLevel.Debug;
@@ -22,12 +23,12 @@ export const logging = {
   },
 
   warn: (msg: string, ...parms: any[]) => {
-    if (logLevel <= 2) {
+    if (logLevel <= 3) {
       l('WARNING:', msg, ...parms);
     }
   },
   log: (msg: string, ...parms: any[]) => {
-    if (logLevel <= 1) {
+    if (logLevel <= 2) {
       l('LOG:', msg, ...parms);
     }
   },

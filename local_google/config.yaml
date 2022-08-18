@@ -1,5 +1,5 @@
 name: Google Home V2
-version: 0.0.77
+version: 0.0.78
 slug: google_home_local_v2
 description: Google Home to Home Assistant manager V2
 arch:
@@ -17,7 +17,7 @@ map:
 options:
   logLevel: Debug
 schema:
-  logLevel: list(Debug|Info|Warn|Error)
+  logLevel: list(Debug|Info|Log|Warn|Error)
   inferWebsocketUrl: bool?
   googleServiceAccountKey: str?
   googleKeyFile: str?
