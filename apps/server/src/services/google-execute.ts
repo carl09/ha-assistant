@@ -43,6 +43,17 @@ export const onExecute = async (
               googleEvents: exe.params,
             });
 
+            const args = commandDetail.args
+              ? resolveValue<{}>(
+                  commandDetail.args.startsWith('{')
+                    ? `(${commandDetail.args})`
+                    : commandDetail.args,
+                  {
+                    googleEvents: exe.params,
+                  }
+                ) || {}
+              : undefined;
+
             const entityId = resolveValue<string>(commandDetail.target, {
               googleEvents: exe.params,
             });
@@ -52,7 +63,7 @@ export const onExecute = async (
             const [domain, service] = serviceCall.split('.');
 
             const exeResuls = await lastValueFrom(
-              socket.callService(domain, service, {}, entityId)
+              socket.callService(domain, service, args, entityId)
             );
 
             logging.debug('exeResuls', exeResuls);

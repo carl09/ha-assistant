@@ -1,12 +1,7 @@
 import { type Express } from 'express';
 import {
   logging,
-  createDevice,
-  updateDevice,
-  deleteDevice,
-  IDevice,
   getHomeAssistantDataAccess,
-  importDevice,
 } from '@ha-assistant/listner';
 import { getConfig } from './config';
 import { firstValueFrom } from 'rxjs';
@@ -42,7 +37,11 @@ export const lookupInit = (app: Express) => {
       },
       {
         label: 'toGoogleThermostatMode',
-        detail: 'converts HA modes to Google'
+        detail: 'converts Home Assistant modes to Google'
+      },
+      {
+        label: 'toHomeAssistantThermostatMode',
+        detail: 'converts Google modes to Home Assistant'
       },
       {
         label: 'toArray',

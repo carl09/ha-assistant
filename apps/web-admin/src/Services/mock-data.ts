@@ -75,7 +75,7 @@ export const mockQuery = async () => {
   return resp.json();
 };
 
-export const mockExecute = async () => {
+export const mockExecuteOnOff = async () => {
   const resp = await fetch('api/fulfillment', {
     method: 'POST',
     headers: {
@@ -112,3 +112,41 @@ export const mockExecute = async () => {
 
   return resp.json();
 };
+
+export const mockExecuteClimateHeat = async () => {
+  const resp = await fetch('api/fulfillment', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      requestId: 'ff36a3cc-ec34-11e6-b1a0-64510650abcf',
+      inputs: [
+        {
+          intent: 'action.devices.EXECUTE',
+          payload: {
+            commands: [
+              {
+                devices: [
+                  {
+                    id: '71fff875-88b8-4697-9193-e32009eed2d9',
+                  },
+                ],
+                execution: [
+                  {
+                    command: 'action.devices.commands.ThermostatSetMode',
+                    params: {
+                      thermostatMode: 'heat',
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      ],
+    }),
+  });
+
+  return resp.json();
+}

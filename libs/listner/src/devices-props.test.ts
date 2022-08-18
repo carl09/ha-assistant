@@ -66,6 +66,22 @@ describe('resolveValue', () => {
     expect(r).toBe('switch.turn_off');
   });
 
+  test('working with objects', () => {
+    const r = resolveValue('({ hvac_mode: "heat" })', {});
+
+    expect(r).toStrictEqual({ hvac_mode: 'heat' });
+  });
+
+  test('working with objects with prop vale', () => {
+    const r = resolveValue('({ hvac_mode: foo.bar })', {
+      foo: {
+        bar: 'cold',
+      },
+    });
+
+    expect(r).toStrictEqual({ hvac_mode: 'cold' });
+  });
+
   test('turnery false debugging', () => {
     const r = resolveValue(
       'googleEvents.on ? "switch.turn_on" : "switch.turn_off"',

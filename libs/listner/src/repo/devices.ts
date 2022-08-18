@@ -20,7 +20,7 @@ const getDeviceClimate = (deviceName: string) => ({
 
 export interface IDeviceCommand {
   command: string;
-  args?: any;
+  args?: string;
   target: string;
 }
 

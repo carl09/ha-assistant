@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Button } from '../Components/Button';
-import { mdiSync, mdiDatabaseSearch, mdiRunFast, mdiLinkOff } from '@mdi/js';
+import { mdiSync, mdiRunFast, mdiLinkOff } from '@mdi/js';
 import {
   mockDisconnect,
-  mockExecute,
+  mockExecuteClimateHeat,
+  mockExecuteOnOff,
   mockQuery,
   mockSync,
 } from '../Services/mock-data';
@@ -30,11 +31,17 @@ export const GoogleActions = () => {
     });
   };
 
-  const onExecute = () => {
-    mockExecute().then((data) => {
+  const onExecuteOnOff = () => {
+    mockExecuteOnOff().then((data) => {
       setData(data);
     });
   };
+
+  const onExecuteClimateHeat = () => {
+    mockExecuteClimateHeat().then((data) => {
+      setData(data);
+    });
+  }
 
   return (
     <div className="form-actions">
@@ -49,7 +56,8 @@ export const GoogleActions = () => {
         value="QUERY"
         onClick={() => onQuery()}
       /> */}
-      <Button icon={mdiRunFast} value="EXECUTE" onClick={() => onExecute()} />
+      <Button icon={mdiRunFast} value="EXECUTE OnOff" onClick={() => onExecuteOnOff()} />
+      <Button icon={mdiRunFast} value="EXECUTE Climate Heat" onClick={() => onExecuteClimateHeat()} />
 
       <Dialog open={data} onClose={() => setData(undefined)}>
         <pre>{JSON.stringify(data || {}, null, 2)} </pre>{' '}

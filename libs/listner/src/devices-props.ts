@@ -75,10 +75,22 @@ const resolveType = (node: Node, object: any, resolve: boolean): any => {
   }
 
   if (node.type === 'UnaryExpression') {
-    if (node.operator === "!"){
-      return !resolveType(node.argument, object, resolve)
+    if (node.operator === '!') {
+      return !resolveType(node.argument, object, resolve);
     }
     throw `Unknown UnaryExpression ${node.operator}`;
+  }
+
+  if (node.type === 'ObjectExpression') {
+    return node.properties.reduce<{ [key: string]: any }>((acc, prop) => {
+      if (prop.type === 'ObjectProperty') {
+        const key = resolveType(prop.key, object, resolve);
+        const value = resolveType(prop.value, object, resolve);
+        acc[key] = value;
+      }
+
+      return acc;
+    }, {});
   }
 
   logging.error('unknown resolveType', node.type, node);
