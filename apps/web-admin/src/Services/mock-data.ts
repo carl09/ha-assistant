@@ -149,4 +149,44 @@ export const mockExecuteClimateHeat = async () => {
   });
 
   return resp.json();
-}
+};
+
+export const mockExecute = async (
+  deviceId: string,
+  commandName: string,
+  params: any
+) => {
+  const resp = await fetch('api/fulfillment', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      requestId: 'ff36a3cc-ec34-11e6-b1a0-64510650abcf',
+      inputs: [
+        {
+          intent: 'action.devices.EXECUTE',
+          payload: {
+            commands: [
+              {
+                devices: [
+                  {
+                    id: deviceId,
+                  },
+                ],
+                execution: [
+                  {
+                    command: commandName,
+                    params,
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      ],
+    }),
+  });
+
+  return resp.json();
+};

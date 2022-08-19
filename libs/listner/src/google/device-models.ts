@@ -24,7 +24,7 @@ export interface IDeviceTraitsProps {
 
 export interface IDeviceCommandProps {
   command: string;
-  params?: {
+  params: {
     [name: string]: IDeviceTraitsProps;
   };
 }

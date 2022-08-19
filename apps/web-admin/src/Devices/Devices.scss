@@ -8,8 +8,8 @@
 }
 
 .add-new-device {
-    text-decoration: none;
-    color: var(--gh2-color);
+  text-decoration: none;
+  color: var(--gh2-color);
 }
 
 .device-grid {
@@ -24,18 +24,33 @@
   background: var(--panel-bg-color);
   padding: 1.5rem;
   border-radius: 1rem;
+
+  display: flex;
+  flex-direction: column;
+
+  .form-actions {
+    flex: 1;
+    align-items: flex-end;
+  }
 }
 
 .panel-link {
   text-decoration: none;
   color: var(--gh2-color);
-}
-
-.panel-header {
-  text-decoration: none;
   padding-bottom: 8px;
   border-bottom: 1px solid;
-  font-size: 1.2rem;
+  display: flex;
+  align-items: baseline;
+
+  .panel-header {
+    text-decoration: none;
+    font-size: 1.2rem;
+  }
+
+  .panel-subheader {
+    font-size: 1rem;
+    margin-inline-start: 8px;
+  }
 }
 
 .panel-stats {

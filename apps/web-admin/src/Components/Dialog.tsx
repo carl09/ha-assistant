@@ -36,12 +36,14 @@ export const Dialog = ({ children, onClose, onOk, open }: DialogProps) => {
     >
       {children}
       <div className="form-actions">
-        <Button
-          value="No"
-          isPrimary
-          onClick={() => dialogCancelOrClose()}
-        ></Button>
-        <Button value="Yes" onClick={() => dialogOk()}></Button>
+        {onClose && (
+          <Button
+            value="No"
+            isPrimary
+            onClick={() => dialogCancelOrClose()}
+          ></Button>
+        )}
+        {onOk && <Button value="Yes" onClick={() => dialogOk()}></Button>}
       </div>
     </dialog>
   );

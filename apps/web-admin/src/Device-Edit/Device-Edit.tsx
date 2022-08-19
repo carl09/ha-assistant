@@ -13,29 +13,22 @@ import './Device-Edit.scss';
 import { snakecaseToTitlecase } from '../utils/format';
 import { mdiDelete, mdiContentSave, mdiClose } from '@mdi/js';
 import { Button } from '../Components/Button';
-import { Input } from './Input';
-import { DeviceSelect } from './Device-Select';
-import { InputEditor } from './Input-Editor';
-import { Select } from './Select';
 import {
   createDevice,
   deleteDevice,
   getAreas,
   updateDevice,
 } from '../Services/device.service';
-import { DeviceTraits } from './Device-Traits';
-import { InputCommand } from './Input-Command';
+import { Input } from '../Components/Input';
+import { Select } from '../Components/Select';
+import { DeviceSelect } from '../Components/Device-Select';
+import { DeviceTraits } from '../Components/Device-Traits';
+import { InputEditor } from '../Components/Input-Editor';
 
 type DeviceProps = {
   device?: IDevice;
   onDone?: () => void;
 };
-
-// const defaultValues = {
-//   deviceType: undefined,
-//   traits: undefined,
-//   name: undefined,
-// };
 
 export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
   const {
@@ -46,9 +39,7 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
     reset,
     watch,
     setValue,
-  } = useForm({
-    // defaultValues,
-  });
+  } = useForm();
 
   const dialogRef = useRef<HTMLDialogElement>(null);
 

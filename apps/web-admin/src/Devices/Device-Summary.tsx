@@ -1,32 +1,55 @@
-import { IDevice } from '@ha-assistant/listner';
+import { IDevice, logging } from '@ha-assistant/listner';
 import { Button } from '../Components/Button';
 import { snakecaseToTitlecase } from '../utils/format';
 import { DeviceValueFormat } from './Device-Value-Format';
-import { mdiSync } from '@mdi/js';
 import { googleQuery } from '../Services/google.service';
 import { useState } from 'react';
 import { Dialog } from '../Components/Dialog';
+import Icon from '@mdi/react';
+import {
+  mdiThermostat,
+  mdiAirHumidifier,
+  mdiLightSwitch,
+  mdiDatabaseSearch,
+  mdiRunFast,
+} from '@mdi/js';
+
+const getIcon = (deviceType: string): string => {
+  switch (deviceType) {
+    case 'action.devices.types.THERMOSTAT':
+      return mdiThermostat;
+    case 'action.devices.types.DEHUMIDIFIER':
+      return mdiAirHumidifier;
+    case 'action.devices.types.SWITCH':
+      return mdiLightSwitch;
+  }
+
+  logging.warn('No Icon for deviceType', deviceType);
+  return '';
+};
 
 type DeviceSummaryProps = {
   device: IDevice;
   deviceStats: { [key: string]: string };
   onSelect: (device: IDevice) => void;
+  onExecute?: (deviceId: string) => void;
+  onShowData: (data: any) => void;
 };
 
 export const DeviceSummary = ({
   device,
   deviceStats,
   onSelect,
+  onExecute,
+  onShowData,
 }: DeviceSummaryProps) => {
-  const [data, setData] = useState<any>();
-
   const selectDevice = (e: React.MouseEvent, d: IDevice) => {
     e.preventDefault();
     onSelect && onSelect(d);
   };
 
   const onQuery = (id: string) => {
-    googleQuery(id).then((data) => setData(data));
+    googleQuery(id).then((data) => onShowData && onShowData(data));
   };
 
   return (
@@ -36,7 +59,9 @@ export const DeviceSummary = ({
         className="panel-link"
         onClick={(e) => selectDevice(e, device)}
       >
+        <Icon className="device-icon" path={getIcon(device.deviceType)} />
         <div className="panel-header">{device.name}</div>
+        <div className="panel-subheader">({device.room})</div>
       </a>
 
       {deviceStats && (
@@ -54,15 +79,18 @@ export const DeviceSummary = ({
 
       <div className="form-actions">
         <Button
-          icon={mdiSync}
-          label="Sync"
+          icon={mdiDatabaseSearch}
+          label="Query"
           onClick={() => onQuery(device.id)}
         ></Button>
+        {device.commands && Object.keys(device.commands).length !== 0 && (
+          <Button
+            icon={mdiRunFast}
+            label="Execute"
+            onClick={() => onExecute && onExecute(device.id)}
+          ></Button>
+        )}
       </div>
-
-      <Dialog open={data} onClose={() => setData(undefined)}>
-        <pre>{JSON.stringify(data || {}, null, 2)} </pre>{' '}
-      </Dialog>
     </>
   );
 };

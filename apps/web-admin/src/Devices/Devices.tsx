@@ -7,6 +7,8 @@ import { DeviceSummary } from './Device-Summary';
 import { mdiPlusCircleOutline } from '@mdi/js';
 import { Button } from '../Components/Button';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { Dialog } from '../Components/Dialog';
+import { DeviceExecution } from './Device-Execution';
 
 type DevicesProps = {
   socketUrl: string;
@@ -20,9 +22,8 @@ export const Devices = ({
   socketUrl,
   onEditDevice,
   onNewDevice,
-  onConnectionStatus
+  onConnectionStatus,
 }: DevicesProps) => {
-  
   const { lastJsonMessage, readyState } = useWebSocket(socketUrl, {
     shouldReconnect: () => {
       return true;
@@ -37,7 +38,9 @@ export const Devices = ({
 
   const [devices, setDevices] = useState<IDevice[]>([]);
 
-  const { width } = useWindowDimensions();
+  const [executionDevice, setExecutionDevice] = useState<IDevice>();
+
+  const [data, setData] = useState<any>();
 
   useEffect(() => {
     if (lastJsonMessage !== null) {
@@ -53,7 +56,7 @@ export const Devices = ({
 
   useEffect(() => {
     onConnectionStatus && onConnectionStatus(readyState);
-  }, [readyState])
+  }, [readyState]);
 
   const selectDevice = (d: IDevice) => {
     logging.log(`selected ${d.name}`);
@@ -64,12 +67,19 @@ export const Devices = ({
     onNewDevice && onNewDevice();
   };
 
+  const showExecution = (id: string) => {
+    const device = devices.find((x) => x.id === id);
+    console.warn('showExecution', device);
+    setExecutionDevice(device);
+  };
+
   // const isSmallScreen = width < 1000;
   // const isEditing = device || addNew;
   // const showList = !(isEditing && isSmallScreen);
 
   return (
-    <div className="devices-list">
+    <>
+      <div className="devices-list">
         <div className="devices-list-row">
           <Button
             onClick={() => addNewDevice()}
@@ -84,17 +94,32 @@ export const Devices = ({
                     device={x}
                     deviceStats={devicesStatus && devicesStatus[x.id]}
                     onSelect={(d) => selectDevice(d)}
+                    onExecute={(id) => showExecution(id)}
+                    onShowData={(data) => setData(data)}
                   />
                 </div>
               );
             })}
           </div>
         </div>
-      {/* {isEditing && (
-        <div className="devices-list-row">
-          <DeviceEdit device={device} onDone={() => clearSelected()} />
-        </div>
-      )} */}
-    </div>
+      </div>
+      <Dialog
+        open={executionDevice !== undefined}
+        onClose={() => setExecutionDevice(undefined)}
+      >
+        {executionDevice && (
+          <DeviceExecution
+            device={executionDevice}
+            onShowData={(data) => {
+              setData(data);
+              setExecutionDevice(undefined);
+            }}
+          />
+        )}
+      </Dialog>
+      <Dialog open={data} onClose={() => setData(undefined)}>
+        <pre>{JSON.stringify(data || {}, null, 2)} </pre>{' '}
+      </Dialog>
+    </>
   );
 };
