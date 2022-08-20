@@ -83,9 +83,9 @@ export const Editor = ({
           syntaxHighlighting(defaultHighlightStyle, { fallback: false }),
           updateListenerExtension,
 
-          EditorState.transactionFilter.of((tr) => {
-            return tr.newDoc.lines > 1 ? [] : [tr];
-          }),
+          // EditorState.transactionFilter.of((tr) => {
+          //   return tr.newDoc.lines > 1 ? [] : [tr];
+          // }),
           defaultTheme,
         ],
         parent: editor.current,

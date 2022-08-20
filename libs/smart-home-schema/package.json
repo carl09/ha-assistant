@@ -1,0 +1,28 @@
+{
+  "name": "@ha-assistant/smart-home-schema",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup --dts",
+    "lint": "eslint \"src/*\"",
+    "release": "echo nothing in lib",
+    "dev": "tsup --dts --watch",
+    "test": "jest",
+    "test:watch": "jest --watch --silent=false",
+    "generate": "node ./generate.js"
+  },
+  "license": "ISC",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "yaml": "^2.1.1",
+    "typescript": "^4.7.4",
+    "tsup": "^6.2.0",
+    "jest": "^28.1.3",
+    "@types/jest": "^28.1.6",
+    "ts-jest": "^28.0.7"
+  }
+}

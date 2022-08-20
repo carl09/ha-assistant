@@ -4,7 +4,7 @@
 export interface IDeviceType {
   type: string;
   humanName: string;
-  attributes?: { [key: string]: string };
+  // attributes?: { [key: string]: string };
   traits: string[];
 }
 

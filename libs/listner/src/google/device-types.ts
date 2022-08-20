@@ -4,11 +4,11 @@ export const deviceTypes: IDeviceType[] = [
   {
     type: 'action.devices.types.CAMERA',
     humanName: 'Camera',
-    attributes: {
-      cameraStreamSupportedProtocols: 'array',
-      cameraStreamNeedAuthToken: 'boolean',
-      cameraStreamNeedDrmEncryption: 'boolean',
-    },
+    // attributes: {
+    //   cameraStreamSupportedProtocols: 'array',
+    //   cameraStreamNeedAuthToken: 'boolean',
+    //   cameraStreamNeedDrmEncryption: 'boolean',
+    // },
     traits: ['action.devices.traits.CameraStream'],
   },
   {
