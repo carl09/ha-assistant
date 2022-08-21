@@ -12,5 +12,8 @@ export const DeviceValueFormat = ({
   if (typeof value === 'string') {
     return <div className="format-string">{value}</div>;
   }
+  if (typeof value === 'object') {
+    return <div className="format-unknown">{JSON.stringify(value)}</div>;
+  }
   return <div className="format-unknown">{value}</div>;
 };
