@@ -1,9 +1,8 @@
 import {
-  deviceTraits,
   IDevice,
   IDeviceCommand,
-  IDeviceTraitsProps,
 } from '@ha-assistant/listner';
+import { deviceTraits, IDeviceTraitsProps } from '@ha-assistant/smart-home-schema';
 import { useForm } from 'react-hook-form';
 import { Button } from '../Components/Button';
 import { Input } from '../Components/Input';
@@ -96,16 +95,6 @@ const DeviceRun = ({
           onClick={handleSubmit(onSubmit)}
         />
       </div>
-
-      {/* return (
-                <div key={`${cmd}-${parm}`}>
-                  <label htmlFor={parm} className="form-label">
-                    {parm}
-                  </label>
-
-                  <input className="form-input" id={parm} required />
-                </div>
-              ); */}
     </form>
   );
 };

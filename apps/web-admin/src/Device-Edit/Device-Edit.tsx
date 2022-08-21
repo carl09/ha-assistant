@@ -3,12 +3,15 @@ import { useForm } from 'react-hook-form';
 import {
   IDevice,
   logging,
+  IHomeAssistantArea,
+  IDeviceCommand,
+} from '@ha-assistant/listner';
+import {
   deviceTypes,
   deviceTraits,
-  IHomeAssistantArea,
   IDeviceTraitsProps,
   IDeviceCommandProps,
-} from '@ha-assistant/listner';
+} from '@ha-assistant/smart-home-schema';
 import './Device-Edit.scss';
 import { snakecaseToTitlecase } from '../utils/format';
 import { mdiDelete, mdiContentSave, mdiClose } from '@mdi/js';
@@ -110,7 +113,9 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
   }, [reset]);
 
   useEffect(() => {
-    const dt = deviceTypes.find((x) => x.type === watchDeviceType);
+    const dt = deviceTypes.find(
+      (x) => x.type === (watchDeviceType || device?.deviceType)
+    );
     if (dt) {
       if (dt.type !== device?.deviceType) {
         setValue('traits', dt.traits);
@@ -131,7 +136,7 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
           online: {
             type: 'boolean',
             required: true,
-            hint: 'If the device is online',
+            description: 'If the device is online',
           } as IDeviceTraitsProps,
         }
       );
@@ -158,10 +163,10 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
     }
   }, [watchTraits]);
 
-  useEffect(() => {
-    logging.log('Device.useEffect', device);
-    reset(device || {}, { keepValues: false });
-  }, [device, reset]);
+  // useEffect(() => {
+  //   logging.log('Device.useEffect', device);
+  //   reset(device || {}, { keepValues: false });
+  // }, [device, reset]);
 
   if (errors && Object.keys(errors).length) {
     logging.error('errors', errors);
@@ -178,36 +183,57 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
 
         <section className="device-section">
           <h3>Detail</h3>
-          <Input label="Id" name="id" hidden register={register} />
-          <Input label="Name" name="name" register={register} required />
+          <Input
+            value={device?.id}
+            label="Id"
+            name="id"
+            hidden
+            register={register}
+          />
+          <Input
+            value={device?.name}
+            label="Name"
+            name="name"
+            register={register}
+            required
+          />
           <Select
             label="Room"
             name="room"
             control={control}
             options={rooms}
             hasEmptyOption
+            value={device?.room}
           />
           <DeviceSelect
             label="Device Type"
             name="deviceType"
             register={register}
+            value={device?.deviceType}
             required
           />
-          <DeviceTraits label="Traits" name="traits" register={register} />
+          <DeviceTraits
+            label="Traits"
+            name="traits"
+            value={device?.traits}
+            register={register}
+          />
         </section>
         <section className="device-section">
           <h3>States</h3>
           {states &&
             Object.keys(states).map((x) => {
+              const value = device?.states[x];
               return (
                 <InputEditor
                   key={x}
                   label={snakecaseToTitlecase(x)}
                   name={`states.${x}`}
-                  description={states[x].hint}
+                  description={states[x].description}
                   control={control}
                   type={states[x].type}
                   mode="entities"
+                  value={value}
                 />
               );
             })}
@@ -217,15 +243,17 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
           <h3>Attributes</h3>
           {attributes &&
             Object.keys(attributes).map((x) => {
+              const value = device?.attributes[x];
               return (
                 <InputEditor
                   key={x}
                   label={snakecaseToTitlecase(x)}
                   name={`attributes.${x}`}
-                  description={attributes[x].hint}
+                  description={attributes[x].description}
                   control={control}
                   type={attributes[x].type}
                   mode="entities"
+                  value={value}
                 />
               );
             })}
@@ -236,6 +264,10 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
           {commands &&
             commands.map((x) => {
               const [commandName] = x.command.split('.').slice(-1);
+              const value: IDeviceCommand =
+                device && device.commands && commandName in device.commands
+                  ? device.commands[commandName]
+                  : { command: '', target: '' };
               return (
                 <div key={`${commandName}`} className="command-group">
                   <h4>{snakecaseToTitlecase(commandName)}</h4>
@@ -248,6 +280,7 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
                     type="string"
                     mode="services"
                     commandPrams={x.params}
+                    value={value.command}
                   />
                   <InputEditor
                     key={`${commandName}args`}
@@ -258,6 +291,7 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
                     type="object"
                     mode="entities"
                     commandPrams={x.params}
+                    value={value.args}
                   />
                   <InputEditor
                     key={`${commandName}target`}
@@ -267,6 +301,7 @@ export const DeviceEdit = ({ device, onDone }: DeviceProps) => {
                     control={control}
                     type="string"
                     mode="entities"
+                    value={value.target}
                   />
                 </div>
                 // <InputCommand

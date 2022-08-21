@@ -8,24 +8,28 @@ const devices = [
   'switch',
   'thermostat',
   'fan',
-  //   'microwave',
+  'microwave',
   'coffeemaker',
   'dehumidifier',
   'sensor',
 ];
 const traitSets = new Set();
+// traitSets.add('OnOff');
 
 const deviceTypes = devices.map((x) => {
   const r = parseDevice(x);
-  traitSets.add(...r.traitSets);
+  r.traitSets.forEach((x) => traitSets.add(x));
+  //   traitSets.add(...r.);
   return {
-    type: r.name,
+    type: r.type,
     humanName: r.humanName,
     traits: r.traits,
   };
 });
 
 const acc = {};
+
+console.log('traitSets', traitSets);
 
 traitSets.forEach((x) => {
   console.log('parseTraits', x);
@@ -34,8 +38,6 @@ traitSets.forEach((x) => {
 
 // parseTraits(acc, 'onoff');
 // parseTraits(acc, 'temperaturesetting');
-
-// console.log('acc', acc);
 
 const deviceTypesSource = prettier.format(
   `
@@ -48,7 +50,7 @@ const deviceTypesSource = prettier.format(
   }
 );
 
-writeFileSync('./src/device-traits.ts', deviceTypesSource, 'utf8');
+writeFileSync('./src/device-types.ts', deviceTypesSource, 'utf8');
 
 const deviceTraitsSource = prettier.format(
   `

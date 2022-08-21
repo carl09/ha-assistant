@@ -1,4 +1,4 @@
-import { deviceTypes } from '@ha-assistant/listner';
+import { deviceTypes } from '@ha-assistant/smart-home-schema';
 import { UseFormRegister } from 'react-hook-form';
 
 type SelectProps = {
@@ -6,6 +6,7 @@ type SelectProps = {
   label: string;
   register: UseFormRegister<any>;
   required?: boolean;
+  value?: any;
 };
 
 export const DeviceSelect = ({
@@ -13,12 +14,13 @@ export const DeviceSelect = ({
   label,
   register,
   required,
+  value
 }: SelectProps) => (
   <div className="form-row">
     <label htmlFor={name} className="form-label">
       {label}
     </label>
-    <select className="form-select" id={name} {...register(name, { required })}>
+    <select className="form-select" id={name} {...register(name, { required, value })}>
       <option value=""></option>
       {deviceTypes.map((x) => {
         return (

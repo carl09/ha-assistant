@@ -71,6 +71,41 @@ export const deviceTraits: { [trait: string]: IDeviceTraits } = {
       { command: 'action.devices.commands.BrightnessRelative', params: {} },
     ],
   },
+  'action.devices.traits.OnOff': {
+    type: 'action.devices.traits.OnOff',
+    humanName: 'OnOff',
+    states: {
+      on: {
+        type: 'boolean',
+        description: 'Whether a device with an on/off switch is on or off.',
+      },
+    },
+    attributes: {
+      commandOnlyOnOff: {
+        type: 'boolean',
+        default: false,
+        description:
+          'Indicates if the device can only controlled through commands, and cannot be queried for state information.',
+      },
+      queryOnlyOnOff: {
+        type: 'boolean',
+        default: false,
+        description:
+          'Indicates if the device can only be queried for state information, and cannot be controlled through commands.',
+      },
+    },
+    commands: [
+      {
+        command: 'action.devices.commands.OnOff',
+        params: {
+          on: {
+            description: 'Whether to turn the device on or off.',
+            type: 'boolean',
+          },
+        },
+      },
+    ],
+  },
   'action.devices.traits.TemperatureSetting': {
     type: 'action.devices.traits.TemperatureSetting',
     humanName: 'TemperatureSetting',
@@ -89,6 +124,33 @@ export const deviceTraits: { [trait: string]: IDeviceTraits } = {
         type: 'number',
         description:
           'Represents the relative level of the ambient humidity, if supported by the device.',
+      },
+      thermostatMode: {
+        type: 'string',
+        description:
+          'Current mode of the device, from the list of <code>availableThermostatModes</code>.',
+        supportedValues: [
+          'none',
+          'off',
+          'heat',
+          'cool',
+          'on',
+          'heatcool',
+          'auto',
+          'fan-only',
+          'purifier',
+          'eco',
+          'dry',
+        ],
+      },
+      thermostatTemperatureAmbient: {
+        type: 'number',
+        description: 'Current observed temperature, in degrees Celsius.',
+      },
+      thermostatTemperatureSetpoint: {
+        type: 'number',
+        description:
+          'Current temperature set point (single target), in degrees Celsius.',
       },
     },
     attributes: {
@@ -290,6 +352,224 @@ export const deviceTraits: { [trait: string]: IDeviceTraits } = {
       },
     ],
   },
+  'action.devices.traits.Timer': {
+    type: 'action.devices.traits.Timer',
+    humanName: 'Timer',
+    states: {
+      timerRemainingSec: {
+        type: 'integer',
+        description:
+          'Current time remaining in seconds, -1, or [0, <code>maxTimerLimitSec</code>]. Set to -1 to indicate no timer is running.',
+      },
+      timerPaused: {
+        type: 'boolean',
+        description: 'True if a active timer exists but is currently paused.',
+      },
+    },
+    attributes: {
+      maxTimerLimitSec: {
+        type: 'integer',
+        description:
+          'Indicates the longest timer setting available on the device, measured in seconds.',
+      },
+      commandOnlyTimer: {
+        type: 'boolean',
+        default: false,
+        description:
+          'Indicates if the device supports using one-way (true) or two-way (false) communication. Set this attribute to true if the device cannot respond to a QUERY intent or Report State for this trait.',
+      },
+    },
+    commands: [
+      {
+        command: 'action.devices.commands.TimerStart',
+        params: {
+          timerTimeSec: {
+            description:
+              'Duration of the timer in seconds; must be within [1, <code>maxTimerLimitSec</code>].',
+            type: 'integer',
+          },
+        },
+      },
+      {
+        command: 'action.devices.commands.TimerAdjust',
+        params: {
+          timerTimeSec: {
+            description:
+              'Positive or negative adjustment of the timer in seconds; must be within [<code>-maxTimerLimitSec</code>, <code>maxTimerLimitSec</code>].',
+            type: 'integer',
+          },
+        },
+      },
+      { command: 'action.devices.commands.TimerPause', params: {} },
+      { command: 'action.devices.commands.TimerResume', params: {} },
+      { command: 'action.devices.commands.TimerCancel', params: {} },
+    ],
+  },
+  'action.devices.traits.StartStop': {
+    type: 'action.devices.traits.StartStop',
+    humanName: 'StartStop',
+    states: {
+      isRunning: {
+        type: 'boolean',
+        description: 'Indicates if the device is currently in operation.',
+      },
+      isPaused: {
+        type: 'boolean',
+        description:
+          'Indicates if the device is explicitly paused. If this value is true, it implies <code>isRunning</code> is false but can be resumed.',
+      },
+      activeZones: {
+        type: 'array',
+        description:
+          'Indicates zones in which the device is currently running, from list of <code>availableZones</code>.',
+      },
+    },
+    attributes: {
+      pausable: {
+        type: 'boolean',
+        default: false,
+        description:
+          'Indicates whether the device can be paused during operation.',
+      },
+      availableZones: {
+        type: 'array',
+        description:
+          'Indicates supported zone names. Strings should be localized as set by the user. This list is not exclusive; users can report any names they want.',
+      },
+    },
+    commands: [
+      {
+        command: 'action.devices.commands.StartStop',
+        params: {
+          start: {
+            description: 'True to start device operation, false to stop.',
+            type: 'boolean',
+          },
+          zone: {
+            description: 'Indicates zone in which to start running.',
+            type: 'string',
+          },
+          multipleZones: {
+            description:
+              'Indicates two or more zones in which to start running. Will be set instead of <code>zone<code> parameter.',
+            type: 'array',
+          },
+        },
+      },
+      {
+        command: 'action.devices.commands.PauseUnpause',
+        params: {
+          pause: {
+            description: 'True to pause, false to unpause.',
+            type: 'boolean',
+          },
+        },
+      },
+    ],
+  },
+  'action.devices.traits.TemperatureControl': {
+    type: 'action.devices.traits.TemperatureControl',
+    humanName: 'TemperatureControl',
+    states: {
+      temperatureSetpointCelsius: {
+        type: 'number',
+        description:
+          'The current temperature setpoint, in degrees Celsius. Must fall within <code>temperatureRange</code>. Required if <code>queryOnlyTemperatureControl</code> set to <code>false</code>',
+      },
+      temperatureAmbientCelsius: {
+        type: 'number',
+        description:
+          'The currently observed temperature, in degrees Celsius. Must fall within <code>temperatureRange</code>.',
+      },
+    },
+    attributes: {
+      temperatureRange: {
+        type: 'object',
+        description: 'Supported temperature range of the device.',
+      },
+      temperatureStepCelsius: {
+        type: 'number',
+        description:
+          'Specifies the relative temperature step. This is the minimum adjustment interval the device supports. If unspecified, relative steps are calculated as a percentage of <code>temperatureRange</code>.',
+      },
+      temperatureUnitForUX: {
+        type: 'string',
+        description: 'Temperature unit used in responses to the user.',
+      },
+      commandOnlyTemperatureControl: {
+        type: 'boolean',
+        default: false,
+        description:
+          'Indicates if the device supports using one-way (true) or two-way (false) communication. Set this attribute to true if the device cannot respond to a QUERY intent or Report State for this trait.',
+      },
+      queryOnlyTemperatureControl: {
+        type: 'boolean',
+        default: false,
+        description:
+          'Required if the device supports query-only execution. This attribute indicates if the device can only be queried for state information, and cannot be controlled.',
+      },
+    },
+    commands: [
+      {
+        command: 'action.devices.commands.SetTemperature',
+        params: {
+          temperature: {
+            description:
+              'The temperature to set, in degrees Celsius. Must fall within <code>temperatureRange</code>.',
+            type: 'number',
+          },
+        },
+      },
+    ],
+  },
+  'action.devices.traits.HumiditySetting': {
+    type: 'action.devices.traits.HumiditySetting',
+    humanName: 'HumiditySetting',
+    states: {
+      humiditySetpointPercent: {
+        type: 'integer',
+        description:
+          'Indicates the current target humidity percentage of the device. Must fall within <code>humiditySetpointRange</code>.',
+      },
+      humidityAmbientPercent: {
+        type: 'integer',
+        description:
+          'Indicates the current ambient humidity reading of the device as a percentage.',
+      },
+    },
+    attributes: {
+      humiditySetpointRange: {
+        type: 'object',
+        description:
+          'Contains the minimum and maximum humidity levels as percentages.',
+      },
+      commandOnlyHumiditySetting: {
+        type: 'boolean',
+        default: false,
+        description:
+          'Indicates if the device supports using one-way (true) or two-way (false) communication. Set this attribute to true if the device cannot respond to a QUERY intent or Report State for this trait.',
+      },
+      queryOnlyHumiditySetting: {
+        type: 'boolean',
+        default: false,
+        description:
+          'Required if the device supports query-only execution. This attribute indicates if the device can only be queried for state information, and cannot be controlled.',
+      },
+    },
+    commands: [
+      {
+        command: 'action.devices.commands.SetHumidity',
+        params: {
+          humidity: {
+            description:
+              'Setpoint humidity percentage. Must fall within <code>humiditySetpointRange</code>.',
+            type: 'integer',
+          },
+        },
+      },
+      { command: 'action.devices.commands.HumidityRelative', params: {} },
+    ],
+  },
   'action.devices.traits.EnergyStorage': {
     type: 'action.devices.traits.EnergyStorage',
     humanName: 'EnergyStorage',
@@ -348,5 +628,23 @@ export const deviceTraits: { [trait: string]: IDeviceTraits } = {
         },
       },
     ],
+  },
+  'action.devices.traits.SensorState': {
+    type: 'action.devices.traits.SensorState',
+    humanName: 'SensorState',
+    states: {
+      currentSensorStateData: {
+        type: 'array',
+        description: 'List of current sensor states.',
+      },
+    },
+    attributes: {
+      sensorStatesSupported: {
+        type: 'array',
+        description:
+          'Each object represents sensor state capabilities supported by this specific device. Each sensor must have at least a descriptive or numeric capability. Sensors can also report both, in which case the numeric value will be preferred.',
+      },
+    },
+    commands: [],
   },
 };

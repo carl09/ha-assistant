@@ -3,42 +3,41 @@ export const deviceTypes: IDeviceType[] = [
   {
     type: 'action.devices.types.CAMERA',
     humanName: 'Camera',
-    traits: ['CameraStream'],
+    traits: ['action.devices.traits.CameraStream'],
   },
   {
     type: 'action.devices.types.SWITCH',
     humanName: 'Switch',
-    traits: ['OnOff'],
+    traits: ['action.devices.traits.OnOff'],
   },
   {
     type: 'action.devices.types.THERMOSTAT',
     humanName: 'Thermostat',
-    traits: ['TemperatureSetting'],
+    traits: ['action.devices.traits.TemperatureSetting'],
   },
   {
     type: 'action.devices.types.FAN',
     humanName: 'Fan',
-    traits: ['FanSpeed', 'OnOff'],
+    traits: ['action.devices.traits.FanSpeed', 'action.devices.traits.OnOff'],
   },
   {
     type: 'action.devices.types.MICROWAVE',
     humanName: 'Microwave',
-    traits: ['StartStop'],
+    traits: ['action.devices.traits.StartStop'],
   },
   {
     type: 'action.devices.types.COFFEE_MAKER',
     humanName: 'Coffee Maker',
-    traits: ['OnOff'],
+    traits: ['action.devices.traits.OnOff'],
   },
   {
     type: 'action.devices.types.DEHUMIDIFIER',
     humanName: 'Dehumidifier',
-    traits: ['OnOff'],
+    traits: ['action.devices.traits.OnOff'],
   },
   {
     type: 'action.devices.types.SENSOR',
     humanName: 'Sensor',
-    traits: ['SensorState'],
+    traits: ['action.devices.traits.SensorState'],
   },
 ];
-

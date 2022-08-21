@@ -46,12 +46,12 @@ export const getDeviceById$ = (id: string): Observable<IDevice | undefined> => {
   return getAllDevices$().pipe(map((x) => x.find((x) => x.id === id)));
 };
 
-export const updateDevice = async (id: string, device: Partial<IDevice>) => {
+export const updateDevice = async (id: string, device: IDevice) => {
   const currentDevice = await firstValueFrom(getDeviceById$(id));
   if (currentDevice) {
-    const d = { ...currentDevice, ...device };
+    // const d = { ...currentDevice, ...device };
     const all = await firstValueFrom(base$);
-    all[id] = d;
+    all[id] = device;
     await save(all);
   } else {
     logging.error('updateDevice failed, device does not exist');

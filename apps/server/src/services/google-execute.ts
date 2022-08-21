@@ -43,25 +43,31 @@ export const onExecute = async (
               googleEvents: exe.params,
             });
 
-            const args = commandDetail.args
-              ? resolveValue<{}>(commandDetail.args, {
-                  googleEvents: exe.params,
-                }) || {}
-              : undefined;
+            if (serviceCall) {
+              const args = commandDetail.args
+                ? resolveValue<{}>(commandDetail.args, {
+                    googleEvents: exe.params,
+                  }) || {}
+                : undefined;
 
-            const entityId = resolveValue<string>(commandDetail.target, {
-              googleEvents: exe.params,
-            });
+              const entityId = resolveValue<string>(commandDetail.target, {
+                googleEvents: exe.params,
+              });
 
-            logging.debug('commands serviceCall ', serviceCall);
+              logging.debug('commands serviceCall ', serviceCall);
 
-            const [domain, service] = serviceCall.split('.');
+              const [domain, service] = serviceCall.split('.');
 
-            const exeResuls = await lastValueFrom(
-              socket.callService(domain, service, args, entityId)
-            );
+              const exeResuls = await lastValueFrom(
+                socket.callService(domain, service, args, entityId)
+              );
 
-            logging.debug('exeResuls', exeResuls);
+              logging.debug('exeResuls', exeResuls);
+            } else {
+              // functionNotSupported
+            }
+          } else {
+            // functionNotSupported
           }
         });
       }

@@ -8,6 +8,7 @@ type InputProps = {
   hidden?: boolean;
   description?: string;
   myType?: 'text' | 'number' | 'checkbox';
+  value?: any;
 };
 
 export const Input = ({
@@ -18,8 +19,9 @@ export const Input = ({
   hidden,
   description,
   myType,
+  value,
 }: InputProps) => {
-  console.log('Input type', name, myType);
+  // console.log('Input type', name, myType);
   return (
     <div className="form-row">
       {!hidden && (
@@ -32,7 +34,11 @@ export const Input = ({
         id={name}
         hidden={hidden}
         type={myType}
-        {...register(name, { required, valueAsNumber: myType === 'number' })}
+        {...register(name, {
+          required,
+          valueAsNumber: myType === 'number',
+          value,
+        })}
       />
       {description && <div className="form-desc">{description}</div>}
     </div>

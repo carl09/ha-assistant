@@ -10,6 +10,6 @@ export * from './utils/config';
 export * from './messages';
 export * from './repo/devices';
 
-export * from './google/device-models';
-export * from './google/device-traits';
-export * from './google/device-types';
+// export * from './google/device-models';
+// export * from './google/device-traits';
+// export * from './google/device-types';

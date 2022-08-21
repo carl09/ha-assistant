@@ -1,4 +1,4 @@
-import { IDeviceTraitsProps } from '@ha-assistant/listner';
+import { IDeviceTraitsProps } from '@ha-assistant/smart-home-schema';
 import { Control, Controller, FieldValues } from 'react-hook-form';
 import { Editor } from '../Editor/Editor';
 
@@ -10,6 +10,7 @@ type InputEditorProps = {
   control: Control<FieldValues, any>;
   mode: 'entities' | 'services';
   commandPrams?: { [name: string]: IDeviceTraitsProps };
+  value?: any;
 };
 
 export const InputEditor = ({
@@ -20,6 +21,7 @@ export const InputEditor = ({
   type,
   mode,
   commandPrams,
+  value,
 }: InputEditorProps) => (
   <div className="form-row">
     <label htmlFor={name} className="form-label">
@@ -29,6 +31,7 @@ export const InputEditor = ({
     <Controller
       name={name}
       control={control}
+      defaultValue={value}
       render={({ field: { onChange, value, name } }) => (
         <Editor
           value={value}

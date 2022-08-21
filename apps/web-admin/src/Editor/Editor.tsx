@@ -32,7 +32,7 @@ export const Editor = ({
 }: EditorProps) => {
   const editor = useRef<HTMLDivElement>(null);
 
-  console.log(`Editor ${name}`, value);
+  // console.log(`Editor ${name}`, value);
 
   let editorView: EditorView;
 
@@ -57,7 +57,7 @@ export const Editor = ({
         };
 
         const node = (from: number, name: string) => {
-          logging.debug('extraRootItems.node', extraRootItems, name);
+          // logging.debug('extraRootItems.node', extraRootItems, name);
           return {
             from,
             options:
@@ -104,7 +104,7 @@ export const Editor = ({
         const doc = update.state.doc;
         const value = doc.toString();
 
-        console.log(`updateListenerExtension.Editor`, value);
+        // console.log(`updateListenerExtension.Editor`, value);
 
         onChange && onChange(value);
 

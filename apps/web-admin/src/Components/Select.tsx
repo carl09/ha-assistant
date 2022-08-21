@@ -11,6 +11,7 @@ type SelectProps = {
   required?: boolean;
   options?: string[] | { value: string; label: string }[];
   hasEmptyOption?: boolean;
+  value?: any;
 };
 
 export const Select = ({
@@ -19,6 +20,7 @@ export const Select = ({
   options,
   hasEmptyOption,
   control,
+  value
 }: SelectProps) => (
   <div className="form-row">
     <label htmlFor={name} className="form-label">
@@ -27,6 +29,7 @@ export const Select = ({
     <Controller
       control={control}
       name={name}
+      defaultValue={value}
       render={({ field }) => {
         return (
           <select className="form-select" id={name} {...field}>
