@@ -3,8 +3,6 @@ import { Button } from '../Components/Button';
 import { snakecaseToTitlecase } from '../utils/format';
 import { DeviceValueFormat } from './Device-Value-Format';
 import { googleQuery } from '../Services/google.service';
-import { useState } from 'react';
-import { Dialog } from '../Components/Dialog';
 import Icon from '@mdi/react';
 import {
   mdiThermostat,
@@ -12,6 +10,8 @@ import {
   mdiLightSwitch,
   mdiDatabaseSearch,
   mdiRunFast,
+  mdiMicrowave,
+  mdiCoffeeMaker,
 } from '@mdi/js';
 
 const getIcon = (deviceType: string): string => {
@@ -22,6 +22,10 @@ const getIcon = (deviceType: string): string => {
       return mdiAirHumidifier;
     case 'action.devices.types.SWITCH':
       return mdiLightSwitch;
+    case 'action.devices.types.MICROWAVE':
+      return mdiMicrowave;
+    case 'action.devices.types.COFFEE_MAKER':
+      return mdiCoffeeMaker;
   }
 
   logging.warn('No Icon for deviceType', deviceType);
