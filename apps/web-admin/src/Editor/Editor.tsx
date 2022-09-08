@@ -3,6 +3,7 @@ import { ViewUpdate } from '@codemirror/view';
 import { useEffect, useRef } from 'react';
 import { autocompletion } from '@codemirror/autocomplete';
 import { syntaxHighlighting } from '@codemirror/language';
+import { syntaxTree } from '@codemirror/language';
 import {
   completeEntityScope,
   completeServiceScope,
@@ -11,7 +12,6 @@ import {
   defaultTheme,
 } from './editor-helpers';
 import { EXAMPLE } from '@ha-assistant/lang-ha';
-import { EditorState } from '@codemirror/state';
 import { toCompletion } from './autocompleate-helpers';
 import { logging } from '@ha-assistant/listner';
 
@@ -104,20 +104,27 @@ export const Editor = ({
         const doc = update.state.doc;
         const value = doc.toString();
 
-        // console.log(`updateListenerExtension.Editor`, value);
+        let hasError = false;
 
-        onChange && onChange(value);
+        const expressionsArray: string[] = [];
+        syntaxTree(update.state)
+          .cursor()
+          .iterate((node) => {
+            expressionsArray.push(node.name);
+            if (node.name === "⚠"){
+              hasError = true;
+            }
+          });
+        console.debug('expressionsArray', expressionsArray);
 
-        // const expressionsArray: string[] = [];
-        // syntaxTree(update.state)
-        //   .cursor()
-        //   .iterate((node) => {
-        //     expressionsArray.push(node.name);
-        //   });
-        // logging.debug('expressionsArray', expressionsArray);
+        if (!hasError){
+          onChange && onChange(value);
+        }
       }
     }
   );
 
   return <div ref={editor}></div>;
 };
+
+

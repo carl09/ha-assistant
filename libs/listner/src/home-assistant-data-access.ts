@@ -146,7 +146,7 @@ export class HomeAssistantDataAccess {
   callService(
     domain: string,
     service: string,
-    serviceData: { [key: string]: any },
+    serviceData: { [key: string]: any } | undefined,
     entityId: string
   ) {
     const serviceCall = this.createSubScription(

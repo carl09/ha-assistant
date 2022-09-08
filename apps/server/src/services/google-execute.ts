@@ -10,11 +10,14 @@ import {
   SmartHomeV1ExecutePayload,
   SmartHomeV1ExecuteResponseCommands,
 } from 'actions-on-google';
-import { firstValueFrom, lastValueFrom } from 'rxjs';
+import { firstValueFrom, Observable, take, lastValueFrom } from 'rxjs';
 import { getConfig } from '../config';
 
 export const onExecute = async (
-  payload: SmartHomeV1ExecuteRequestPayload
+  payload: SmartHomeV1ExecuteRequestPayload,
+  deviceStats$: Observable<{
+    [key: string]: any;
+  }>
 ): Promise<SmartHomeV1ExecutePayload> => {
   logging.log('onExecute', payload);
 
@@ -32,7 +35,7 @@ export const onExecute = async (
       const device = await firstValueFrom(getDeviceById$(d.id));
 
       if (device) {
-        x.execution.map(async (exe) => {
+        const executionResult = x.execution.map(async (exe) => {
           const [commandName] = exe.command.split('.').slice(-1);
           const commandDetail = (device.commands || {})[commandName];
 
@@ -45,14 +48,15 @@ export const onExecute = async (
 
             if (serviceCall) {
               const args = commandDetail.args
-                ? resolveValue<{}>(commandDetail.args, {
+                ? (resolveValue<{}>(commandDetail.args, {
                     googleEvents: exe.params,
-                  }) || {}
+                  }) as { [key: string]: any })
                 : undefined;
 
-              const entityId = resolveValue<string>(commandDetail.target, {
-                googleEvents: exe.params,
-              });
+              const entityId =
+                resolveValue<string>(commandDetail.target, {
+                  googleEvents: exe.params,
+                }) || '';
 
               logging.debug('commands serviceCall ', serviceCall);
 
@@ -63,33 +67,79 @@ export const onExecute = async (
               );
 
               logging.debug('exeResuls', exeResuls);
+              if (exeResuls.success) {
+                return {
+                  code: 'SUCCESS',
+                  id: d.id,
+                };
+              } 
+              return {
+                code: 'deviceOffline',
+                id: d.id,
+              };
             } else {
-              // functionNotSupported
+              return {
+                code: 'functionNotSupported',
+                id: d.id,
+              };
             }
           } else {
-            // functionNotSupported
+            return {
+              code: 'functionNotSupported',
+              id: d.id,
+            };
           }
         });
-      }
 
-      return d.id;
+        // return d.id;
+        return Promise.all(executionResult);
+      } else {
+        return [
+          {
+            code: 'deviceNotFound',
+            id: d.id,
+          },
+        ];
+      }
     });
 
-    return Promise.all(deviceExecutions);
+    const allResults = await Promise.all(deviceExecutions);
+    return allResults.flat();
   });
 
   const results = (await Promise.all(c)).flat();
 
-  const googleResults: SmartHomeV1ExecuteResponseCommands = {
-    ids: results,
-    status: 'SUCCESS',
-  };
+  // const statusMap = await lastValueFrom(deviceStats$.pipe(take(2)));
+
+  // const statusMap = await lastValueFrom(deviceStats$.pipe(take(1)));
+
+  //Promise<SmartHomeV1ExecuteResponseCommands[]>
+
+  const googleResults = results.map(async (x) => {
+    if (x.code === 'SUCCESS') {
+      return {
+        ids: [x.id],
+        status: 'SUCCESS',
+        // states: statusMap[x.id],
+      };
+    }
+    return {
+      ids: [x.id],
+      status: 'ERROR',
+      errorCode: x.code,
+      // states: statusMap[x.id],
+    };
+  });
+
+  const commands = (await Promise.all(
+    googleResults
+  )) as SmartHomeV1ExecuteResponseCommands[];
 
   logging.log('execute response to google', {
-    commands: [googleResults],
+    commands: commands,
   });
 
   return {
-    commands: [googleResults],
+    commands: commands,
   };
 };

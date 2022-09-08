@@ -2,9 +2,10 @@ import { type Express } from 'express';
 import {
   logging,
   getHomeAssistantDataAccess,
+  deviceMappingFunctions,
 } from '@ha-assistant/listner';
 import { getConfig } from './config';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, map } from 'rxjs';
 
 type LookupItem = {
   label: string;
@@ -21,33 +22,14 @@ export const lookupInit = (app: Express) => {
   );
 
   app.get('/api/editor/builtin/functions', async (req, res) => {
-    const lookupFunctions: LookupItem[] = [
-      {
-        label: 'equals',
-        detail: 'compare to values',
-      },
-      {
-        label: 'toInt',
-        detail: 'converts string to int',
-      },
-      {
-        label: 'toNum',
-        detail: 'converts string to number',
-        info: 'some really foon info to help me',
-      },
-      {
-        label: 'toGoogleThermostatMode',
-        detail: 'converts Home Assistant modes to Google'
-      },
-      {
-        label: 'toHomeAssistantThermostatMode',
-        detail: 'converts Google modes to Home Assistant'
-      },
-      {
-        label: 'toArray',
-        detail: 'converts string to a array, default , seperated'
-      }
-    ];
+    const lookupFunctions = Object.keys(deviceMappingFunctions).map((x) => {
+      const item = deviceMappingFunctions[x];
+      return {
+        label: item.label,
+        detail: item.detail,
+      };
+    });
+
     res.send(lookupFunctions);
   });
 

@@ -17,14 +17,14 @@ const cleanSwitchDomain = (v: string): string =>
     .replaceAll('"__switch.', '"switch.');
 
 const wrapIfRawObject = (v: string): string => {
-  if (v){
+  if (v) {
     const cleanValue = v.trim();
-    if (cleanValue.startsWith('{') && cleanValue.endsWith('}')){
-      return `(${cleanValue})`
+    if (cleanValue.startsWith('{') && cleanValue.endsWith('}')) {
+      return `(${cleanValue})`;
     }
   }
   return v;
-}
+};
 
 const restoreSwitchDomain = (v: string): string =>
   v.replaceAll('__switch', 'switch');
@@ -61,9 +61,14 @@ const resolveType = (node: Node, object: any, resolve: boolean): any => {
   }
 
   if (node.type === 'CallExpression') {
-    return deviceMappingFunctions[(node.callee as Identifier).name](
-      ...resolveTypes(node.arguments, object, resolve)
-    );
+    const fnName = (node.callee as Identifier).name;
+    if (fnName in deviceMappingFunctions) {
+      return deviceMappingFunctions[fnName].fn(
+        ...resolveTypes(node.arguments, object, resolve)
+      );
+    } else {
+      throw `Function unknows ${fnName}`;
+    }
   }
 
   if (node.type === 'BooleanLiteral') {

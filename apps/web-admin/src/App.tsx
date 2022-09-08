@@ -11,6 +11,7 @@ import { Button } from './Components/Button';
 import { GoogleActions } from './Google-Actions/Google-Actions';
 import { mdiImport, mdiExport } from '@mdi/js';
 import { DeviceEdit } from './Device-Edit/Device-Edit';
+// import { Editor } from './Editor/Editor';
 
 const config: IServerConfig = (window as any).config || {};
 
@@ -25,14 +26,6 @@ export const App = () => {
   const { width } = useWindowDimensions();
   const [device, setDevice] = useState<IDevice>();
   const [addNew, setAddNew] = useState<boolean>(false);
-
-  // const connectionStatus = {
-  //   [ReadyState.CONNECTING]: 'Connecting',
-  //   [ReadyState.OPEN]: 'Open',
-  //   [ReadyState.CLOSING]: 'Closing',
-  //   [ReadyState.CLOSED]: 'Closed',
-  //   [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
-  // }[readyState];
 
   const onExport = () => {
     // fetch('api/export');
@@ -83,6 +76,8 @@ export const App = () => {
       <h1>
         {location.hostname} {width} {connectionStatus}
       </h1>
+
+      {/* <Editor name="demo" mode="entities" /> */}
 
       <div className="devices-list">
         {showList && (

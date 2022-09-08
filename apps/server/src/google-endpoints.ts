@@ -161,7 +161,8 @@ export const googleInit = (
         } as SmartHomeV1QueryResponse;
       } else if (x.intent === 'action.devices.EXECUTE') {
         const execute = await onExecute(
-          (x as SmartHomeV1ExecuteRequestInputs).payload
+          (x as SmartHomeV1ExecuteRequestInputs).payload,
+          deviceStats$
         );
         return {
           requestId: payload.requestId,
