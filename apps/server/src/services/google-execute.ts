@@ -31,8 +31,9 @@ const post = async <T>(
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
 
+      'X-WEBAUTH-USER': 'b63c4564a0514a899821d85e2e18d8db',
       'X-Hass-User-ID': 'b63c4564a0514a899821d85e2e18d8db',
-      'X-Hass-Is-Admin': 1
+      'X-Hass-Is-Admin': 1,
     },
   });
 
@@ -104,6 +105,7 @@ export const onExecute = async (
               // const exeResuls = await lastValueFrom(
               //   socket.callService(domain, service, args, entityId);
               // );
+              let hasError = false;
               try {
                 exeResuls = (await callRemoteService(
                   config.homeAssistaneRestUri,
@@ -114,6 +116,7 @@ export const onExecute = async (
                 )) as Record<string, any>;
                 logging.debug('Http Resp', exeResuls);
               } catch (err) {
+                hasError = true;
                 logging.error('http failed:', err);
 
                 // exeResuls = await lastValueFrom(
@@ -121,7 +124,7 @@ export const onExecute = async (
                 // );
               }
 
-              if (exeResuls && 'success' in exeResuls && exeResuls.success) {
+              if (!hasError) {
                 return {
                   code: 'SUCCESS',
                   id: d.id,
