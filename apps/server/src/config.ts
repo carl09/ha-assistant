@@ -39,10 +39,6 @@ setLogLevel(options.logLevel);
 
 const port = process.env.SERVER_PORT ? parseInt(process.env.SERVER_PORT) : 4001;
 
-// Object.keys(process.env).forEach((x) => {
-//   logging.debug(`process.env.${x} = ${process.env[x]}`);
-// });
-
 export const getConfig = (): IConfig => {
   return {
     port: port,
@@ -50,9 +46,9 @@ export const getConfig = (): IConfig => {
     homeAssistaneApiKey: process.env.HASSIO_TOKEN || '',
     supervisorToken: process.env.SUPERVISOR_TOKEN || '',
     homeAssistaneSocketUri:
-      process.env.HA_SOCKET_URL || 'ws://hassio/homeassistant/api/websocket',
+      process.env.HA_SOCKET_URL || 'ws://supervisor/core/websocket',
     homeAssistaneRestUri:
-      process.env.HA_REST_URL || 'http://hassio/homeassistant/api',
+      process.env.HA_REST_URL || 'http://supervisor/core/api',
     deviceStore: process.env.DEVICE_STORE || '/data/devices.json',
     inferWebsocketUrl: options.inferWebsocketUrl,
     googleKeyFile:
