@@ -135,8 +135,6 @@ export const googleInit = (
   app.post('/api/fulfillment', async (req, res) => {
     const user = await getUser(req.headers);
 
-    logging.info('user', user);
-
     const payload: SmartHomeV1Request = req.body;
 
     logging.debug('payload', payload);
@@ -165,7 +163,8 @@ export const googleInit = (
       } else if (x.intent === 'action.devices.EXECUTE') {
         const execute = await onExecute(
           (x as SmartHomeV1ExecuteRequestInputs).payload,
-          deviceStats$
+          deviceStats$,
+          user
         );
         return {
           requestId: payload.requestId,

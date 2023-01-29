@@ -12,12 +12,49 @@ import {
 } from 'actions-on-google';
 import { firstValueFrom, Observable, take, lastValueFrom } from 'rxjs';
 import { getConfig } from '../config';
+import axios from 'axios';
+
+const post = async <T>(
+  url: string,
+  token: string | undefined,
+  body: { [key: string]: string }
+) => {
+  const var1 = JSON.stringify(body);
+
+  console.log('post url:', url);
+  console.log('post body:', var1);
+
+  const res = await axios(url, {
+    method: 'post',
+    data: body,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return res.data as T;
+};
+
+const callRemoteService = (
+  domain: string,
+  service: string,
+  data: { [key: string]: string },
+  token: string
+) => {
+  return post<{}>(
+    `http://hassio/homeassistant/api/services/${domain}/${service}`,
+    token,
+    data
+  );
+};
 
 export const onExecute = async (
   payload: SmartHomeV1ExecuteRequestPayload,
   deviceStats$: Observable<{
     [key: string]: any;
-  }>
+  }>,
+  user: string
 ): Promise<SmartHomeV1ExecutePayload> => {
   logging.log('onExecute', payload);
 
@@ -51,7 +88,7 @@ export const onExecute = async (
                 ? (resolveValue<{}>(commandDetail.args, {
                     googleEvents: exe.params,
                   }) as { [key: string]: any })
-                : undefined;
+                : {};
 
               const entityId =
                 resolveValue<string>(commandDetail.target, {
@@ -62,17 +99,24 @@ export const onExecute = async (
 
               const [domain, service] = serviceCall.split('.');
 
-              const exeResuls = await lastValueFrom(
-                socket.callService(domain, service, args, entityId)
+              // const exeResuls = await lastValueFrom(
+              //   socket.callService(domain, service, args, entityId);
+              // );
+
+              const exeResuls = await callRemoteService(
+                domain,
+                service,
+                { ...args, entityId: entityId },
+                user
               );
 
               logging.debug('exeResuls', exeResuls);
-              if (exeResuls.success) {
+              if ('success' in exeResuls && exeResuls.success) {
                 return {
                   code: 'SUCCESS',
                   id: d.id,
                 };
-              } 
+              }
               return {
                 code: 'deviceOffline',
                 id: d.id,
