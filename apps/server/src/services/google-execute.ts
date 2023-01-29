@@ -107,7 +107,7 @@ export const onExecute = async (
                 domain,
                 service,
                 { ...args, entityId: entityId },
-                user
+                config.homeAssistaneApiKey
               )) as Record<string, any>;
 
               const deb = Object.keys(exeResuls || {}).reduce<Map<string, any>>(
