@@ -85,7 +85,7 @@ const reportState = async (updates: { [key: string]: any }) => {
       },
     });
 
-    logging.log('reportState res done');
+    logging.debug('reportState res done');
   } catch (err: any) {
     logging.error(`reportState ${err.code}`);
   }
@@ -133,7 +133,10 @@ export const googleInit = (
   }
 
   app.post('/api/fulfillment', async (req, res) => {
-    // const user = await getUser(req.headers);
+    const user = await getUser(req.headers);
+
+    logging.info('user', user);
+
     const payload: SmartHomeV1Request = req.body;
 
     logging.debug('payload', payload);
