@@ -43,7 +43,7 @@ const callRemoteService = (
   token: string
 ) => {
   return post<{}>(
-    `http://hassio/homeassistant/api/services/${domain}/${service}`,
+    `http://supervisor/core/api/services/${domain}/${service}`,
     token,
     data
   );
@@ -103,14 +103,24 @@ export const onExecute = async (
               //   socket.callService(domain, service, args, entityId);
               // );
 
-              const exeResuls = await callRemoteService(
+              const exeResuls = (await callRemoteService(
                 domain,
                 service,
                 { ...args, entityId: entityId },
                 user
+              )) as Record<string, any>;
+
+              const deb = Object.keys(exeResuls || {}).reduce<Map<string, any>>(
+                (acc, x) => {
+                  if (x[0] !== '_') {
+                    acc.set(x, exeResuls[x]);
+                  }
+                  return acc;
+                },
+                new Map()
               );
 
-              logging.debug('exeResuls', exeResuls);
+              logging.debug('exeResuls', deb);
               if ('success' in exeResuls && exeResuls.success) {
                 return {
                   code: 'SUCCESS',

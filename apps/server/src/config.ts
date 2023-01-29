@@ -6,6 +6,7 @@ export interface IConfig {
   ingressUrl?: string;
   homeAssistaneSocketUri: string;
   homeAssistaneApiKey: string;
+  supervisorToken: string;
   deviceStore: string;
   inferWebsocketUrl?: boolean;
   googleKeyFile?: string;
@@ -46,6 +47,7 @@ export const getConfig = (): IConfig => {
     port: port,
     ingressUrl: process.env.INGRESS_URL,
     homeAssistaneApiKey: process.env.HASSIO_TOKEN || '',
+    supervisorToken: process.env.SUPERVISOR_TOKEN || '',
     homeAssistaneSocketUri:
       process.env.HA_SOCKET_URL || 'ws://hassio/homeassistant/api/websocket',
 
