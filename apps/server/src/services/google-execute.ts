@@ -99,32 +99,40 @@ export const onExecute = async (
 
               const [domain, service] = serviceCall.split('.');
 
+              let exeResuls: Record<string, any> = {};
+
               // const exeResuls = await lastValueFrom(
               //   socket.callService(domain, service, args, entityId);
               // );
+              try {
+                exeResuls = (await callRemoteService(
+                  domain,
+                  service,
+                  { ...args, entityId: entityId },
+                  config.homeAssistaneApiKey
+                )) as Record<string, any>;
 
-              const exeResuls = (await callRemoteService(
-                domain,
-                service,
-                { ...args, entityId: entityId },
-                config.homeAssistaneApiKey
-              )) as Record<string, any>;
-
-              const deb = Object.keys(exeResuls || {}).reduce<Map<string, any>>(
-                (acc, x) => {
+                const deb = Object.keys(exeResuls || {}).reduce<
+                  Map<string, any>
+                >((acc, x) => {
                   if (x[0] !== '_') {
                     acc.set(x, exeResuls[x]);
                   }
                   return acc;
-                },
-                new Map()
-              );
+                }, new Map());
 
-              logging.debug('exeResuls', deb);
+                logging.debug('exeResuls', deb);
+              } catch (err) {
+                logging.error('http failed:', err);
+
+                exeResuls = await lastValueFrom(
+                  socket.callService(domain, service, args, entityId)
+                );
+              }
 
               logging.debug('payload body', { ...args, entityId: entityId });
 
-              if ('success' in exeResuls && exeResuls.success) {
+              if (exeResuls && 'success' in exeResuls && exeResuls.success) {
                 return {
                   code: 'SUCCESS',
                   id: d.id,
