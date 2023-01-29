@@ -1,7 +1,7 @@
-name: Google Home V2
-version: 0.0.89
+name: Google Home
+version: 0.0.90
 slug: google_home_local_v2
-description: Google Home to Home Assistant manager V2
+description: Google Home to Home Assistant manager
 arch:
   - armhf
   - armv7
