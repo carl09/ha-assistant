@@ -43,7 +43,7 @@ const callRemoteService = (
   token: string
 ) => {
   return post<{}>(
-    `http://supervisor/core/api/services/${domain}/${service}`,
+    `http://hassio/homeassistant/api/services/${domain}/${service}`,
     token,
     data
   );
@@ -121,6 +121,9 @@ export const onExecute = async (
               );
 
               logging.debug('exeResuls', deb);
+
+              logging.debug('payload body', { ...args, entityId: entityId });
+
               if ('success' in exeResuls && exeResuls.success) {
                 return {
                   code: 'SUCCESS',
