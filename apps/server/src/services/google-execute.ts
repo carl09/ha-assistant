@@ -30,6 +30,9 @@ const post = async <T>(
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
+
+      'X-Hass-User-ID': 'dd9eebc3009a46ad9ba38614860ca56c',
+      'X-Hass-Is-Admin': 1
     },
   });
 
@@ -37,16 +40,13 @@ const post = async <T>(
 };
 
 const callRemoteService = (
+  host: string,
   domain: string,
   service: string,
   data: { [key: string]: string },
   token: string
 ) => {
-  return post<{}>(
-    `http://hassio/homeassistant/api/services/${domain}/${service}`,
-    token,
-    data
-  );
+  return post<{}>(`${host}/services/${domain}/${service}`, token, data);
 };
 
 export const onExecute = async (
@@ -106,31 +106,20 @@ export const onExecute = async (
               // );
               try {
                 exeResuls = (await callRemoteService(
+                  config.homeAssistaneRestUri,
                   domain,
                   service,
-                  { ...args, entityId: entityId },
+                  { ...args, entity_id: entityId },
                   config.homeAssistaneApiKey
                 )) as Record<string, any>;
-
-                const deb = Object.keys(exeResuls || {}).reduce<
-                  Map<string, any>
-                >((acc, x) => {
-                  if (x[0] !== '_') {
-                    acc.set(x, exeResuls[x]);
-                  }
-                  return acc;
-                }, new Map());
-
-                logging.debug('exeResuls', deb);
+                logging.debug('Http Resp', exeResuls);
               } catch (err) {
                 logging.error('http failed:', err);
 
-                exeResuls = await lastValueFrom(
-                  socket.callService(domain, service, args, entityId)
-                );
+                // exeResuls = await lastValueFrom(
+                //   socket.callService(domain, service, args, entityId)
+                // );
               }
-
-              logging.debug('payload body', { ...args, entityId: entityId });
 
               if (exeResuls && 'success' in exeResuls && exeResuls.success) {
                 return {
@@ -176,23 +165,24 @@ export const onExecute = async (
 
   // const statusMap = await lastValueFrom(deviceStats$.pipe(take(2)));
 
-  // const statusMap = await lastValueFrom(deviceStats$.pipe(take(1)));
+  const statusMap = await lastValueFrom(deviceStats$.pipe(take(1)));
 
   //Promise<SmartHomeV1ExecuteResponseCommands[]>
 
   const googleResults = results.map(async (x) => {
+    console.log('statusMap[x.id]', statusMap[x.id]);
     if (x.code === 'SUCCESS') {
       return {
         ids: [x.id],
         status: 'SUCCESS',
-        // states: statusMap[x.id],
+        states: statusMap[x.id],
       };
     }
     return {
       ids: [x.id],
       status: 'ERROR',
       errorCode: x.code,
-      // states: statusMap[x.id],
+      states: statusMap[x.id],
     };
   });
 
