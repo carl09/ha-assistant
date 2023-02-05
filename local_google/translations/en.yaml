@@ -14,6 +14,9 @@ configuration:
   googleAgentUserId:
     name: Google Agent User Id
     description: A unique id for google to sync with
+  localDiscoveryPacket:
+    name: Google local UDP Discovery packet
+    description: A unique value for checking UDB message
 network:
   8089/tcp: Port for web server
   3312/udp: UDP Port for listening to devices

@@ -64,6 +64,10 @@ export const onSync = async (): Promise<SmartHomeV1SyncPayload> => {
           logging.debug(`${x.name} attributes`, key, acc[key]);
           return acc;
         }, {}),
+        otherDeviceIds: [{ deviceId: `local_${x.id}` }],
+        customData: {
+          localEntityId: x.id,
+        },
         // deviceInfo: {
         //     manufacturer: 'HomeAssistant',
         //     model: '',

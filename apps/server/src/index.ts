@@ -15,24 +15,26 @@ import { googleInit } from './google-endpoints';
 import { lookupInit } from './lookup-endpoints';
 import { existsSync, readFileSync } from 'fs';
 import { initDeviceState } from './common';
+import { googleLocalInit } from './google-local-endpoints';
 
 const cors = require('cors');
 
 const app = express();
 
 app.use(cors());
-app.use(express.json()) // for parsing application/json
-app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
+app.use(express.json()); // for parsing application/json
+app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
 const config = getConfig();
 
 init(config.deviceStore);
-const deviceStats$ = initDeviceState()
+const deviceStats$ = initDeviceState();
 clientInit(app, config);
 apiInit(app);
 lookupInit(app);
 authInit(app);
 googleInit(app, deviceStats$);
+googleLocalInit(app);
 
 const server = http.createServer(app);
 
