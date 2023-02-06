@@ -19,4 +19,4 @@ configuration:
     description: A unique value for checking UDB message
 network:
   8089/tcp: Port for web server
-  3312/udp: UDP Port for listening to devices
+  3311/udp: UDP Port for listening to devices

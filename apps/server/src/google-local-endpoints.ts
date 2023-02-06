@@ -45,7 +45,7 @@ export const googleLocalInit = (app: Express) => {
       isLocalOnly: true,
       isProxy: true,
     };
-    const responsePacket = encode(discoveryData);
+    const responsePacket = JSON.stringify(discoveryData) // encode(discoveryData);
     socket.send(responsePacket, rinfo.port, rinfo.address, (error) => {
       if (error !== null) {
         logging.error('failed to send ack:', error);

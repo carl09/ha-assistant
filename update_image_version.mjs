@@ -14,3 +14,13 @@ const updatedConfig = prettier.format(yaml.dump(config), {
 });
 
 fs.writeFileSync('./local_google/config.yaml', updatedConfig, 'utf8');
+
+const packageJson = JSON.parse(fs.readFileSync('./apps/agent/package.json'));
+
+packageJson.version = newVersion;
+
+const updatedPackageJson = prettier.format(JSON.stringify(packageJson), {
+  parser: 'json',
+});
+
+fs.writeFileSync('./apps/agent/package.json', updatedPackageJson, 'utf8');

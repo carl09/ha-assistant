@@ -23,7 +23,7 @@
     "start": "npm start -ws",
     "dev": "npm run dev -ws",
     "build": "npm run build -ws",
-    "release": "npm run release -ws && npm run copy && npm run inc-version",
+    "release": "npm run inc-version && npm run release -ws && npm run copy",
     "copy": "copy-files-from-to",
     "inc-version": "node ./update_image_version.mjs"
   },

@@ -41,7 +41,7 @@ logging.debug('App options', options);
 setLogLevel(options.logLevel);
 
 const port = process.env.SERVER_PORT ? parseInt(process.env.SERVER_PORT) : 4001;
-const udbPort = process.env.UDP_PORT ? parseInt(process.env.UDP_PORT) : 3312;
+const udbPort = process.env.UDP_PORT ? parseInt(process.env.UDP_PORT) : 3311;
 
 export const getConfig = (): IConfig => {
   return {

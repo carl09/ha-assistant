@@ -1,0 +1,28 @@
+{
+  "name": "@ha-assistant/agent",
+  "version": "0.0.105",
+  "description": "",
+  "main": "./dist/index.js",
+  "scripts": {
+    "build-web": "webpack --config webpack.config.web.js",
+    "build-node": "webpack --config webpack.config.node.js",
+    "build": "npm run build-web && npm run build-node",
+    "release": "npm run build",
+    "start": "node serve.webpack.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google/local-home-sdk": "^1.4.0",
+    "cbor": "^8.1.0",
+    "buffer": "^6.0.3",
+    "stream-browserify": "^3.0.0",
+    "process": "^0.11.10"
+  },
+  "peerDependencies": {},
+  "devDependencies": {
+    "typescript": "^3.9.5",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
+  }
+}
