@@ -7,17 +7,10 @@ import {
   IDevice,
   getHomeAssistantDataAccess,
   importDevice,
-  getAllDevices$,
 } from '@ha-assistant/listner';
 import { getConfig } from './config';
 import { firstValueFrom } from 'rxjs';
 import { requestSync } from './google-endpoints';
-
-type LookupItem = {
-  label: string;
-  detail: string;
-  info?: string;
-};
 
 export const apiInit = (app: Express) => {
   const config = getConfig();
@@ -26,18 +19,6 @@ export const apiInit = (app: Express) => {
     config.homeAssistaneSocketUri,
     config.homeAssistaneApiKey
   );
-
-  // app.get('/api', (req, res) => {
-  //   res.send({
-  //     name: 'hello',
-  //   });
-  // });
-
-  app.get('/api/device', async (req, res) => {
-    const devices = await firstValueFrom(getAllDevices$());
-    res.send(devices);
-    res.sendStatus(200);
-  });
 
   app.post('/api/device', (req, res) => {
     logging.log('Got body:', req.body);

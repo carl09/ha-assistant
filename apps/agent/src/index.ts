@@ -77,7 +77,7 @@ app
     command.requestId = request.requestId;
     command.deviceId = proxyDeviceId;
     command.port = 8089; // deviceData.httpPort;
-    command.path = `/api/device`;
+    command.path = `/api/local/reachableDevices`;
     // command.data = JSON.stringify(this.request);
     command.dataType = 'application/json';
     command.additionalHeaders = {};
@@ -86,24 +86,41 @@ app
 
     let rawResponse: DataFlow.HttpResponseData;
 
+    const reachableDevices: Array<
+      IntentFlow.DeviceWithId | IntentFlow.DeviceWithVerificationId
+    > = [];
+
     try {
       rawResponse = (await deviceManager.send(
         command
       )) as DataFlow.HttpResponseData;
 
       console.log('rawResponse', rawResponse);
+
+      const deveices = JSON.parse(
+        rawResponse.httpResponse.body as string
+      ) as Array<{ id: string }>;
+
+      (deveices || []).forEach((x) => {
+        reachableDevices.push({
+          verificationId: `local_${x.id}`,
+          id: x.id,
+        });
+      });
+
+      console.log('rawResponse', deveices);
     } catch (err) {
       console.error('Error making request', err);
       // Errors coming out of `deviceManager.send` are already Google errors.
       throw err;
     }
 
-    const reachableDevices = [
-      // Each verificationId must match one of the otherDeviceIds
-      // in the SYNC response
-      { verificationId: 'local-device-id-1' },
-      { verificationId: 'local-device-id-2' },
-    ];
+    // const reachableDevices = [
+    //   // Each verificationId must match one of the otherDeviceIds
+    //   // in the SYNC response
+    //   { verificationId: 'local-device-id-1' },
+    //   { verificationId: 'local-device-id-2' },
+    // ];
 
     // Return a response
     const response: IntentFlow.ReachableDevicesResponse = {
@@ -129,6 +146,11 @@ app
       request.requestId
     );
     const command = request.inputs[0].payload.commands[0];
+
+    
+    console.log('command', command);
+
+    throw new Error('failed');
 
     return Promise.all(
       command.devices.map((device) => {

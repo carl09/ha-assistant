@@ -2,6 +2,8 @@ import { logging } from './../../../libs/listner/src/utils/logging';
 import { type Express } from 'express';
 import { getConfig } from './config';
 import { createSocket } from 'node:dgram';
+import { firstValueFrom } from 'rxjs';
+import { getAllDevices$ } from '@ha-assistant/listner';
 
 interface IUDPOptions {
   udp_discovery_packet: string;
@@ -18,6 +20,18 @@ export const googleLocalInit = (app: Express) => {
   if (!config.localDiscoveryPacket) {
     return;
   }
+
+  app.get('/api/local/reachableDevices', async (req, res) => {
+    const devices = await firstValueFrom(getAllDevices$());
+
+    const resp = devices.map((x) => ({
+      id: x.id,
+    }));
+
+    logging.log('/api/local/reachableDevices', resp);
+
+    res.send(resp);
+  });
 
   const argv: IUDPOptions = {
     udp_discovery_port: config.udpPort,
@@ -44,7 +58,7 @@ export const googleLocalInit = (app: Express) => {
       isLocalOnly: true,
       isProxy: true,
     };
-    const responsePacket = JSON.stringify(discoveryData) // encode(discoveryData);
+    const responsePacket = JSON.stringify(discoveryData); // encode(discoveryData);
     socket.send(responsePacket, rinfo.port, rinfo.address, (error) => {
       if (error !== null) {
         logging.error('failed to send ack:', error);
