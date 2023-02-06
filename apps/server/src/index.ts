@@ -34,6 +34,7 @@ apiInit(app);
 lookupInit(app);
 authInit(app);
 googleInit(app, deviceStats$);
+googleLocalInit(app);
 
 const server = http.createServer(app);
 
@@ -63,8 +64,6 @@ if (existsSync('/ssl/privkey.pem')) {
 } else {
   logging.warn('cert dos not exist');
 }
-
-googleLocalInit(app);
 
 const handle = (signal: number) => {
   logging.error(`*^!@4=> Received event: ${signal}`);

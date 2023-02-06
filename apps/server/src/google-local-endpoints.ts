@@ -1,9 +1,8 @@
-import { logging } from './../../../libs/listner/src/utils/logging';
 import { type Express } from 'express';
 import { getConfig } from './config';
 import { createSocket } from 'node:dgram';
 import { firstValueFrom } from 'rxjs';
-import { getAllDevices$ } from '@ha-assistant/listner';
+import { getAllDevices$, logging } from '@ha-assistant/listner';
 
 interface IUDPOptions {
   udp_discovery_packet: string;
@@ -40,7 +39,6 @@ export const googleLocalInit = (app: Express) => {
   };
 
   const socket = createSocket('udp4');
-  // Handle discovery request.
   socket.on('message', (msg, rinfo) => {
     const discoveryPacket = Buffer.from(argv.udp_discovery_packet, 'hex');
     if (msg.compare(discoveryPacket) !== 0) {
@@ -48,7 +46,7 @@ export const googleLocalInit = (app: Express) => {
       return;
     }
 
-    logging.log('Recived message', msg, rinfo);
+    // logging.debug('Recived message', msg, rinfo);
 
     const discoveryData = {
       id: argv.device_id,
