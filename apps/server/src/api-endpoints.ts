@@ -7,6 +7,7 @@ import {
   IDevice,
   getHomeAssistantDataAccess,
   importDevice,
+  getAllDevices$,
 } from '@ha-assistant/listner';
 import { getConfig } from './config';
 import { firstValueFrom } from 'rxjs';
@@ -31,6 +32,12 @@ export const apiInit = (app: Express) => {
   //     name: 'hello',
   //   });
   // });
+
+  app.get('/api/device', async (req, res) => {
+    const devices = await firstValueFrom(getAllDevices$());
+    res.send(devices);
+    res.sendStatus(200);
+  });
 
   app.post('/api/device', (req, res) => {
     logging.log('Got body:', req.body);

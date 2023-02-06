@@ -67,6 +67,7 @@ export const onSync = async (): Promise<SmartHomeV1SyncPayload> => {
         otherDeviceIds: [{ deviceId: `local_${x.id}` }],
         customData: {
           localEntityId: x.id,
+          httpPort: config.port
         },
         // deviceInfo: {
         //     manufacturer: 'HomeAssistant',
