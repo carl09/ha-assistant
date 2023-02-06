@@ -1,11 +1,6 @@
 /// <reference types="@google/local-home-sdk" />
-// import { decodeFirst } from 'cbor';
-// import { Buffer } from 'buffer';
+import { Buffer } from 'buffer';
 import { version } from '../package.json';
-
-if (!window.Buffer) {
-  window.Buffer = Buffer;
-}
 
 import App = smarthome.App;
 import IntentFlow = smarthome.IntentFlow;
@@ -36,9 +31,13 @@ const app = new App(version)
     }
     // Raw discovery data are encoded as 'hex'.
     const udpScanData = Buffer.from(device.udpScanData.data, 'hex');
-    console.log('udpScanData:', udpScanData);
+    console.log('udpScanData:', {
+      d: udpScanData,
+      s: udpScanData.toString(),
+      j: udpScanData.toJSON(),
+    });
     // Device encoded discovery payload in CBOR.
-    const discoveryData: DiscoveryData = JSON.parse(device.udpScanData.data);
+    const discoveryData: DiscoveryData = JSON.parse(udpScanData.toString());
     // const discoveryData: DiscoveryData = await decodeFirst(udpScanData);
     // console.log('discoveryData:', discoveryData);
 
@@ -89,5 +88,5 @@ const app = new App(version)
   })
   .listen()
   .then(() => {
-    console.log('Ready');
+    console.log('Ready to listen');
   });

@@ -23,9 +23,7 @@
     "utf-8-validate": "^5.0.9",
     "bufferutil": "^4.0.6",
     "actions-on-google": "^3.0.0",
-    "googleapis": "^110.0.0",
-    "cbor": "^8.1.0",
-    "dgram": "^1.0.1"
+    "googleapis": "^110.0.0"
   },
   "peerDependencies": {
     "@ha-assistant/listner": "*"
