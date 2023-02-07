@@ -38,12 +38,9 @@ app
       payload: {
         device: {
           id: discoveryData.id,
-          verificationId: discoveryData.isLocalOnly
-            ? undefined
-            : discoveryData.id,
           isLocalOnly: discoveryData.isLocalOnly,
           isProxy: discoveryData.isProxy,
-          commandedOverProxy: true,
+          // commandedOverProxy: true,
         },
       },
     };
@@ -53,7 +50,7 @@ app
     return response;
   })
   .onReachableDevices(async (request) => {
-    console.debug('onReachableDevices request');
+    console.debug('onReachableDevices request', request.requestId);
     const deviceManager = await app.getDeviceManager();
 
     // Reference to the local proxy device
@@ -91,7 +88,6 @@ app
           id: x.id,
         });
       });
-
     } catch (err) {
       console.error('Error making request', err);
       // Errors coming out of `deviceManager.send` are already Google errors.
@@ -108,27 +104,27 @@ app
 
     return response;
   })
-  .onQuery((request) => {
-    console.debug('onQuery request');
-    //: IntentFlow.QueryRequest
+  // .onQuery((request) => {
+  //   console.debug('onQuery request');
+  //   //: IntentFlow.QueryRequest
 
-    console.log('payload', request.inputs[0].payload);
+  //   console.log('payload', request.inputs[0].payload);
 
-    const resp: IntentFlow.QueryResponse = {
-      requestId: request.requestId,
-      payload: {
-        devices: {},
-      },
-    };
+  //   const resp: IntentFlow.QueryResponse = {
+  //     requestId: request.requestId,
+  //     payload: {
+  //       devices: {},
+  //     },
+  //   };
 
-    throw new IntentFlow.HandlerError(
-      request.requestId,
-      ErrorCode.GENERIC_ERROR,
-      'onQuery testing'
-    );
+  //   throw new IntentFlow.HandlerError(
+  //     request.requestId,
+  //     ErrorCode.GENERIC_ERROR,
+  //     'onQuery testing'
+  //   );
 
-    return resp;
-  })
+  //   return resp;
+  // })
   .onExecute((request) => {
     console.debug('onExecute request');
     console.debug('EXECUTE request', request);
@@ -140,16 +136,13 @@ app
 
     console.log('command', command);
 
-    throw new IntentFlow.HandlerError(
-      request.requestId,
-      ErrorCode.GENERIC_ERROR,
-      'onExecute testing'
-    );
-
     return Promise.all(
       command.devices.map((device) => {
         // TODO: send device command.
         // TODO: set response success/errorState.
+        return Promise.resolve(
+          response.setErrorState(device.id, ErrorCode.GENERIC_ERROR)
+        );
       })
     ).then(() => {
       console.debug('EXECUTE response', response);
@@ -159,4 +152,5 @@ app
   .listen()
   .then(() => {
     console.log('Ready to listen');
-  });
+  })
+  .catch((e: Error) => console.error('App Error', e));

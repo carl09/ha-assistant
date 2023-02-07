@@ -17,6 +17,7 @@ export const googleLocalInit = (app: Express) => {
   const config = getConfig();
 
   if (!config.localDiscoveryPacket) {
+    logging.warn('Google Local Execution is disabled');
     return;
   }
 
