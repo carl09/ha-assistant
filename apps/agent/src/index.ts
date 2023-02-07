@@ -8,13 +8,10 @@ import ErrorCode = IntentFlow.ErrorCode;
 import Intents = smarthome.Intents;
 import DataFlow = smarthome.DataFlow;
 import Constants = smarthome.Constants;
+import Execute = smarthome.Execute;
 
 type DiscoveryData = {
   id: string;
-  model: string;
-  hw_rev: string;
-  fw_rev: string;
-  leds: number;
   port: number;
   isLocalOnly?: boolean;
   isProxy?: boolean;
@@ -24,16 +21,12 @@ const app = new App(version);
 
 app
   .onIdentify(async (request) => {
-    console.debug('IDENTIFY request:', request);
-
+    console.debug('onIdentify request');
     const device = request.inputs[0].payload.device;
-
-    console.log('device:', device);
 
     if (device.udpScanData === undefined) {
       throw Error(`identify request is missing discovery response: ${request}`);
     }
-    // Raw discovery data are encoded as 'hex'.
     const udpScanData = Buffer.from(device.udpScanData.data, 'hex');
     const discoveryData: DiscoveryData = JSON.parse(udpScanData.toString());
 
@@ -57,15 +50,10 @@ app
 
     console.debug('IDENTIFY response', response);
 
-    // throw new IntentFlow.HandlerError(
-    //   request.requestId,
-    //   ErrorCode.INTENT_CANCELLED,
-    //   'testing js'
-    // );
-
     return response;
   })
   .onReachableDevices(async (request) => {
+    console.debug('onReachableDevices request');
     const deviceManager = await app.getDeviceManager();
 
     // Reference to the local proxy device
@@ -82,8 +70,6 @@ app
     command.dataType = 'application/json';
     command.additionalHeaders = {};
 
-    // this.logMessage("Sending", command);
-
     let rawResponse: DataFlow.HttpResponseData;
 
     const reachableDevices: Array<
@@ -94,8 +80,6 @@ app
       rawResponse = (await deviceManager.send(
         command
       )) as DataFlow.HttpResponseData;
-
-      console.log('rawResponse', rawResponse);
 
       const deveices = JSON.parse(
         rawResponse.httpResponse.body as string
@@ -108,21 +92,12 @@ app
         });
       });
 
-      console.log('rawResponse', deveices);
     } catch (err) {
       console.error('Error making request', err);
       // Errors coming out of `deviceManager.send` are already Google errors.
       throw err;
     }
 
-    // const reachableDevices = [
-    //   // Each verificationId must match one of the otherDeviceIds
-    //   // in the SYNC response
-    //   { verificationId: 'local-device-id-1' },
-    //   { verificationId: 'local-device-id-2' },
-    // ];
-
-    // Return a response
     const response: IntentFlow.ReachableDevicesResponse = {
       intent: Intents.REACHABLE_DEVICES,
       requestId: request.requestId,
@@ -131,26 +106,45 @@ app
       },
     };
 
-    // throw new IntentFlow.HandlerError(
-    //   request.requestId,
-    //   ErrorCode.INTENT_CANCELLED,
-    //   'testing js'
-    // );
-
     return response;
   })
+  .onQuery((request) => {
+    console.debug('onQuery request');
+    //: IntentFlow.QueryRequest
+
+    console.log('payload', request.inputs[0].payload);
+
+    const resp: IntentFlow.QueryResponse = {
+      requestId: request.requestId,
+      payload: {
+        devices: {},
+      },
+    };
+
+    throw new IntentFlow.HandlerError(
+      request.requestId,
+      ErrorCode.GENERIC_ERROR,
+      'onQuery testing'
+    );
+
+    return resp;
+  })
   .onExecute((request) => {
+    console.debug('onExecute request');
     console.debug('EXECUTE request', request);
 
-    const response = new smarthome.Execute.Response.Builder().setRequestId(
+    const response = new Execute.Response.Builder().setRequestId(
       request.requestId
     );
     const command = request.inputs[0].payload.commands[0];
 
-    
     console.log('command', command);
 
-    throw new Error('failed');
+    throw new IntentFlow.HandlerError(
+      request.requestId,
+      ErrorCode.GENERIC_ERROR,
+      'onExecute testing'
+    );
 
     return Promise.all(
       command.devices.map((device) => {
