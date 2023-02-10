@@ -87,7 +87,17 @@ const reportState = async (updates: { [key: string]: any }) => {
 
     logging.debug('reportState res done');
   } catch (err: any) {
-    logging.error(`reportState ${err.code}`);
+    logging.error(`reportState ${err.code} : ${err.message}`, {
+      requestBody: {
+        agentUserId: config.googleAgentUserId,
+        requestId: uuidv4(),
+        payload: {
+          devices: {
+            states: updates,
+          },
+        },
+      },
+    });
   }
 };
 
@@ -177,6 +187,8 @@ export const googleInit = (
 
     Promise.all(results).then((x) => {
       return res.send(x[0]);
+    }).catch(err => {
+      logging.error('fulfillment', err)
     });
   });
 };
