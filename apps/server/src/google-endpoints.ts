@@ -147,7 +147,7 @@ export const googleInit = (
 
     const payload: SmartHomeV1Request = req.body;
 
-    logging.debug('payload', payload);
+    logging.debug('fulfillment payload', payload);
 
     const results = payload.inputs.map(async (x) => {
       if (x.intent === 'action.devices.SYNC') {
