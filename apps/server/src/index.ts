@@ -15,6 +15,7 @@ import { googleInit } from './google-endpoints';
 import { lookupInit } from './lookup-endpoints';
 import { existsSync, readFileSync } from 'fs';
 import { initDeviceState } from './common';
+import { googleLocalInit } from './google-local-endpoints';
 
 const cors = require('cors');
 
@@ -33,7 +34,7 @@ apiInit(app);
 lookupInit(app);
 authInit(app);
 googleInit(app, deviceStats$);
-// googleLocalInit(app);
+googleLocalInit(app);
 
 const server = http.createServer(app);
 

@@ -33,6 +33,18 @@ export const googleLocalInit = (app: Express) => {
     res.send(resp);
   });
 
+  app.post('/api/local/execute', async (req, res) => {
+    logging.log('/api/local/execute', req.body);
+
+    res.send();
+  });
+
+  app.post('/api/local/query', async (req, res) => {
+    logging.log('/api/local/query', req.body);
+
+    res.send();
+  });
+
   const argv: IUDPOptions = {
     udp_discovery_port: config.udpPort,
     udp_discovery_packet: config.localDiscoveryPacket,
@@ -46,8 +58,6 @@ export const googleLocalInit = (app: Express) => {
       logging.warn(`received unknown payload from ${rinfo}:`, msg);
       return;
     }
-
-    // logging.debug('Recived message', msg, rinfo);
 
     const discoveryData = {
       id: argv.device_id,
