@@ -21,12 +21,14 @@ export const googleLocalInit = (app: Express) => {
     return;
   }
 
-  app.get('/api/local/reachableDevices', async (req, res) => {
+  app.post('/api/local/reachableDevices', async (req, res) => {
     const devices = await firstValueFrom(getAllDevices$());
 
-    const resp = devices.map((x) => ({
-      id: x.id,
-    }));
+    const resp = devices
+      .filter((x) => x.name === 'Coffee grinder')
+      .map((x) => ({
+        id: x.id,
+      }));
 
     logging.log('/api/local/reachableDevices', resp);
 

@@ -4,7 +4,7 @@
   "description": "EXAMPLE language support for CodeMirror",
   "scripts": {
     "test": "mocha test/test.js",
-    "prepare": "rollup -c",
+    "_prepare": "rollup -c",
     "dev": "rollup -c",
     "release": "echo nothing in lib"
   },

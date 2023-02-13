@@ -6,7 +6,6 @@ module.exports = {
   target: 'web',
   entry: './src/index.ts',
   output: {
-    // path: path.resolve(__dirname, 'dist/web/'),
     path: path.resolve(__dirname, 'dist/'),
     filename: 'web-bundle.js',
   },

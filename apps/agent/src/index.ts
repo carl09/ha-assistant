@@ -58,7 +58,7 @@ app
 
     const command = new DataFlow.HttpRequestData();
     command.protocol = Constants.Protocol.HTTP;
-    command.method = Constants.HttpOperation.GET;
+    command.method = Constants.HttpOperation.POST;
     command.requestId = request.requestId;
     command.deviceId = proxyDeviceId;
     command.port = 8089; // deviceData.httpPort;
@@ -104,45 +104,100 @@ app
 
     return response;
   })
-  // .onQuery((request) => {
-  //   console.debug('onQuery request');
-  //   //: IntentFlow.QueryRequest
+  .onQuery(async (request) => {
+    console.debug('onQuery request');
+    //: IntentFlow.QueryRequest
 
-  //   console.log('payload', request.inputs[0].payload);
+    const payload = request.inputs[0].payload;
+    console.log('payload', payload);
 
-  //   const resp: IntentFlow.QueryResponse = {
-  //     requestId: request.requestId,
-  //     payload: {
-  //       devices: {},
-  //     },
-  //   };
+    const deviceManager = await app.getDeviceManager();
 
-  //   throw new IntentFlow.HandlerError(
-  //     request.requestId,
-  //     ErrorCode.GENERIC_ERROR,
-  //     'onQuery testing'
-  //   );
+    const command = new DataFlow.HttpRequestData();
+    command.protocol = Constants.Protocol.HTTP;
+    command.method = Constants.HttpOperation.POST;
+    command.requestId = request.requestId;
+    // command.deviceId = proxyDeviceId;
+    command.port = 8089; // deviceData.httpPort;
+    command.path = `/api/local/query`;
+    command.data = JSON.stringify(payload);
+    command.dataType = 'application/json';
+    command.additionalHeaders = {};
 
-  //   return resp;
-  // })
-  .onExecute((request) => {
+    let rawResponse: DataFlow.HttpResponseData;
+
+    try {
+      rawResponse = (await deviceManager.send(
+        command
+      )) as DataFlow.HttpResponseData;
+
+      console.log(
+        'onQuery rawResponse',
+        rawResponse.httpResponse.statusCode,
+        rawResponse.httpResponse.body
+      );
+    } catch (err) {
+      console.error('onQuery', err);
+      // Errors coming out of `deviceManager.send` are already Google errors.
+      throw err;
+    }
+
+    const resp: IntentFlow.QueryResponse = {
+      requestId: request.requestId,
+      payload: {
+        devices: {},
+      },
+    };
+
+    throw new IntentFlow.HandlerError(
+      request.requestId,
+      ErrorCode.GENERIC_ERROR,
+      'onQuery testing'
+    );
+
+    return resp;
+  })
+  .onExecute(async (request) => {
     console.debug('onExecute request');
     console.debug('EXECUTE request', request);
 
     const response = new Execute.Response.Builder().setRequestId(
       request.requestId
     );
+
+    const deviceManager = await app.getDeviceManager();
+
+    // const proxyDeviceId = request.inputs[0].payload.device.id as string;
+
     const command = request.inputs[0].payload.commands[0];
 
     console.log('command', command);
 
     return Promise.all(
-      command.devices.map((device) => {
-        // TODO: send device command.
-        // TODO: set response success/errorState.
-        return Promise.resolve(
-          response.setErrorState(device.id, ErrorCode.GENERIC_ERROR)
-        );
+      command.devices.map(async (device) => {
+        const command = new DataFlow.HttpRequestData();
+        command.protocol = Constants.Protocol.HTTP;
+        command.method = Constants.HttpOperation.POST;
+        command.requestId = request.requestId;
+        // command.deviceId = proxyDeviceId;
+        command.port = 8089; // deviceData.httpPort;
+        command.path = `/api/local/execute`;
+        command.data = JSON.stringify(device);
+        command.dataType = 'application/json';
+        command.additionalHeaders = {};
+
+        let rawResponse: DataFlow.HttpResponseData;
+
+        try {
+          rawResponse = (await deviceManager.send(
+            command
+          )) as DataFlow.HttpResponseData;
+          console.error('Request', rawResponse.httpResponse.statusCode);
+          response.setErrorState(device.id, ErrorCode.GENERIC_ERROR);
+        } catch (err) {
+          console.error('Request Failed', err);
+          response.setErrorState(device.id, ErrorCode.GENERIC_ERROR);
+        }
       })
     ).then(() => {
       console.debug('EXECUTE response', response);

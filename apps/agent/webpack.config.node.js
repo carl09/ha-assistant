@@ -6,7 +6,6 @@ module.exports = {
   target: 'node',
   entry: './src/index.ts',
   output: {
-    // path: path.resolve(__dirname, 'dist/node/'),
     path: path.resolve(__dirname, 'dist/'),
     filename: 'node-bundle.js',
   },
@@ -17,10 +16,6 @@ module.exports = {
   ],
   module: {
     rules: [
-      // {
-      //   test: /\.ts$/,
-      //   loader: 'ts-loader'
-      // }
       {
         test: /\.(t|j)sx?$/,
         loader: 'babel-loader',
