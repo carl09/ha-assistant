@@ -104,59 +104,59 @@ app
 
     return response;
   })
-  .onQuery(async (request) => {
-    console.debug('onQuery request');
-    //: IntentFlow.QueryRequest
+  // .onQuery(async (request) => {
+  //   console.debug('onQuery request');
+  //   //: IntentFlow.QueryRequest
 
-    const payload = request.inputs[0].payload;
-    console.log('payload', payload);
+  //   const payload = request.inputs[0].payload;
+  //   console.log('payload', payload);
 
-    const deviceManager = await app.getDeviceManager();
+  //   const deviceManager = await app.getDeviceManager();
 
-    const command = new DataFlow.HttpRequestData();
-    command.protocol = Constants.Protocol.HTTP;
-    command.method = Constants.HttpOperation.POST;
-    command.requestId = request.requestId;
-    // command.deviceId = proxyDeviceId;
-    command.port = 8089; // deviceData.httpPort;
-    command.path = `/api/local/query`;
-    command.data = JSON.stringify(payload);
-    command.dataType = 'application/json';
-    command.additionalHeaders = {};
+  //   const command = new DataFlow.HttpRequestData();
+  //   command.protocol = Constants.Protocol.HTTP;
+  //   command.method = Constants.HttpOperation.POST;
+  //   command.requestId = request.requestId;
+  //   // command.deviceId = proxyDeviceId;
+  //   command.port = 8089; // deviceData.httpPort;
+  //   command.path = `/api/local/query`;
+  //   command.data = JSON.stringify(payload);
+  //   command.dataType = 'application/json';
+  //   command.additionalHeaders = {};
 
-    let rawResponse: DataFlow.HttpResponseData;
+  //   let rawResponse: DataFlow.HttpResponseData;
 
-    try {
-      rawResponse = (await deviceManager.send(
-        command
-      )) as DataFlow.HttpResponseData;
+  //   try {
+  //     rawResponse = (await deviceManager.send(
+  //       command
+  //     )) as DataFlow.HttpResponseData;
 
-      console.log(
-        'onQuery rawResponse',
-        rawResponse.httpResponse.statusCode,
-        rawResponse.httpResponse.body
-      );
-    } catch (err) {
-      console.error('onQuery', err);
-      // Errors coming out of `deviceManager.send` are already Google errors.
-      throw err;
-    }
+  //     console.log(
+  //       'onQuery rawResponse',
+  //       rawResponse.httpResponse.statusCode,
+  //       rawResponse.httpResponse.body
+  //     );
+  //   } catch (err) {
+  //     console.error('onQuery', err);
+  //     // Errors coming out of `deviceManager.send` are already Google errors.
+  //     throw err;
+  //   }
 
-    const resp: IntentFlow.QueryResponse = {
-      requestId: request.requestId,
-      payload: {
-        devices: {},
-      },
-    };
+  //   const resp: IntentFlow.QueryResponse = {
+  //     requestId: request.requestId,
+  //     payload: {
+  //       devices: {},
+  //     },
+  //   };
 
-    throw new IntentFlow.HandlerError(
-      request.requestId,
-      ErrorCode.GENERIC_ERROR,
-      'onQuery testing'
-    );
+  //   throw new IntentFlow.HandlerError(
+  //     request.requestId,
+  //     ErrorCode.GENERIC_ERROR,
+  //     'onQuery testing'
+  //   );
 
-    return resp;
-  })
+  //   return resp;
+  // })
   .onExecute(async (request) => {
     console.debug('onExecute request');
     console.debug('EXECUTE request', request);
@@ -206,6 +206,6 @@ app
   })
   .listen()
   .then(() => {
-    console.log('Ready to listen');
+    console.log('Ready to listen HA Agent');
   })
   .catch((e: Error) => console.error('App Error', e));

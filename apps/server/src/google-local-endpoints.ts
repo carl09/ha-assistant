@@ -60,18 +60,20 @@ export const googleLocalInit = (app: Express) => {
       logging.warn(`received unknown payload from ${rinfo}:`, msg);
       return;
     }
-    
 
     const discoveryData = {
       id: argv.device_id,
-      model: argv.device_model,
-      hw_rev: argv.hardware_revision,
-      fw_rev: argv.firmware_revision,
+      // model: argv.device_model,
+      // hw_rev: argv.hardware_revision,
+      // fw_rev: argv.firmware_revision,
       isLocalOnly: true,
       isProxy: true,
     };
 
-    logging.log(`received discovery Packet ${rinfo}:`, discoveryData);
+    logging.log(`received discovery Packet:`, {
+      rinfo,
+      discoveryData,
+    });
 
     const responsePacket = JSON.stringify(discoveryData); // encode(discoveryData);
     socket.send(responsePacket, rinfo.port, rinfo.address, (error) => {
