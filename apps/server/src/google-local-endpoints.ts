@@ -60,6 +60,7 @@ export const googleLocalInit = (app: Express) => {
       logging.warn(`received unknown payload from ${rinfo}:`, msg);
       return;
     }
+    
 
     const discoveryData = {
       id: argv.device_id,
@@ -69,6 +70,9 @@ export const googleLocalInit = (app: Express) => {
       isLocalOnly: true,
       isProxy: true,
     };
+
+    logging.log(`received discovery Packet ${rinfo}:`, discoveryData);
+
     const responsePacket = JSON.stringify(discoveryData); // encode(discoveryData);
     socket.send(responsePacket, rinfo.port, rinfo.address, (error) => {
       if (error !== null) {

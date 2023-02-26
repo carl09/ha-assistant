@@ -95,7 +95,7 @@ export const init = (fileName: string) => {
   };
 
   firstValueFrom(base$).then((devices) => {
-    logging.debug('Checking file', devices);
+    // logging.debug('Checking file', devices);
     if (!devices || Object.keys(devices).length === 0) {
       //   d1_mini_4: getDeviceClimate('d1_mini_4'),
       // d1_mini_3: getDeviceClimate('d1_mini_3'),
