@@ -21,7 +21,8 @@ export const googleLocalInit = (app: Express) => {
     return;
   }
 
-  app.post('/api/local/reachableDevices', async (req, res) => {
+  app.get('/api/local/reachableDevices', async (req, res) => {
+    logging.log('get /api/local/reachableDevices');
     const devices = await firstValueFrom(getAllDevices$());
 
     const resp = devices
@@ -31,6 +32,20 @@ export const googleLocalInit = (app: Express) => {
       }));
 
     logging.log('/api/local/reachableDevices', resp);
+
+    res.send(resp);
+  });
+
+  app.post('/api/local/reachableDevices', async (req, res) => {
+    const devices = await firstValueFrom(getAllDevices$());
+
+    const resp = devices
+      .filter((x) => x.name === 'Coffee grinder')
+      .map((x) => ({
+        id: x.id,
+      }));
+
+    logging.log('post /api/local/reachableDevices', resp);
 
     res.send(resp);
   });

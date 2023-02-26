@@ -56,9 +56,11 @@ app
     // Reference to the local proxy device
     const proxyDeviceId = request.inputs[0].payload.device.id as string;
 
+    console.debug('onReachableDevices proxyDeviceId', proxyDeviceId);
+
     const command = new DataFlow.HttpRequestData();
     command.protocol = Constants.Protocol.HTTP;
-    command.method = Constants.HttpOperation.POST;
+    command.method = Constants.HttpOperation.GET;
     command.requestId = request.requestId;
     command.deviceId = proxyDeviceId;
     command.port = 8089; // deviceData.httpPort;
@@ -81,6 +83,8 @@ app
       const deveices = JSON.parse(
         rawResponse.httpResponse.body as string
       ) as Array<{ id: string }>;
+
+      console.debug('onReachableDevices deveices', deveices);
 
       (deveices || []).forEach((x) => {
         reachableDevices.push({
