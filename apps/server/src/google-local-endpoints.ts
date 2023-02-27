@@ -40,7 +40,7 @@ export const googleLocalInit = (app: Express) => {
     const devices = await firstValueFrom(getAllDevices$());
 
     const resp = devices
-      .filter((x) => x.name === 'Coffee grinder')
+      // .filter((x) => x.name === 'Coffee grinder')
       .map((x) => ({
         id: x.id,
       }));

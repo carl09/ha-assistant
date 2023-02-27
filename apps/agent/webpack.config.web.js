@@ -2,13 +2,18 @@ const path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
-  mode: 'production',
+  // mode: 'production',
+  mode: 'development',
   target: 'web',
+  // devtool: undefined,
   entry: './src/index.ts',
   output: {
     path: path.resolve(__dirname, 'dist/'),
     filename: 'web-bundle.js',
   },
+  // experiments: {
+  //   outputModule: true,
+  // },
   plugins: [
     new webpack.ProvidePlugin({
       process: 'process/browser',
