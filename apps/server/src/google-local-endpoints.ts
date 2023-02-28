@@ -31,7 +31,7 @@ export const googleLocalInit = (app: Express) => {
         id: x.id,
       }));
 
-    logging.log('/api/local/reachableDevices', resp);
+    // logging.log('/api/local/reachableDevices', resp);
 
     res.send(resp);
   });
@@ -45,7 +45,7 @@ export const googleLocalInit = (app: Express) => {
         id: x.id,
       }));
 
-    logging.log('post /api/local/reachableDevices', resp);
+    // logging.log('post /api/local/reachableDevices', resp);
 
     res.send(resp);
   });
@@ -78,14 +78,11 @@ export const googleLocalInit = (app: Express) => {
 
     const discoveryData = {
       id: argv.device_id,
-      // model: argv.device_model,
-      // hw_rev: argv.hardware_revision,
-      // fw_rev: argv.firmware_revision,
       isLocalOnly: true,
       isProxy: true,
     };
 
-    logging.log(`received discovery Packet:`, {
+    logging.debug(`received discovery Packet:`, {
       rinfo,
       discoveryData,
     });

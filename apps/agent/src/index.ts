@@ -41,6 +41,12 @@ app
           isLocalOnly: discoveryData.isLocalOnly,
           isProxy: discoveryData.isProxy,
           // commandedOverProxy: true,
+          deviceInfo: {
+            hwVersion: 'UNKNOWN_HW_VERSION',
+            manufacturer: 'Home Assistant',
+            model: 'Home Assistant',
+            swVersion: version,
+          },
         },
       },
     };
@@ -69,8 +75,6 @@ app
     command.dataType = 'application/json';
     command.additionalHeaders = {};
 
-    [];
-
     try {
       let rawResponse = (await deviceManager.send(
         command
@@ -82,17 +86,6 @@ app
 
       console.debug('onReachableDevices serverDevices', serverDevices);
 
-      // const reachableDevices: Array<
-      //   IntentFlow.DeviceWithId | IntentFlow.DeviceWithVerificationId
-      // >
-      // const reachableDevices = (serverDevices || []).map((x) => {
-      //   return {
-      //     verificationId: `local_${x.id}`,
-      //   };
-      // });
-
-      // console.debug('onReachableDevices reachableDevices', reachableDevices);
-
       const response: IntentFlow.ReachableDevicesResponse = {
         intent: Intents.REACHABLE_DEVICES,
         requestId: request.requestId,
@@ -100,7 +93,7 @@ app
           devices: serverDevices.map((x) => {
             return {
               verificationId: `local_${x.id}`,
-              id: x.id,
+              // id: x.id,
             };
           }),
         },
