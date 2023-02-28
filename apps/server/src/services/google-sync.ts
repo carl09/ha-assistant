@@ -65,7 +65,12 @@ export const onSync = async (): Promise<SmartHomeV1SyncPayload> => {
       };
 
       if (config.localDiscoveryPacket) {
-        syncDevice.otherDeviceIds = [{ deviceId: `local_${x.id}` }];
+        syncDevice.otherDeviceIds = [
+          {
+            deviceId: `local-${x.name.replaceAll(' ', '-')}`,
+            // agentId: 'ha-google-agent',
+          },
+        ];
         // syncDevice.customData = {
         //   localEntityId: x.id,
         //   httpPort: config.port,
