@@ -1,4 +1,4 @@
-import { parser } from './simple.grammar';
+import { parser } from './simple';
 import {
   LRLanguage,
   LanguageSupport,
@@ -29,10 +29,12 @@ export const EXAMPLELanguage = LRLanguage.define({
         PropertyName: t.propertyName,
         MemberExpression: t.propertyName,
         '( )': t.paren,
-        "[ ]": t.squareBracket,
-        ", ;": t.separator,
-        "CallExpression/VariableName": t.function(t.variableName),
-        "CallExpression/MemberExpression/PropertyName": t.function(t.propertyName),
+        '[ ]': t.squareBracket,
+        ', ;': t.separator,
+        'CallExpression/VariableName': t.function(t.variableName),
+        'CallExpression/MemberExpression/PropertyName': t.function(
+          t.propertyName
+        ),
       }),
     ],
   }),

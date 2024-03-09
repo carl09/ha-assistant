@@ -29,7 +29,7 @@ const post = async <T>(
     data: body,
     headers: {
       'Content-Type': 'application/json',
-      // Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
       'X-Ha-Access': token,
 
       'X-WEBAUTH-USER': 'b63c4564a0514a899821d85e2e18d8db',

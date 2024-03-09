@@ -40,4 +40,9 @@ export const deviceTypes: IDeviceType[] = [
     humanName: 'Sensor',
     traits: ['action.devices.traits.SensorState'],
   },
+  {
+    type: 'action.devices.types.BLINDS',
+    humanName: 'Blinds',
+    traits: ['action.devices.traits.OpenClose'],
+  },
 ];

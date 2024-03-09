@@ -647,4 +647,70 @@ export const deviceTraits: { [trait: string]: IDeviceTraits } = {
     },
     commands: [],
   },
+  'action.devices.traits.OpenClose': {
+    type: 'action.devices.traits.OpenClose',
+    humanName: 'OpenClose',
+    states: {
+      openPercent: {
+        required: true,
+        type: 'integer',
+        description:
+          'Indicates the percentage that a device is opened, where 0 is closed and 100 is fully open.',
+      },
+      targetOpenPercent: {
+        type: 'integer',
+        description:
+          'Level indicating the open percent where the device will go or is moving to as a result of an ongoing change in position.',
+      },
+      openState: {
+        type: 'string',
+        description: 'The current open state of the device.',
+        supportedValues: [
+          'open',
+          'closed',
+          'opening',
+          'closing',
+          'partially open',
+        ],
+      },
+    },
+    attributes: {
+      discreteOnlyOpenClose: {
+        type: 'boolean',
+        default: false,
+        description:
+          'When set to true, this indicates that the device must either be fully open or fully closed (that is, it does not support values between 0% and 100%).',
+      },
+      openDirection: {
+        type: 'array',
+        description:
+          'List of supported directions in which the device can open or close',
+        supportedValues: ['UP', 'DOWN', 'LEFT', 'RIGHT', 'IN', 'OUT'],
+      },
+      commandOnlyOpenClose: {
+        type: 'boolean',
+        default: false,
+        description:
+          'Indicates if the device can only be controlled, and cannot be queried for state information.',
+      },
+      queryOnlyOpenClose: {
+        type: 'boolean',
+        default: false,
+        description:
+          'Indicates if the device can only be queried for state information, and cannot be controlled.',
+      },
+    },
+    commands: [
+      {
+        command: 'action.devices.commands.OpenClose',
+        params: {
+          openPercent: {
+            description:
+              'The desired open percentage, where 0 is closed and 100 is fully open.',
+            type: 'integer',
+          },
+        },
+      },
+    ],
+  },
 };
