@@ -132,7 +132,7 @@ app
     for (const device of devices) {
       const command = new DataFlow.HttpRequestData();
       command.protocol = Constants.Protocol.HTTP;
-      command.method = Constants.HttpOperation.GET;
+      command.method = Constants.HttpOperation.POST;
       command.requestId = request.requestId;
       command.deviceId = device.id;
       command.port = 8089; // deviceData.httpPort;
@@ -205,41 +205,51 @@ app
 
     // const proxyDeviceId = request.inputs[0].payload.device.id as string;
 
-    const command = request.inputs[0].payload.commands[0];
+    const input_command = request.inputs[0].payload.commands[0];
 
-    console.log('command', command);
+    console.log('command', input_command);
 
-    return Promise.all(
-      command.devices.map(async (device) => {
-        const command = new DataFlow.HttpRequestData();
-        command.protocol = Constants.Protocol.HTTP;
-        command.method = Constants.HttpOperation.POST;
-        command.requestId = request.requestId;
-        command.deviceId = device.id;
-        // command.deviceId = proxyDeviceId;
-        command.port = 8089; // deviceData.httpPort;
-        command.path = `/api/local/execute`;
-        command.data = JSON.stringify(device);
-        command.dataType = 'application/json';
-        command.additionalHeaders = {};
+    // return Promise.all(
+    // input_command.devices.map(async (device) => {
+    const command = new DataFlow.HttpRequestData();
+    command.protocol = Constants.Protocol.HTTP;
+    command.method = Constants.HttpOperation.POST;
+    command.requestId = request.requestId;
+    command.deviceId = input_command.devices[0].id;
+    // command.deviceId = proxyDeviceId;
+    command.port = 8089; // deviceData.httpPort;
+    command.path = `/api/local/execute`;
+    command.data = JSON.stringify(input_command);
+    command.dataType = 'application/json';
+    command.additionalHeaders = {};
 
-        let rawResponse: DataFlow.HttpResponseData;
+    let rawResponse: DataFlow.HttpResponseData;
 
-        try {
-          rawResponse = (await deviceManager.send(
-            command
-          )) as DataFlow.HttpResponseData;
-          console.error('Request', rawResponse.httpResponse.statusCode);
-          response.setErrorState(device.id, ErrorCode.GENERIC_ERROR);
-        } catch (err) {
-          console.error('Request Failed', err);
-          response.setErrorState(device.id, ErrorCode.GENERIC_ERROR);
-        }
-      })
-    ).then(() => {
-      console.debug('EXECUTE response', response);
-      return response.build();
-    });
+    try {
+      rawResponse = (await deviceManager.send(
+        command
+      )) as DataFlow.HttpResponseData;
+      console.error('Request', rawResponse.httpResponse.statusCode);
+      response.setErrorState(
+        input_command.devices[0].id,
+        ErrorCode.GENERIC_ERROR
+      );
+    } catch (err) {
+      console.error('Request Failed', err);
+      response.setErrorState(
+        input_command.devices[0].id,
+        ErrorCode.GENERIC_ERROR
+      );
+    }
+
+    console.log('onExecute response', response);
+
+    return response.build();
+    // })
+    // ).then(() => {
+    //   console.debug('EXECUTE response', response);
+    //   return response.build();
+    // });
   })
   .listen()
   .then(() => {
