@@ -28,7 +28,7 @@ export const googleLocalInit = (app: Express) => {
     const resp = devices
       // .filter((x) => x.name === 'Coffee grinder')
       .map((x) => ({
-        id: x.id,
+        id: x.name,
       }));
 
     // logging.log('/api/local/reachableDevices', resp);
