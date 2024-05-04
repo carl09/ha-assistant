@@ -82,20 +82,24 @@ app
 
       const serverDevices = JSON.parse(
         rawResponse.httpResponse.body as string
-      ) as Array<{ id: string }>;
+      ) as Array<{ id: string; localId: string; deviceId: string }>;
 
       console.debug('onReachableDevices serverDevices', serverDevices);
+
+      const reachableDevices = serverDevices.map((x) => {
+        return {
+          verificationId: x.localId,
+          id: x.deviceId,
+        };
+      });
+
+      console.debug('onReachableDevices devices', reachableDevices);
 
       const response: IntentFlow.ReachableDevicesResponse = {
         intent: Intents.REACHABLE_DEVICES,
         requestId: request.requestId,
         payload: {
-          devices: serverDevices.map((x) => {
-            return {
-              verificationId: `local_${x.id}`,
-              // id: x.id,
-            };
-          }),
+          devices: reachableDevices,
         },
       };
 
