@@ -170,7 +170,7 @@ export const getDeviceStatusV2$ = (socket: HomeAssistantDataAccess) =>
             if (JSON.stringify(devicesState) !== JSON.stringify(msg.devices)) {
               devicesState = msg.devices;
               obs.next(devicesState);
-              logging.info(`got update for`, devicesState);
+              logging.debug(`got update for`, devicesState);
             } else {
               logging.debug('Device state has not changed');
             }

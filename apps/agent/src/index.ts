@@ -89,11 +89,15 @@ app
       const reachableDevices = serverDevices.map((x) => {
         return {
           verificationId: x.localId,
-          id: x.deviceId,
+          // id: x.deviceId,
         };
       });
 
       console.debug('onReachableDevices devices', reachableDevices);
+      console.debug(
+        'onReachableDevices devices stringify',
+        JSON.parse(JSON.stringify(reachableDevices))
+      );
 
       const response: IntentFlow.ReachableDevicesResponse = {
         intent: Intents.REACHABLE_DEVICES,
@@ -214,6 +218,6 @@ app
   })
   .listen()
   .then(() => {
-    console.log('Ready to listen HA Agent');
+    console.log('Ready to listen HA Agent', version);
   })
   .catch((e: Error) => console.error('App Error', e));
