@@ -6,7 +6,8 @@
     "test": "mocha test/test.js",
     "_prepare": "rollup -c",
     "dev": "rollup -c",
-    "release": "npm run dev"
+    "_release": "npm run dev",
+    "release": "echo nothing in lib"
   },
   "type": "module",
   "main": "dist/index.cjs",
