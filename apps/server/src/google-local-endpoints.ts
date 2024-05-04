@@ -28,7 +28,7 @@ export const googleLocalInit = (app: Express) => {
     const resp = devices
       // .filter((x) => x.name === 'Coffee grinder')
       .map((x) => ({
-        id: x.name,
+        id: x.name.replaceAll(' ', '-'),
       }));
 
     // logging.log('/api/local/reachableDevices', resp);
@@ -42,7 +42,7 @@ export const googleLocalInit = (app: Express) => {
     const resp = devices
       // .filter((x) => x.name === 'Coffee grinder')
       .map((x) => ({
-        id: x.name,
+        id: x.name.replaceAll(' ', '-'),
         // name: x.name,
       }));
 
