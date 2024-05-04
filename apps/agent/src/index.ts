@@ -121,51 +121,75 @@ app
     //: IntentFlow.QueryRequest
 
     const payload = request.inputs[0].payload;
+    const devices = payload.devices;
     console.log('payload', payload);
 
     const deviceManager = await app.getDeviceManager();
 
-    const command = new DataFlow.HttpRequestData();
-    command.protocol = Constants.Protocol.HTTP;
-    command.method = Constants.HttpOperation.POST;
-    command.requestId = request.requestId;
-    // command.deviceId = proxyDeviceId;
-    command.port = 8089; // deviceData.httpPort;
-    command.path = `/api/local/query`;
-    command.data = JSON.stringify(payload);
-    command.dataType = 'application/json';
-    command.additionalHeaders = {};
+    const devicesResults = [];
+    // try {
 
-    let rawResponse: DataFlow.HttpResponseData;
+    for (const device of devices) {
+      const command = new DataFlow.HttpRequestData();
+      command.protocol = Constants.Protocol.HTTP;
+      command.method = Constants.HttpOperation.GET;
+      command.requestId = request.requestId;
+      command.deviceId = device.id;
+      command.port = 8089; // deviceData.httpPort;
+      command.path = `/api/local/query`;
+      command.dataType = 'application/json';
+      command.additionalHeaders = {};
 
-    try {
-      rawResponse = (await deviceManager.send(
-        command
-      )) as DataFlow.HttpResponseData;
+      let rawResponse: DataFlow.HttpResponseData;
 
-      console.log(
-        'onQuery rawResponse',
-        rawResponse.httpResponse.statusCode,
-        rawResponse.httpResponse.body
-      );
-    } catch (err) {
-      console.error('onQuery', err);
-      // Errors coming out of `deviceManager.send` are already Google errors.
-      throw err;
+      try {
+        rawResponse = (await deviceManager.send(
+          command
+        )) as DataFlow.HttpResponseData;
+
+        console.log(
+          'onQuery rawResponse',
+          rawResponse.httpResponse.statusCode,
+          rawResponse.httpResponse.body
+        );
+
+        devicesResults.push(...(rawResponse.httpResponse.body as any).devices);
+      } catch (err) {
+        console.error('onQuery', err);
+        // Errors coming out of `deviceManager.send` are already Google errors.
+        throw err;
+      }
     }
+
+    // rawResponse = (await deviceManager.send(
+    //   command
+    // )) as DataFlow.HttpResponseData;
+
+    // console.log(
+    //   'onQuery rawResponse',
+    //   rawResponse.httpResponse.statusCode,
+    //   rawResponse.httpResponse.body
+    // );
+    // } catch (err) {
+    //   console.error('onQuery', err);
+    //   // Errors coming out of `deviceManager.send` are already Google errors.
+    //   throw err;
+    // }
+
+    console.log('onQuery result', devicesResults);
 
     const resp: IntentFlow.QueryResponse = {
       requestId: request.requestId,
       payload: {
-        devices: {},
+        devices: devicesResults,
       },
     };
 
-    throw new IntentFlow.HandlerError(
-      request.requestId,
-      ErrorCode.GENERIC_ERROR,
-      'onQuery testing'
-    );
+    // throw new IntentFlow.HandlerError(
+    //   request.requestId,
+    //   ErrorCode.GENERIC_ERROR,
+    //   'onQuery testing'
+    // );
 
     return resp;
   })
@@ -191,6 +215,7 @@ app
         command.protocol = Constants.Protocol.HTTP;
         command.method = Constants.HttpOperation.POST;
         command.requestId = request.requestId;
+        command.deviceId = device.id;
         // command.deviceId = proxyDeviceId;
         command.port = 8089; // deviceData.httpPort;
         command.path = `/api/local/execute`;
