@@ -66,7 +66,7 @@ app
 
     const command = new DataFlow.HttpRequestData();
     command.protocol = Constants.Protocol.HTTP;
-    command.method = Constants.HttpOperation.GET;
+    command.method = Constants.HttpOperation.POST;
     command.requestId = request.requestId;
     command.deviceId = proxyDeviceId;
     command.port = 8089; // deviceData.httpPort;
@@ -209,17 +209,16 @@ app
 
     const first_command = commands[0];
 
-    console.log('command', first_command);
+    const deviceId = first_command.devices[0].id;
 
-    // return Promise.all(
-    // input_command.devices.map(async (device) => {
+    console.log('commands', commands, deviceId);
+
     const command = new DataFlow.HttpRequestData();
     command.protocol = Constants.Protocol.HTTP;
     command.method = Constants.HttpOperation.POST;
     command.requestId = request.requestId;
-    command.deviceId = first_command.devices[0].id;
-    // command.deviceId = proxyDeviceId;
-    command.port = 8089; // deviceData.httpPort;
+    command.deviceId = deviceId;
+    command.port = 8089;
     command.path = `/api/local/execute`;
     command.data = JSON.stringify(commands);
     command.dataType = 'application/json';

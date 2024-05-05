@@ -3,9 +3,7 @@ import { getConfig } from './config';
 import { createSocket } from 'node:dgram';
 import { firstValueFrom } from 'rxjs';
 import { getAllDevices$, logging } from '@ha-assistant/listner';
-import {
-  SmartHomeV1ExecuteRequestPayload
-} from 'actions-on-google';
+import { SmartHomeV1ExecuteRequestPayload } from 'actions-on-google';
 import { onExecute } from './services/google-execute';
 
 interface IUDPOptions {
@@ -42,30 +40,37 @@ export const googleLocalInit = (app: Express) => {
     res.send(resp);
   });
 
-  // app.post('/api/local/reachableDevices', async (req, res) => {
-  //   const devices = await firstValueFrom(getAllDevices$());
+  app.post('/api/local/reachableDevices', async (req, res) => {
+    logging.debug('post /api/local/reachableDevices');
+    const devices = await firstValueFrom(getAllDevices$());
 
-  //   const resp = devices
-  //     // .filter((x) => x.name === 'Coffee grinder')
-  //     .map((x) => ({
-  //       id: x.name.replaceAll(' ', '-'),
-  //       localId: `local-${x.name.replaceAll(' ', '-')}`,
-  //       deviceId: x.id,
-  //     }));
+    const resp = devices
+      // .filter((x) => x.name === 'Coffee grinder')
+      .map((x) => ({
+        id: x.name.replaceAll(' ', '-'),
+        localId: `local-${x.name.replaceAll(' ', '-')}`,
+        deviceId: x.id,
+      }));
 
-  //   // logging.log('post /api/local/reachableDevices', resp);
+    // logging.log('post /api/local/reachableDevices', resp);
 
-  //   res.send(resp);
-  // });
+    res.send(resp);
+  });
 
   app.post('/api/local/execute', async (req, res) => {
     logging.log('/api/local/execute', req.body);
 
     const payload: SmartHomeV1ExecuteRequestPayload = req.body;
 
-    const result = await onExecute(payload, getAllDevices$(), 'local');
+    console.log('execute payload', JSON.stringify(payload));
 
-    res.send(result);
+    try {
+      const result = await onExecute(payload, getAllDevices$(), 'local');
+      res.send(result);
+    } catch (err) {
+      logging.error('onExecute', err);
+      res.status(500).send(err);
+    }
   });
 
   app.post('/api/local/query', async (req, res) => {

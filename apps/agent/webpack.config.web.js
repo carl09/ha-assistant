@@ -1,5 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const { version } = require('./package.json');
 
 module.exports = {
   // mode: 'production',
@@ -17,6 +19,12 @@ module.exports = {
   plugins: [
     new webpack.ProvidePlugin({
       process: 'process/browser',
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'debug.html',
+      template: './src/debug.html',
+      inject: 'body',
+      title: `HA Local Home Agent v${version}`,
     }),
   ],
   module: {
