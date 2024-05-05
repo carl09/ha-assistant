@@ -25,9 +25,11 @@ export const onQuery = async (
 
   const statusMap = await firstValueFrom(deviceStats$);
 
+  logging.info('onQuery statusMap', statusMap);
+
   return {
-    devices: ids.reduce<{ [key: string]: any }>((acc, x) => {
-      acc[x] = { ...statusMap[x], status: 'SUCCESS' };
+    devices: ids.reduce<{ [key: string]: any }>((acc, id) => {
+      acc[id] = { ...statusMap[id], status: 'SUCCESS' };
       return acc;
     }, {}),
   };
