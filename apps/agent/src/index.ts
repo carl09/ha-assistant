@@ -231,6 +231,10 @@ app
         command
       )) as DataFlow.HttpResponseData;
       console.debug('Request statusCode', rawResponse.httpResponse.statusCode);
+      console.log('onExecute response', JSON.stringify(rawResponse));
+
+      response.setSuccessState(first_command.devices[0].id, {});
+
     } catch (err) {
       console.error('Request Failed', err);
       response.setErrorState(
@@ -239,10 +243,10 @@ app
       );
     }
 
-    console.log('onExecute response', JSON.stringify(response));
+    
     console.log(
       'onExecute response stringify',
-      JSON.parse(JSON.stringify(response))
+      JSON.parse(JSON.stringify(response.build()))
     );
 
     return response.build();
