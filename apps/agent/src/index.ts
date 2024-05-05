@@ -66,7 +66,7 @@ app
 
     const command = new DataFlow.HttpRequestData();
     command.protocol = Constants.Protocol.HTTP;
-    command.method = Constants.HttpOperation.POST;
+    command.method = Constants.HttpOperation.GET;
     command.requestId = request.requestId;
     command.deviceId = proxyDeviceId;
     command.port = 8089; // deviceData.httpPort;
