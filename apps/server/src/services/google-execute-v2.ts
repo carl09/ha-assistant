@@ -17,6 +17,11 @@ import { firstValueFrom, Observable, take, lastValueFrom } from 'rxjs';
 import { getConfig, IConfig } from '../config';
 import axios from 'axios';
 
+type ExecutionResuls = {
+  code: string;
+  id: string;
+};
+
 const post = async <T>(
   url: string,
   token: string | undefined,
@@ -57,25 +62,28 @@ const callRemoteService = (
 const executeCommand = async (
   command: SmartHomeV1ExecuteRequestCommands,
   config: IConfig
-) => {
-  const deviceExecutions = command.devices.map(async (device) => {
+): Promise<ExecutionResuls[]> => {
+  const executionResults: ExecutionResuls[] = [];
+
+  command.devices.forEach(async (device) => {
     const found_device = await firstValueFrom(getDeviceById$(device.id));
 
     if (!found_device) {
-      return {
+      executionResults.push({
         code: 'deviceNotFound',
         id: device.id,
-      };
+      });
+    } else {
+      const executionPromise = command.execution.map((execution) =>
+        executeDeviceCommand(execution, found_device, config)
+      );
+
+      const resultsResults = await Promise.all(executionPromise);
+      executionResults.push(...resultsResults);
     }
-
-    const executionResult = command.execution.map((execution) =>
-      executeDeviceCommand(execution, found_device, config)
-    );
-
-    return Promise.all(executionResult);
   });
 
-  return Promise.all(deviceExecutions);
+  return executionResults;
 };
 
 const executeDeviceCommand = async (
@@ -164,32 +172,30 @@ export const onExecute = async (
 
   const statusMap = await lastValueFrom(deviceStats$.pipe(take(1)));
 
-  const googleResults = results.map(async (result) => {
-    console.log('statusMap[result.id]', statusMap[result.id]);
-    if (result.code === 'SUCCESS') {
+  const googleResults = results.map<SmartHomeV1ExecuteResponseCommands>(
+    (result) => {
+      console.log('statusMap[result.id]', statusMap[result.id]);
+      if (result.code === 'SUCCESS') {
+        return {
+          ids: [result.id],
+          status: 'SUCCESS',
+          states: statusMap[result.id],
+        };
+      }
       return {
         ids: [result.id],
-        status: 'SUCCESS',
+        status: 'ERROR',
+        errorCode: result.code,
         states: statusMap[result.id],
       };
     }
-    return {
-      ids: [result.id],
-      status: 'ERROR',
-      errorCode: result.code,
-      states: statusMap[result.id],
-    };
-  });
-
-  const commands = (await Promise.all(
-    googleResults
-  )) as SmartHomeV1ExecuteResponseCommands[];
+  );
 
   logging.log('execute response to google', {
-    commands: commands,
+    commands: googleResults,
   });
 
   return {
-    commands: commands,
+    commands: googleResults,
   };
 };

@@ -1,6 +1,6 @@
 {
   "name": "@ha-assistant/agent",
-  "version": "0.0.163",
+  "version": "0.0.165",
   "description": "",
   "main": "./dist/index.js",
   "scripts": {

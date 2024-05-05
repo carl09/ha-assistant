@@ -4,7 +4,7 @@ import { createSocket } from 'node:dgram';
 import { firstValueFrom } from 'rxjs';
 import { getAllDevices$, logging } from '@ha-assistant/listner';
 import { SmartHomeV1ExecuteRequestPayload } from 'actions-on-google';
-import { onExecute } from './services/google-execute';
+import { onExecute } from './services/google-execute-v2';
 
 interface IUDPOptions {
   udp_discovery_packet: string;
@@ -66,6 +66,9 @@ export const googleLocalInit = (app: Express) => {
 
     try {
       const result = await onExecute(payload, getAllDevices$(), 'local');
+
+      logging.log('execute result', result);
+
       res.send(result);
     } catch (err) {
       logging.error('onExecute', err);

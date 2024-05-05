@@ -1,5 +1,5 @@
 name: Google Home
-version: 0.0.163
+version: 0.0.165
 slug: google_home_local_v2
 description: Google Home to Home Assistant manager
 arch:

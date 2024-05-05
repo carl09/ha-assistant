@@ -12,7 +12,7 @@ import {
 import { onSync } from './services/google-sync';
 import { onQuery } from './services/google-query';
 import { onDisconnect } from './services/google-disconnect';
-import { onExecute } from './services/google-execute';
+import { onExecute } from './services/google-execute-v2';
 import { getConfig } from './config';
 import { Observable, tap } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
@@ -185,10 +185,12 @@ export const googleInit = (
       }
     });
 
-    Promise.all(results).then((x) => {
-      return res.send(x[0]);
-    }).catch(err => {
-      logging.error('fulfillment', err)
-    });
+    Promise.all(results)
+      .then((x) => {
+        return res.send(x[0]);
+      })
+      .catch((err) => {
+        logging.error('fulfillment', err);
+      });
   });
 };
