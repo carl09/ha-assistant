@@ -25,6 +25,7 @@ module.exports = {
       template: './src/debug.html',
       inject: 'body',
       title: `HA Local Home Agent v${version}`,
+      scriptLoading: 'blocking'
     }),
   ],
   module: {
