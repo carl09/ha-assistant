@@ -85,7 +85,7 @@ export const googleLocalInit = (app: Express) => {
 
     try {
       const payload: SmartHomeV1QueryRequestPayload = {
-        devices: [],
+        devices: req.body.devices,
       };
 
       const results = await onQuery(payload, getAllDevices$());
