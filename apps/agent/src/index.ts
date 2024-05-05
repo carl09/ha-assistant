@@ -205,9 +205,11 @@ app
 
     // const proxyDeviceId = request.inputs[0].payload.device.id as string;
 
-    const input_command = request.inputs[0].payload.commands[0];
+    const commands = request.inputs[0].payload.commands;
 
-    console.log('command', input_command);
+    const first_command = commands[0];
+
+    console.log('command', first_command);
 
     // return Promise.all(
     // input_command.devices.map(async (device) => {
@@ -215,11 +217,11 @@ app
     command.protocol = Constants.Protocol.HTTP;
     command.method = Constants.HttpOperation.POST;
     command.requestId = request.requestId;
-    command.deviceId = input_command.devices[0].id;
+    command.deviceId = first_command.devices[0].id;
     // command.deviceId = proxyDeviceId;
     command.port = 8089; // deviceData.httpPort;
     command.path = `/api/local/execute`;
-    command.data = JSON.stringify(input_command);
+    command.data = JSON.stringify(commands);
     command.dataType = 'application/json';
     command.additionalHeaders = {};
 
@@ -231,13 +233,13 @@ app
       )) as DataFlow.HttpResponseData;
       console.error('Request', rawResponse.httpResponse.statusCode);
       response.setErrorState(
-        input_command.devices[0].id,
+        first_command.devices[0].id,
         ErrorCode.GENERIC_ERROR
       );
     } catch (err) {
       console.error('Request Failed', err);
       response.setErrorState(
-        input_command.devices[0].id,
+        first_command.devices[0].id,
         ErrorCode.GENERIC_ERROR
       );
     }
