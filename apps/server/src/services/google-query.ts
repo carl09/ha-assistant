@@ -21,11 +21,7 @@ export const onQuery = async (
 
   const ids = payload.devices.map((x) => x.id);
 
-  logging.info('onQuery ids', ids);
-
   const statusMap = await firstValueFrom(deviceStats$);
-
-  logging.info('onQuery statusMap', statusMap);
 
   return {
     devices: ids.reduce<{ [key: string]: any }>((acc, id) => {

@@ -1,7 +1,7 @@
 import { type Express } from 'express';
 import { getConfig } from './config';
 import { createSocket } from 'node:dgram';
-import { firstValueFrom } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { getAllDevices$, logging } from '@ha-assistant/listner';
 import {
   SmartHomeV1ExecuteRequestPayload,
@@ -19,10 +19,15 @@ interface IUDPOptions {
   udp_discovery_port: number;
 }
 
-export const googleLocalInit = (app: Express) => {
+export const googleLocalInit = (
+  app: Express,
+  deviceStats$: Observable<{
+    [key: string]: any;
+  }>
+) => {
   const config = getConfig();
 
-  const devicesStatus$ = getAllDevices$()
+  const allDevices$ = getAllDevices$();
 
   if (!config.localDiscoveryPacket) {
     logging.warn('Google Local Execution is disabled');
@@ -31,7 +36,7 @@ export const googleLocalInit = (app: Express) => {
 
   app.get('/api/local/reachableDevices', async (req, res) => {
     logging.debug('get /api/local/reachableDevices');
-    const devices = await firstValueFrom(devicesStatus$);
+    const devices = await firstValueFrom(allDevices$);
 
     const resp = devices
       // .filter((x) => x.name === 'Coffee grinder')
@@ -48,7 +53,7 @@ export const googleLocalInit = (app: Express) => {
 
   app.post('/api/local/reachableDevices', async (req, res) => {
     logging.debug('post /api/local/reachableDevices');
-    const devices = await firstValueFrom(devicesStatus$);
+    const devices = await firstValueFrom(allDevices$);
 
     const resp = devices
       // .filter((x) => x.name === 'Coffee grinder')
@@ -71,7 +76,7 @@ export const googleLocalInit = (app: Express) => {
     console.log('execute payload', JSON.stringify(payload));
 
     try {
-      const result = await onExecute(payload, devicesStatus$, 'local');
+      const result = await onExecute(payload, deviceStats$, 'local');
 
       logging.log('execute result', result);
 
@@ -90,7 +95,7 @@ export const googleLocalInit = (app: Express) => {
         devices: req.body.devices,
       };
 
-      const results = await onQuery(payload, devicesStatus$);
+      const results = await onQuery(payload, deviceStats$);
 
       logging.log('execute query', results);
 

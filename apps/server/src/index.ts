@@ -34,7 +34,7 @@ apiInit(app);
 lookupInit(app);
 authInit(app);
 googleInit(app, deviceStats$);
-googleLocalInit(app);
+googleLocalInit(app, deviceStats$);
 
 const server = http.createServer(app);
 
