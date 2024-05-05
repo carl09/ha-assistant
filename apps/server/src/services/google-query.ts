@@ -17,9 +17,11 @@ export const onQuery = async (
     [key: string]: any;
   }>
 ): Promise<SmartHomeV1QueryPayload> => {
-  logging.debug('onQuery', payload);
+  logging.info('onQuery', payload);
 
   const ids = payload.devices.map((x) => x.id);
+
+  logging.info('onQuery ids', ids);
 
   const statusMap = await firstValueFrom(deviceStats$);
 

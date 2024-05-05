@@ -22,6 +22,8 @@ interface IUDPOptions {
 export const googleLocalInit = (app: Express) => {
   const config = getConfig();
 
+  const devicesStatus$ = getAllDevices$()
+
   if (!config.localDiscoveryPacket) {
     logging.warn('Google Local Execution is disabled');
     return;
@@ -29,7 +31,7 @@ export const googleLocalInit = (app: Express) => {
 
   app.get('/api/local/reachableDevices', async (req, res) => {
     logging.debug('get /api/local/reachableDevices');
-    const devices = await firstValueFrom(getAllDevices$());
+    const devices = await firstValueFrom(devicesStatus$);
 
     const resp = devices
       // .filter((x) => x.name === 'Coffee grinder')
@@ -46,7 +48,7 @@ export const googleLocalInit = (app: Express) => {
 
   app.post('/api/local/reachableDevices', async (req, res) => {
     logging.debug('post /api/local/reachableDevices');
-    const devices = await firstValueFrom(getAllDevices$());
+    const devices = await firstValueFrom(devicesStatus$);
 
     const resp = devices
       // .filter((x) => x.name === 'Coffee grinder')
@@ -69,7 +71,7 @@ export const googleLocalInit = (app: Express) => {
     console.log('execute payload', JSON.stringify(payload));
 
     try {
-      const result = await onExecute(payload, getAllDevices$(), 'local');
+      const result = await onExecute(payload, devicesStatus$, 'local');
 
       logging.log('execute result', result);
 
@@ -88,7 +90,7 @@ export const googleLocalInit = (app: Express) => {
         devices: req.body.devices,
       };
 
-      const results = await onQuery(payload, getAllDevices$());
+      const results = await onQuery(payload, devicesStatus$);
 
       logging.log('execute query', results);
 

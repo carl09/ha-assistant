@@ -164,7 +164,7 @@ app
       }
     }
 
-    console.log('onQuery result', devicesResults);
+    console.log('onQuery result', JSON.parse(JSON.stringify(devicesResults)));
 
     const resp: IntentFlow.QueryResponse = {
       requestId: request.requestId,
