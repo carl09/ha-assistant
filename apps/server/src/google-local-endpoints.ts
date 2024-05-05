@@ -60,7 +60,7 @@ export const googleLocalInit = (app: Express) => {
   app.post('/api/local/execute', async (req, res) => {
     logging.log('/api/local/execute', req.body);
 
-    const payload: SmartHomeV1ExecuteRequestPayload = req.body;
+    const payload: SmartHomeV1ExecuteRequestPayload = { commands: req.body };
 
     console.log('execute payload', JSON.stringify(payload));
 

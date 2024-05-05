@@ -2,6 +2,7 @@ import {
   getDeviceById$,
   getHomeAssistantDataAccess,
   HomeAssistantDataAccess,
+  IDevice,
   logging,
   resolveValue,
 } from '@ha-assistant/listner';
@@ -9,9 +10,11 @@ import {
   SmartHomeV1ExecuteRequestPayload,
   SmartHomeV1ExecutePayload,
   SmartHomeV1ExecuteResponseCommands,
+  SmartHomeV1ExecuteRequestCommands,
+  SmartHomeV1ExecuteRequestExecution,
 } from 'actions-on-google';
 import { firstValueFrom, Observable, take, lastValueFrom } from 'rxjs';
-import { getConfig } from '../config';
+import { getConfig, IConfig } from '../config';
 import axios from 'axios';
 
 const post = async <T>(
@@ -51,11 +54,14 @@ const callRemoteService = (
   return post<{}>(`${host}/services/${domain}/${service}`, token, data);
 };
 
-const executeCommand = async (command, device, config) => {
+const executeCommand = async (
+  command: SmartHomeV1ExecuteRequestCommands,
+  config: IConfig
+) => {
   const deviceExecutions = command.devices.map(async (device) => {
-    const device = await firstValueFrom(getDeviceById$(device.id));
+    const found_device = await firstValueFrom(getDeviceById$(device.id));
 
-    if (!device) {
+    if (!found_device) {
       return {
         code: 'deviceNotFound',
         id: device.id,
@@ -63,7 +69,7 @@ const executeCommand = async (command, device, config) => {
     }
 
     const executionResult = command.execution.map((execution) =>
-      executeDeviceCommand(execution, device, config)
+      executeDeviceCommand(execution, found_device, config)
     );
 
     return Promise.all(executionResult);
@@ -72,7 +78,11 @@ const executeCommand = async (command, device, config) => {
   return Promise.all(deviceExecutions);
 };
 
-const executeDeviceCommand = async (execution, device, config) => {
+const executeDeviceCommand = async (
+  execution: SmartHomeV1ExecuteRequestExecution,
+  device: IDevice,
+  config: IConfig
+) => {
   const [commandName] = execution.command.split('.').slice(-1);
   const commandDetail = (device.commands || {})[commandName];
 
