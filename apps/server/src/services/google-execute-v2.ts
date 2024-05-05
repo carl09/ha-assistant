@@ -65,7 +65,7 @@ const executeCommand = async (
 ): Promise<ExecutionResuls[]> => {
   const executionResults: ExecutionResuls[] = [];
 
-  command.devices.forEach(async (device) => {
+  for (const device of command.devices) {
     const found_device = await firstValueFrom(getDeviceById$(device.id));
 
     if (!found_device) {
@@ -81,7 +81,9 @@ const executeCommand = async (
       const resultsResults = await Promise.all(executionPromise);
       executionResults.push(...resultsResults);
     }
-  });
+  }
+
+  logging.log('executeCommand results', executionResults);
 
   return executionResults;
 };
@@ -169,6 +171,8 @@ export const onExecute = async (
   );
 
   const results = (await Promise.all(commandResults)).flat();
+
+  logging.log('results after flat', results);
 
   const statusMap = await lastValueFrom(deviceStats$.pipe(take(1)));
 
