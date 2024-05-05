@@ -230,11 +230,7 @@ app
       rawResponse = (await deviceManager.send(
         command
       )) as DataFlow.HttpResponseData;
-      console.error('Request', rawResponse.httpResponse.statusCode);
-      response.setErrorState(
-        first_command.devices[0].id,
-        ErrorCode.GENERIC_ERROR
-      );
+      console.debug('Request statusCode', rawResponse.httpResponse.statusCode);
     } catch (err) {
       console.error('Request Failed', err);
       response.setErrorState(
@@ -243,7 +239,11 @@ app
       );
     }
 
-    console.log('onExecute response', response);
+    console.log('onExecute response', JSON.stringify(response));
+    console.log(
+      'onExecute response stringify',
+      JSON.parse(JSON.stringify(response))
+    );
 
     return response.build();
     // })

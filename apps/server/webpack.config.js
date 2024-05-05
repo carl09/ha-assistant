@@ -16,11 +16,12 @@ const config = {
   entry: './src/index.ts',
   mode: isProduction ? 'production' : 'development',
   target: 'node',
+  cache: true,
   output: {
     path: path.join(__dirname, 'dist'), //  '/dist',
     filename: 'index.js',
   },
-  devtool: 'source-map',
+  devtool: 'eval', // 'source-map',
   resolve: {
     mainFields: ['es2015', 'module', 'main'],
     extensions: ['.ts', '.js'],
