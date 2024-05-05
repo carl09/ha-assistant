@@ -139,6 +139,7 @@ app
       command.path = `/api/local/query`;
       command.dataType = 'application/json';
       command.additionalHeaders = {};
+      command.data = JSON.stringify({ devices: [device] });
 
       let rawResponse: DataFlow.HttpResponseData;
 
@@ -156,25 +157,9 @@ app
         devicesResults.push(...(rawResponse.httpResponse.body as any).devices);
       } catch (err) {
         console.error('onQuery', err);
-        // Errors coming out of `deviceManager.send` are already Google errors.
         throw err;
       }
     }
-
-    // rawResponse = (await deviceManager.send(
-    //   command
-    // )) as DataFlow.HttpResponseData;
-
-    // console.log(
-    //   'onQuery rawResponse',
-    //   rawResponse.httpResponse.statusCode,
-    //   rawResponse.httpResponse.body
-    // );
-    // } catch (err) {
-    //   console.error('onQuery', err);
-    //   // Errors coming out of `deviceManager.send` are already Google errors.
-    //   throw err;
-    // }
 
     console.log('onQuery result', devicesResults);
 
@@ -184,12 +169,6 @@ app
         devices: devicesResults,
       },
     };
-
-    // throw new IntentFlow.HandlerError(
-    //   request.requestId,
-    //   ErrorCode.GENERIC_ERROR,
-    //   'onQuery testing'
-    // );
 
     return resp;
   })
@@ -234,7 +213,6 @@ app
       console.log('onExecute response', JSON.stringify(rawResponse));
 
       response.setSuccessState(first_command.devices[0].id, {});
-
     } catch (err) {
       console.error('Request Failed', err);
       response.setErrorState(
@@ -243,7 +221,6 @@ app
       );
     }
 
-    
     console.log(
       'onExecute response stringify',
       JSON.parse(JSON.stringify(response.build()))

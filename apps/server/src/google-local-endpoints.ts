@@ -3,8 +3,12 @@ import { getConfig } from './config';
 import { createSocket } from 'node:dgram';
 import { firstValueFrom } from 'rxjs';
 import { getAllDevices$, logging } from '@ha-assistant/listner';
-import { SmartHomeV1ExecuteRequestPayload } from 'actions-on-google';
+import {
+  SmartHomeV1ExecuteRequestPayload,
+  SmartHomeV1QueryRequestPayload,
+} from 'actions-on-google';
 import { onExecute } from './services/google-execute-v2';
+import { onQuery } from './services/google-query';
 
 interface IUDPOptions {
   udp_discovery_packet: string;
@@ -79,7 +83,18 @@ export const googleLocalInit = (app: Express) => {
   app.post('/api/local/query', async (req, res) => {
     logging.log('/api/local/query', req.body);
 
-    res.send();
+    try {
+      const payload: SmartHomeV1QueryRequestPayload = {
+        devices: [],
+      };
+
+      const results = onQuery(payload, getAllDevices$());
+
+      res.send(results);
+    } catch (err) {
+      logging.error('onQuery', err);
+      res.status(500).send(err);
+    }
   });
 
   const argv: IUDPOptions = {
