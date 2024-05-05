@@ -1,6 +1,6 @@
 {
   "name": "@ha-assistant/agent",
-  "version": "0.0.158",
+  "version": "0.0.159",
   "description": "",
   "main": "./dist/index.js",
   "scripts": {
@@ -31,8 +31,7 @@
     "copy-files-from-to": "^3.2.2"
   },
   "copyFiles": [
-    { "from": "dist/*", "to": "../../local_google/rootfs/www/public" },
-    { "from": "src/*.html", "to": "../../local_google/rootfs/www/public" }
+    { "from": "dist/*", "to": "../../local_google/rootfs/www/public" }
   ],
   "copyFilesSettings": { "whenFileExists": "overwrite" }
 }

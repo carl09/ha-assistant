@@ -62,19 +62,14 @@ export const onExecute = async (
 
   const config = getConfig();
 
-  let socket: HomeAssistantDataAccess = getHomeAssistantDataAccess(
-    config.homeAssistaneSocketUri,
-    config.homeAssistaneApiKey
-  );
+  const c = payload.commands.map(async (command) => {
+    logging.log('command', command);
 
-  const c = payload.commands.map(async (x) => {
-    logging.log('commands', x);
-
-    const deviceExecutions = x.devices.map(async (d) => {
+    const deviceExecutions = command.devices.map(async (d) => {
       const device = await firstValueFrom(getDeviceById$(d.id));
 
       if (device) {
-        const executionResult = x.execution.map(async (exe) => {
+        const executionResult = command.execution.map(async (exe) => {
           const [commandName] = exe.command.split('.').slice(-1);
           const commandDetail = (device.commands || {})[commandName];
 
@@ -103,9 +98,6 @@ export const onExecute = async (
 
               let exeResuls: Record<string, any> = {};
 
-              // const exeResuls = await lastValueFrom(
-              //   socket.callService(domain, service, args, entityId);
-              // );
               let hasError = false;
               try {
                 exeResuls = (await callRemoteService(
@@ -119,10 +111,6 @@ export const onExecute = async (
               } catch (err) {
                 hasError = true;
                 logging.error('http failed:', err);
-
-                // exeResuls = await lastValueFrom(
-                //   socket.callService(domain, service, args, entityId)
-                // );
               }
 
               if (!hasError) {
