@@ -88,7 +88,7 @@ export const googleLocalInit = (app: Express) => {
         devices: [],
       };
 
-      const results = onQuery(payload, getAllDevices$());
+      const results = await onQuery(payload, getAllDevices$());
 
       res.send(results);
     } catch (err) {
