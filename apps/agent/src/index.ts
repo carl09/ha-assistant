@@ -126,7 +126,7 @@ app
 
     const deviceManager = await app.getDeviceManager();
 
-    const devicesResults = [];
+    let devicesResults = {};
     // try {
 
     for (const device of devices) {
@@ -154,7 +154,10 @@ app
           rawResponse.httpResponse.body
         );
 
-        devicesResults.push(...(rawResponse.httpResponse.body as any).devices);
+        devicesResults = {
+          ...devicesResults,
+          ...(rawResponse.httpResponse.body as any).devices,
+        };
       } catch (err) {
         console.error('onQuery', err);
         throw err;
