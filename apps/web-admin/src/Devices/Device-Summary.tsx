@@ -12,6 +12,7 @@ import {
   mdiRunFast,
   mdiMicrowave,
   mdiCoffeeMaker,
+  mdiBlindsHorizontal,
 } from '@mdi/js';
 
 const getIcon = (deviceType: string): string => {
@@ -26,6 +27,8 @@ const getIcon = (deviceType: string): string => {
       return mdiMicrowave;
     case 'action.devices.types.COFFEE_MAKER':
       return mdiCoffeeMaker;
+    case 'action.devices.types.BLINDS':
+      return mdiBlindsHorizontal;
   }
 
   logging.warn('No Icon for deviceType', deviceType);

@@ -1,6 +1,6 @@
 {
   "name": "@ha-assistant/agent",
-  "version": "0.0.176",
+  "version": "0.0.177",
   "description": "",
   "main": "./dist/index.js",
   "scripts": {
@@ -30,12 +30,7 @@
     "webpack-cli": "^5.1.4"
   },
   "copyFiles": [
-    {
-      "from": "dist/*",
-      "to": "../../local_google/rootfs/www/public"
-    }
+    { "from": "dist/*", "to": "../../local_google/rootfs/www/public" }
   ],
-  "copyFilesSettings": {
-    "whenFileExists": "overwrite"
-  }
+  "copyFilesSettings": { "whenFileExists": "overwrite" }
 }
