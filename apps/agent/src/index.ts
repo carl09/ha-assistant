@@ -154,9 +154,14 @@ app
           rawResponse.httpResponse.body
         );
 
+        const body =
+          typeof rawResponse.httpResponse.body === 'string'
+            ? JSON.parse(rawResponse.httpResponse.body)
+            : rawResponse.httpResponse.body;
+
         devicesResults = {
           ...devicesResults,
-          ...(rawResponse.httpResponse.body as any).devices,
+          ...body.devices,
         };
       } catch (err) {
         console.error('onQuery', err);
