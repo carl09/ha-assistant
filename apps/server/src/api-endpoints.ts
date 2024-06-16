@@ -54,21 +54,6 @@ export const apiInit = (app: Express) => {
   app.get('/api/areas', async (req, res) => {
     logging.debug('areas');
     const rooms = await firstValueFrom(socket.getAreas());
-
-    // const services = await firstValueFrom(socket.getServices());
-
-    // Object.keys(services).forEach((x) => {
-    //   if (x === 'sonos') {
-    //     const _switch = services[x];
-    //     logging.log('sonos', _switch);
-    //     Object.keys(_switch).map(x => {
-    //       logging.log('sonos fields', _switch[x].fields);
-    //     })
-    //   }
-    // });
-
-    // logging.log('services', services);
-
     res.send(rooms);
   });
 

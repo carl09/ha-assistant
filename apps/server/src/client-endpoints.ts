@@ -34,3 +34,4 @@ export const clientInit = (app: Express, config: IConfig) => {
     res.send(`window.config = ${JSON.stringify(clientConfig)}`);
   });
 };
+

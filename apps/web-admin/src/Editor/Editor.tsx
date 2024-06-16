@@ -111,14 +111,20 @@ export const Editor = ({
           .cursor()
           .iterate((node) => {
             expressionsArray.push(node.name);
-            if (node.name === "⚠"){
+            if (node.name === '⚠') {
               hasError = true;
+              console.log('Error', node);
             }
           });
         console.debug('expressionsArray', expressionsArray);
 
-        if (!hasError){
+        if (!hasError) {
+          editor.current?.style.setProperty('border', 'none');
+          editor.current?.style.setProperty('background-color', 'unset');
           onChange && onChange(value);
+        } else {
+          editor.current?.style.setProperty('border', '2px solid red');
+          editor.current?.style.setProperty('background-color', 'red');
         }
       }
     }
@@ -126,5 +132,4 @@ export const Editor = ({
 
   return <div ref={editor}></div>;
 };
-
 

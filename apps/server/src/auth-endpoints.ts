@@ -3,7 +3,6 @@ import { logging } from '@ha-assistant/listner';
 import { format } from 'util';
 
 export const authInit = (app: Express) => {
-
   app.get('/login', (req, res) => {
     res.send(`
     <html>
@@ -69,3 +68,4 @@ export const authInit = (app: Express) => {
     res.status(HTTP_STATUS_OK).json(token);
   });
 };
+

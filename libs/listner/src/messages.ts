@@ -23,3 +23,4 @@ export type devicesStatus = {
 };
 
 export type messages = welcome | debug | devices | devicesStatus;
+

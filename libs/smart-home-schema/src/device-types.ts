@@ -45,4 +45,10 @@ export const deviceTypes: IDeviceType[] = [
     humanName: 'Blinds',
     traits: ['action.devices.traits.OpenClose'],
   },
+  {
+    type: 'action.devices.types.LIGHT',
+    humanName: 'Light',
+    traits: ['action.devices.traits.Brightness', 'action.devices.traits.OnOff'],
+  },
 ];
+
