@@ -6,7 +6,8 @@
     "newLine": "lf",
     "declaration": true,
     "moduleResolution": "node",
-    "allowJs": true
+    "allowJs": true,
+    "outDir": "dist",
   },
   "include": ["src/*.ts"]
 }

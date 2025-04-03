@@ -77,6 +77,7 @@ export class HomeAssistantWebSocket {
   }
 
   private processMessage(msg: IMassageBase) {
+    logging.debug('got message', msg);
     if (msg.type === 'auth_required') {
       this.webSocketSubject.next({
         type: 'auth',

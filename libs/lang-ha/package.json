@@ -7,7 +7,8 @@
     "_prepare": "rollup -c",
     "dev": "rollup -c",
     "_release": "npm run dev",
-    "release": "echo nothing in lib"
+    "release": "echo nothing in lib",
+    "gen": "lezer-generator ./src/simple.grammar -o ./src/simple.js"
   },
   "type": "module",
   "main": "dist/index.cjs",
@@ -28,7 +29,7 @@
     "mocha": "^9.2.2",
     "rollup": "^4.17.2",
     "rollup-plugin-dts": "^6.1.0",
-    "rollup-plugin-ts": "^3.4.5",
+    "@rollup/plugin-typescript":"^12.1.2",
     "typescript": "^5.4.5"
   },
   "license": "MIT"
