@@ -1,5 +1,5 @@
 name: Google Home
-version: 0.0.186
+version: 0.0.187
 slug: google_home_local_v2
 description: Google Home to Home Assistant manager
 arch:
@@ -25,9 +25,11 @@ schema:
   localDiscoveryPacket: str?
 ports:
   8089/tcp: 8089
+  8090/tcp: 8090
   3311/udp: 3311
 ports_description:
   8089/tcp: HA Addon Server
+  8090/tcp: HA Addon HTTPS Server
   3312/udp: Google local Descovery port
 homeassistant_api: true
 hassio_api: false
