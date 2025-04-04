@@ -14,7 +14,7 @@ bashio::log.info "udp port ${udpPort}"
 bashio::log.info "ingressUrl ${ingressUrl}"
 
 export SERVER_PORT=${serverPort:=8089}
-export SECURE_SERVER_PORT=${serverPort:=8090}
+export SECURE_SERVER_PORT=${secureServerPort:=8090}
 export UDP_PORT=${udpPort:=3311}
 export INGRESS_URL=${ingressUrl:=""}
 
