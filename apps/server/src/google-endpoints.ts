@@ -143,6 +143,7 @@ export const googleInit = (
   }
 
   app.post('/api/fulfillment', async (req, res) => {
+    logging.debug('/api/fulfillment');
     const user = await getUser(req.headers);
 
     const payload: SmartHomeV1Request = req.body;
