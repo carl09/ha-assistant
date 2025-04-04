@@ -22,7 +22,7 @@
     "prettier": "pretty-quick --staged",
     "start": "npm start -ws",
     "dev": "npm run dev -ws",
-    "build": "npm run build -ws",
+    "build": "npm run build -ws --if-present",
     "lint": "npm run lint -ws --if-present",
     "release": "npm run inc-version && npm run release -ws && npm run copy",
     "copy": "copy-files-from-to",

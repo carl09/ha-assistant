@@ -8,7 +8,8 @@ import {
 import { Observable, filter, map, shareReplay, take } from 'rxjs';
 import {
   HomeAssistantWebSocket,
-  IMassageBase,
+  HomeAssistantMessage,
+  ISubscribeMessage,
 } from './home-assistant-web-socket';
 
 export class HomeAssistantDataAccess {
@@ -56,7 +57,12 @@ export class HomeAssistantDataAccess {
         },
         this.counter++
       ).pipe(
-        filter((x) => x.event?.event_type === 'state_changed'),
+        filter((x) => {
+          if (x.type === 'event') {
+            return x.event?.event_type === 'state_changed';
+          }
+          return false;
+        }),
         map((msg) => {
           return (msg as any).event.data
             .new_state as IHomeAssistantEntityStatus;
@@ -159,7 +165,7 @@ export class HomeAssistantDataAccess {
         target: {
           entity_id: entityId,
         },
-      },
+      } as ISubscribeMessage,
       this.counter++
     ).pipe(
       map((msg) => {
@@ -171,7 +177,7 @@ export class HomeAssistantDataAccess {
     return serviceCall;
   }
 
-  private createSubScription(iniMessage: IMassageBase, resultId: number) {
+  private createSubScription(iniMessage: ISubscribeMessage, resultId: number) {
     this.homeAssistantWebSocket.next(iniMessage);
 
     return this.homeAssistantWebSocket
