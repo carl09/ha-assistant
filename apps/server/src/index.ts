@@ -41,7 +41,7 @@ const server = http.createServer(app);
 webSocketInit(server, deviceStats$);
 
 app.use(function (req, res, next) {
-  logging.warn('404', req.url, req.method);
+  logging.debug('404', req.url, req.method);
   res.status(404).send('Unable to find the requested resource!');
 });
 
