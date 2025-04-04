@@ -46,7 +46,7 @@ export const lookupInit = (app: Express) => {
     res.send(results);
   });
 
-  app.get('/api/editor/entity/services/:domain?', async (req, res) => {
+  app.get('/api/editor/entity/services/:domain', async (req, res) => {
     const domain = req.params.domain as string;
     logging.log('domain', domain);
 
