@@ -3,6 +3,7 @@ import { setLogLevel, logging } from '@ha-assistant/listner';
 
 export interface IConfig {
   port: number;
+  securePort: number;
   udpPort: number;
   ingressUrl?: string;
   homeAssistaneSocketUri: string;
@@ -41,11 +42,13 @@ logging.debug('App options', options);
 setLogLevel(options.logLevel);
 
 const port = process.env.SERVER_PORT ? parseInt(process.env.SERVER_PORT) : 4001;
+const securePort = process.env.SECURE_SERVER_PORT ? parseInt(process.env.SECURE_SERVER_PORT) : port+ 1;
 const udbPort = process.env.UDP_PORT ? parseInt(process.env.UDP_PORT) : 3311;
 
 export const getConfig = (): IConfig => {
   return {
     port: port,
+    securePort: securePort,
     udpPort: udbPort,
     ingressUrl: process.env.INGRESS_URL,
     homeAssistaneApiKey: process.env.HASSIO_TOKEN || '',

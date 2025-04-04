@@ -58,8 +58,8 @@ if (existsSync('/ssl/privkey.pem')) {
       },
       app
     )
-    .listen(config.port + 1, () => {
-      logging.log(`server started at https://localhost:${config.port + 1}`);
+    .listen(config.securePort, () => {
+      logging.log(`server started at https://localhost:${config.securePort}`);
     });
 } else {
   logging.warn('cert dos not exist');

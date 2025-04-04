@@ -3,15 +3,18 @@
 bashio::log.info "Starting Google Proxy Service..."
 
 serverPort=$(bashio::addon.port 8089)
+secureServerPort=$(bashio::addon.port 8090)
 udpPort=$(bashio::addon.port 3311)
 ingressUrl="$(bashio::addon.ingress_url)"
 
 ## Print the message the user supplied, defaults to "Hello World..."
 bashio::log.info "server port ${serverPort}"
+bashio::log.info "secure server port ${secureServerPort}"
 bashio::log.info "udp port ${udpPort}"
 bashio::log.info "ingressUrl ${ingressUrl}"
 
 export SERVER_PORT=${serverPort:=8089}
+export SECURE_SERVER_PORT=${serverPort:=8090}
 export UDP_PORT=${udpPort:=3311}
 export INGRESS_URL=${ingressUrl:=""}
 
