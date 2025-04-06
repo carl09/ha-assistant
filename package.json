@@ -45,5 +45,6 @@
   ],
   "copyFilesSettings": {
     "whenFileExists": "overwrite"
-  }
+  },
+  "dependencies": {}
 }
