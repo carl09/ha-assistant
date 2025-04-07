@@ -2,6 +2,9 @@ import dotenv from 'dotenv';
 dotenv.config();
 (global as any).WebSocket = require('ws');
 
+import sdk from './tracer';
+sdk.start();
+
 import express from 'express';
 import { apiInit } from './api-endpoints';
 import { clientInit } from './client-endpoints';
@@ -16,41 +19,7 @@ import { lookupInit } from './lookup-endpoints';
 import { existsSync, readFileSync } from 'fs';
 import { initDeviceState } from './common';
 import { googleLocalInit } from './google-local-endpoints';
-import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
-const opentelemetry = require('@opentelemetry/sdk-node');
-const {
-  getNodeAutoInstrumentations,
-} = require('@opentelemetry/auto-instrumentations-node');
-const { resourceFromAttributes } = require('@opentelemetry/resources');
-const { ATTR_SERVICE_NAME } = require('@opentelemetry/semantic-conventions');
 
-const isDevelopment = process.env.NODE_ENV !== 'production';
-
-// Create a trace exporter
-const traceExporter = new OTLPTraceExporter({
-  url: 'http://192.168.10.2:4318/v1/traces',
-});
-
-const sdk = new opentelemetry.NodeSDK({
-  resource: resourceFromAttributes({
-    [ATTR_SERVICE_NAME]: isDevelopment ? 'ha-assistant-dev' : 'ha-assistant',
-  }),
-  traceExporter,
-  instrumentations: [getNodeAutoInstrumentations()],
-});
-
-// initialize the SDK and register with the OpenTelemetry API
-// this enables the API to record telemetry
-sdk.start();
-
-// gracefully shut down the SDK on process exit
-process.on('SIGTERM', () => {
-  sdk
-    .shutdown()
-    .then(() => console.log('Tracing terminated'))
-    .catch((error: Error) => console.log('Error terminating tracing', error))
-    .finally(() => process.exit(0));
-});
 
 logging.log('OpenTelemetry initialized with Jaeger exporter');
 
