@@ -10,11 +10,15 @@ const readFileAsJson = (filePath) => {
 const options = existsSync('/data/options.json')
   ? readFileAsJson('/data/options.json')
   : {
-      logLevel: process.env.LOG_LEVEL,
-      inferWebsocketUrl: process.env.INFER_WEBSOCKET_URL,
-      googleKeyFile: process.env.GOOGLE_KEY_FILE,
-      googleAgentUserId: process.env.GOOGLE_AGENT_USER_ID,
-      localDiscoveryPacket: process.env.LOCAL_DISCOVERY_PACKET,
+      message: process.env.MESSAGE,
+      apiVersion: process.env.AZURE_OPENAI_VERSION,
+      logins: [
+        {
+          endpoint: process.env.AZURE_OPENAI_RES1_ENDPOINT,
+          apikey: process.env.AZURE_OPENAI_RES1_API_KEY,
+          model: 'gpt-4o',
+        },
+      ],
     };
 
 console.log('App options', options);
@@ -24,5 +28,6 @@ const port = process.env.SERVER_PORT ? parseInt(process.env.SERVER_PORT) : 8099;
 export const getConfig = () => {
   return {
     port: port,
+    ...options,
   };
 };
