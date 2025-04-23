@@ -1,22 +1,14 @@
 ARG BUILD_FROM
 FROM $BUILD_FROM
 
-# Set shell
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+ENV LANG C.UTF-8
 
-# Setup base
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        nodejs \
-        npm
+RUN apk add --no-cache nodejs npm
 
-# Copy data for add-on
 COPY rootfs /
 
-# Copy application files
 COPY app /app
 
-# Install Node.js dependencies
 RUN cd /app && npm install
 
 WORKDIR /app
