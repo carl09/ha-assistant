@@ -1,38 +1,54 @@
 import express from 'express';
-import getConfig from './config.js';
+import chalk from 'chalk'; // Import chalk
+import { getConfig } from './config.js';
+
+// --- Helper functions for HA-style logging with colors ---
+const log = (level, message, color = chalk.white) => {
+  // Use chalk to color the level
+  console.log(`[${new Date().toISOString()}] [${color(level)}] ${message}`);
+};
+
+const logInfo = (message) => log('INFO', message, chalk.blue); // Blue for INFO
+const logWarning = (message) => log('WARNING', message, chalk.yellow); // Yellow for WARNING
+const logError = (message) => log('ERROR', message, chalk.red); // Red for ERROR
+// --- End helper functions ---
 
 const app = express();
 
 const config = getConfig();
 
-console.log('Node.js SERVER_PORT: ', config.port);
+// Use logInfo for informational messages
+logInfo(`Node.js SERVER_PORT from config: ${config.port}`);
 
-const port = 8099; // Default port, can be overridden by options
+// Use the port from config if available, otherwise default
+const port = config.port || 8099;
 
-console.log('Node.js application starting...');
+logInfo('Node.js application starting...');
 
 // Access options from Home Assistant configuration
-// Use bashio library or environment variables if needed for more complex interactions
 const message = process.env.CONFIG_MESSAGE || 'Default message if not set';
+if (!process.env.CONFIG_MESSAGE) {
+  logWarning('CONFIG_MESSAGE environment variable not set, using default.');
+}
 
 app.get('/', (req, res) => {
-  console.log('Received request on /');
+  logInfo('Received request on /');
   res.send(`Hello from the Azure Ollama add-on! Message: ${message}`);
 });
 
 app.listen(port, () => {
-  console.log(`Node.js app listening at http://localhost:${port}`);
+  logInfo(`Node.js app listening on port ${port}`);
 });
 
 // Handle termination signals
 process.on('SIGTERM', () => {
-  console.log('SIGTERM signal received: closing HTTP server');
+  logInfo('SIGTERM signal received: closing HTTP server');
   // Perform cleanup if necessary
   process.exit(0);
 });
 
 process.on('SIGINT', () => {
-  console.log('SIGINT signal received: closing HTTP server');
+  logInfo('SIGINT signal received: closing HTTP server');
   // Perform cleanup if necessary
   process.exit(0);
 });
