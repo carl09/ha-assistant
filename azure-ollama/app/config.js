@@ -1,7 +1,8 @@
 import { readFileSync, existsSync } from 'fs';
+import { logInfo } from './logging.js';
 
 const readFileAsJson = (filePath) => {
-  logging.info('Reading File:', filePath);
+  logInfo('Reading File:', filePath);
   const rawdata = readFileSync(filePath);
   return JSON.parse(rawdata.toString());
 };

@@ -1,16 +1,7 @@
 import express from 'express';
-import chalk from 'chalk'; // Import chalk
+import { logInfo, logWarning } from './logging.js'; 
 import { getConfig } from './config.js';
 
-// --- Helper functions for HA-style logging with colors ---
-const log = (level, message, color = chalk.white) => {
-  // Use chalk to color the level
-  console.log(`[${new Date().toISOString()}] [${color(level)}] ${message}`);
-};
-
-const logInfo = (message) => log('INFO', message, chalk.blue); // Blue for INFO
-const logWarning = (message) => log('WARNING', message, chalk.yellow); // Yellow for WARNING
-const logError = (message) => log('ERROR', message, chalk.red); // Red for ERROR
 // --- End helper functions ---
 
 const app = express();
