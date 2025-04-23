@@ -20,6 +20,11 @@ if (!process.env.CONFIG_MESSAGE) {
 app.get('/', async (req, res) => {
   logInfo('Received request on /');
 
+  console.log('Request headers:', req.headers); // Log the request headers
+  console.log('Request method:', req.method); // Log the request method
+  console.log('Request URL:', req.url); // Log the request URL
+  console.log('Request query:', req.query); // Log the request query parameters
+
   const c = config.logins.at(0);
 
   const model = new AzureChatOpenAI({
@@ -37,13 +42,16 @@ app.get('/', async (req, res) => {
   const chain = prompt.pipe(model).pipe(new StringOutputParser());
 
   const result = await chain.invoke({ topic: 'cats' });
-  logInfo('Result:', result);
+  logInfo(`Result: ${result}`);
 
   res.send(`${message} ${result}`);
 });
 
 app.post('/', async (req, res) => {
   logInfo('Received POST request on /');
+
+  
+
 
   console.log('Request body:', req.body); // Log the request body
 
