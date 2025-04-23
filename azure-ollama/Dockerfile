@@ -7,8 +7,8 @@ RUN apk add --no-cache nodejs npm
 
 COPY rootfs /
 
-# RUN chmod a+x /etc/services.d/azure-ollama/run
-# RUN chmod a+x /etc/services.d/azure-ollama/finish
+RUN chmod a+x /etc/services.d/azure-ollama/run
+RUN chmod a+x /etc/services.d/azure-ollama/finish
 
 COPY app /app
 
