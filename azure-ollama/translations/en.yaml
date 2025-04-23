@@ -1,0 +1,22 @@
+configuration:
+  message:
+    name: Message
+    description: The message to display in the web interface
+  apiVersion:
+    name: API Version
+    description: The version of the API to use
+  logins:
+    name: Logins
+    description: List of logins for the API
+    schema:
+      endpoint:
+        name: Endpoint
+        description: The endpoint for the API
+      apikey:
+        name: API Key
+        description: The API key for authentication
+      model:
+        name: Model
+        description: The model to use for the API
+network:
+  8099/tcp: Port for web server
