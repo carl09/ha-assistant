@@ -7,6 +7,8 @@ RUN apk add --no-cache nodejs npm
 
 COPY rootfs /
 
+# RUN chmod a+x /etc/cont-init.d/99-run.sh
+
 COPY app /app
 
 RUN cd /app && npm install

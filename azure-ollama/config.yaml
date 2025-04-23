@@ -1,6 +1,6 @@
 # Basic configuration for the azure-ollama add-on
 name: Azure Ollama
-version: "0.1.1"
+version: "0.1.2"
 slug: azure-ollama
 description: An Azure Ollama add-on for Home Assistant
 arch:
