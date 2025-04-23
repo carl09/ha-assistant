@@ -1,7 +1,11 @@
 import express from 'express';
+import getConfig from './config.js';
+
 const app = express();
 
-console.log('Node.js SERVER_PORT: ', process.env.SERVER_PORT);
+const config = getConfig();
+
+console.log('Node.js SERVER_PORT: ', config.port);
 
 const port = 8099; // Default port, can be overridden by options
 
