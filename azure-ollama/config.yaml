@@ -1,6 +1,6 @@
 # Basic configuration for the azure-ollama add-on
 name: Azure Ollama
-version: 0.1.10
+version: 0.1.11
 slug: azure-ollama
 description: An Azure Ollama add-on for Home Assistant
 arch:
@@ -15,6 +15,13 @@ boot: auto
 options:
   message: "Hello from the add-on!"
   apiVersion: "2024-10-21"
+  logins:
+  - endpoint: http://foo.com/api
+    apikey: "123456"
+    model: "gpt-4o"
+  - endpoint: http://foo.com/api
+    apikey: "123456"
+    model: "gpt-4.1"
 schema:
   message: str
   apiVersion: str
