@@ -7,7 +7,8 @@ RUN apk add --no-cache nodejs npm
 
 COPY rootfs /
 
-# RUN chmod a+x /etc/cont-init.d/99-run.sh
+# RUN chmod a+x /etc/services.d/azure-ollama/run
+# RUN chmod a+x /etc/services.d/azure-ollama/finish
 
 COPY app /app
 
@@ -18,4 +19,4 @@ WORKDIR /app
 # Expose ports (if your app needs any)
 # EXPOSE 8080
 
-CMD [ "/run.sh" ]
+# CMD [ "/run.sh" ]
