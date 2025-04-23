@@ -1,4 +1,4 @@
-const express = require('express');
+import express from 'express';
 const app = express();
 
 console.log('Node.js SERVER_PORT: ', process.env.SERVER_PORT);
