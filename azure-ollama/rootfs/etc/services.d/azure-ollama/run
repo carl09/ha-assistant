@@ -5,4 +5,8 @@
 # ==============================================================================
 bashio::log.info "Starting Azure Ollama Node.js application..."
 
+serverPort=$(bashio::addon.port 8099)
+bashio::log.info "server port ${serverPort}"
+export SERVER_PORT=${serverPort:=8099}
+
 node /app/server.js

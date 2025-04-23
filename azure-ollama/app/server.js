@@ -1,12 +1,15 @@
 const express = require('express');
 const app = express();
+
+console.log('Node.js SERVER_PORT: ', process.env.SERVER_PORT);
+
 const port = 8099; // Default port, can be overridden by options
 
 console.log('Node.js application starting...');
 
 // Access options from Home Assistant configuration
 // Use bashio library or environment variables if needed for more complex interactions
-const message = process.env.CONFIG_MESSAGE || 'Default message if not set'; 
+const message = process.env.CONFIG_MESSAGE || 'Default message if not set';
 
 app.get('/', (req, res) => {
   console.log('Received request on /');

@@ -1,6 +1,6 @@
 # Basic configuration for the azure-ollama add-on
 name: Azure Ollama
-version: 0.1.5
+version: 0.1.6
 slug: azure-ollama
 description: An Azure Ollama add-on for Home Assistant
 arch:
@@ -16,3 +16,9 @@ options:
   message: "Hello from the add-on!"
 schema:
   message: str
+ports:
+  8099/tcp: 8099
+ports_description:
+  8099/tcp: HA Addon Server
+homeassistant_api: false
+hassio_api: false
