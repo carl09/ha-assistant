@@ -3,9 +3,12 @@ import express from 'express';
 import { logError, logInfo, logWarning } from './logging.js';
 import { getConfig } from './config.js';
 import { AzureChatOpenAI } from '@langchain/openai';
-import { StringOutputParser } from '@langchain/core/output_parsers';
-import { ChatPromptTemplate } from '@langchain/core/prompts';
-import { HumanMessage, SystemMessage } from '@langchain/core/messages';
+import {
+  HumanMessage,
+  SystemMessage,
+  AIMessage,
+  ToolMessage,
+} from '@langchain/core/messages';
 
 const app = express();
 
@@ -55,10 +58,37 @@ app.post('/api/chat', async (req, res) => {
     if (message.role === 'user') {
       messages.push(new HumanMessage(message.content));
     } else if (message.role === 'assistant') {
+      logWarning(`AIMessage message: ${JSON.stringify(message)}`);
+      messages.push(
+        new AIMessage({
+          content: message.content,
+          tool_calls: (message.tool_calls || []).map((tool_call) => {
+            return {
+              name: tool_call.function.name,
+              args: tool_call.function.arguments,
+              id: tool_call.function.name,
+              type: 'tool_call',
+            };
+          }),
+        })
+      );
     } else if (message.role === 'system') {
       messages.push(new SystemMessage(message.content));
+    } else if (message.role === 'tool') {
+      const id = messages.at(-1)?.tool_calls.at(0)?.id;
+      // console.warn(`Tool message id: ${id}`);
+
+      // logWarning(`Unknown role message: ${JSON.stringify(message)}`);
+
+      messages.push(
+        new ToolMessage({
+          content: message.content,
+          tool_call_id: id,
+        })
+      );
     } else {
       logWarning(`Unknown role: ${message.role}`);
+      logWarning(`Unknown role message: ${JSON.stringify(message)}`);
       continue;
     }
   }
@@ -76,18 +106,82 @@ app.post('/api/chat', async (req, res) => {
     azureOpenAIApiVersion: config.apiVersion,
   });
 
-  const chain = model.pipe(new StringOutputParser());
+  // if (body.tools) {
+  //   logInfo(`Tools: ${JSON.stringify(body.tools)}`);
+  // }
 
-  const result = await chain.invoke(messages);
+  const modelWithTools = model.bind({
+    tools: (body.tools || []).map((tool) => {
+      console.log('Tool:', tool.function.name);
+      const t = {
+        ...tool,
+        function: {
+          ...tool.function,
+          parameters: {
+            type: 'object',
+            properties: Object.keys(tool.function.parameters || {}).reduce(
+              (acc, key) => {
+                const param = tool.function.parameters[key];
+                acc[key] = {
+                  type: param.type,
+                  items:
+                    param.type === 'array' ? { type: param.items } : undefined,
+                  description: param.description,
+                };
+                return acc;
+              },
+              {}
+            ),
+          },
+        },
+      };
+      return t;
+    }),
+  });
 
-  console.log('Result:', result);
+  const result = await modelWithTools.invoke(messages);
+
+  // console.log('Result:', result.content);
+
+  console.log(
+    'Result tool_calls:',
+    result.tool_calls,
+    JSON.stringify(result.tool_calls)
+  );
+
+  const tool_calls = (result.tool_calls || []).map((tool_call, i) => {
+
+    let toolArgs = tool_call.args;
+
+    if ('properties' in tool_call.args) {
+      toolArgs = tool_call.args.properties;
+    }
+
+    return {
+      function: {
+        name: tool_call.name,
+        arguments: Object.keys(toolArgs).reduce((acc, key) => {
+          const param = toolArgs[key];
+          acc[key] = param;
+          return acc;
+        }, {}),
+      },
+    };
+  });
+
+  // console.log(
+  //   'Result mapped tool_calls:',
+  //   tool_calls,
+  //   JSON.stringify(tool_calls)
+  // );
 
   res.send({
     model: c.model,
     created_at: new Date().toISOString(),
     message: {
       role: 'assistant',
-      content: result,
+      content: result.content,
+      tool_calls,
     },
   });
 });
